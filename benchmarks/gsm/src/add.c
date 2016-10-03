@@ -13,6 +13,7 @@
 #include	<stdio.h>
 #include	<assert.h>
 
+#include    "spm_management.h"
 #include	"private.h"
 #include	"gsm.h"
 #include	"proto.h"
@@ -22,13 +23,15 @@
 
 word gsm_add P2((a,b), word a, word b)
 {
-	longword sum = (longword)a + (longword)b;
+	longword sum;
+    sum=(longword)a + (longword)b;
 	return saturate(sum);
 }
 
 word gsm_sub P2((a,b), word a, word b)
 {
-	longword diff = (longword)a - (longword)b;
+	longword diff;
+    diff=(longword)a - (longword)b;
 	return saturate(diff);
 }
 
