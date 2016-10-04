@@ -48,7 +48,7 @@
 #include <arpa/inet.h>
 
 #include "patricia.h"
-
+#include "spm_management.h"
 struct MyNode {
 	int foo;
 	double bar;
@@ -67,6 +67,12 @@ main(int argc, char **argv)
 	unsigned long mask=0xffffffff;
 	float time;
 
+#ifdef TROI_main
+    printf("TROI+ TROI_main\n");
+#endif
+#ifdef stack_func_main
+    printf("VAROI+ stack_func_main %p %p\n",__builtin_frame_address(0) - stack_func_main_size +1,__builtin_frame_address(0));
+#endif
 	if (argc<2) {
 		printf("Usage: %s <TCP stream>\n", argv[0]);
 		exit(-1);
@@ -92,6 +98,10 @@ main(int argc, char **argv)
 	 * NOTE: This should go into an intialization function.
 	 */
 	phead = (struct ptree *)malloc(sizeof(struct ptree));
+
+#define heap_array_main_phead
+    printf("VAROI+ heap_array_main_phead %p %p\n",*phead,*phead + (sizeof(struct ptree)-1));
+#endif
 	if (!phead) {
 		perror("Allocating p-trie node");
 		exit(0);
@@ -99,6 +109,9 @@ main(int argc, char **argv)
 	bzero(phead, sizeof(*phead));
 	phead->p_m = (struct ptree_mask *)malloc(
 			sizeof(struct ptree_mask));
+#define heap_array_main_phead_pm
+    printf("VAROI+ heap_array_main_phead_pm %p %p\n",*(phead->p_m),*(phead->p_m) + (sizeof(struct ptree_mask)-1));
+#endif
 	if (!phead->p_m) {
 		perror("Allocating p-trie mask data");
 		exit(0);
@@ -106,6 +119,9 @@ main(int argc, char **argv)
 	bzero(phead->p_m, sizeof(*phead->p_m));
 	pm = phead->p_m;
 	pm->pm_data = (struct MyNode *)malloc(sizeof(struct MyNode));
+#define heap_array_main_phead_pm_data
+    printf("VAROI+ heap_array_main_phead_pm_data %p %p\n",*(pm->pm_data),*(pm->pm_data)+(sizeof(struct MyNode))-1);
+#endif
 	if (!pm->pm_data) {
 		perror("Allocating p-trie mask's node data");
 		exit(0);
@@ -135,6 +151,9 @@ main(int argc, char **argv)
 		 * Create a Patricia trie node to insert.
 		 */
 		p = (struct ptree *)malloc(sizeof(struct ptree));
+#define heap_array_main_p
+    printf("VAROI+ heap_array_main_p %p %p\n",*p, *p + sizeof(struct ptree) -1);
+#endif
 		if (!p) {
 			perror("Allocating p-trie node");
 			exit(0);
@@ -146,6 +165,9 @@ main(int argc, char **argv)
 		 */
 		p->p_m = (struct ptree_mask *)malloc(
 				sizeof(struct ptree_mask));
+#define heap_array_main_p_pm
+    printf("VAROI+ heap_array_main_p_pm %p %p\n",*(p->p_m),*(p->p_m)+sizeof(struct ptree_mask)-1);
+#endif
 		if (!p->p_m) {
 			perror("Allocating p-trie mask data");
 			exit(0);
@@ -158,6 +180,9 @@ main(int argc, char **argv)
 		 */
 		pm = p->p_m;
 		pm->pm_data = (struct MyNode *)malloc(sizeof(struct MyNode));
+#define heap_array_main_p_pm_data
+    printf("VAROI+ heap_array_main_p_pm_data %p %p\n",*(pm->pm_data),*(pm->pm_data)+ sizeof(struct MyNode)-1);
+#endif
 		if (!pm->pm_data) {
 			perror("Allocating p-trie mask's node data");
 			exit(0);
@@ -194,6 +219,13 @@ main(int argc, char **argv)
 			exit(0);
 		}
 	}
+#ifdef stack_func_main
+    printf("VAROI- stack_func_main %p %p\n",__builtin_frame_address(0) - stack_func_main_size +1,__builtin_frame_address(0));
+#endif
+
+#ifdef TROI_main
+    printf("TROI- TROI_main\n");
+#endif
 
 	exit(1);
 }
