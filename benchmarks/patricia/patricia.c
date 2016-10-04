@@ -161,8 +161,19 @@ pat_insert(struct ptree *n, struct ptree *head)
 		for (i=0; i < t->p_mlen; i++) {
 			if (n->p_m->pm_mask == t->p_m[i].pm_mask) {
 				t->p_m[i].pm_data = n->p_m->pm_data;
-				free(n->p_m);
-				free(n);
+                free(n->p_m->pm_data);
+#ifdef heap_array_main_p_pm_data
+    printf("VAROI- heap_array_main_p_pm_data %p %p\n",n->p_m->pm_data , n->p_m->pm_data+sizeof(struct MyNode)-1);
+#endif
+		        free(n->p_m);
+#ifdef heap_array_main_p_pm
+    printf("VAROI- heap_array_main_p_pm %p %p\n",n->p_m, n->p_m+sizeof(struct ptree_mask)-1);
+#endif
+		        free(n);
+#ifdef heap_array_main_p
+    printf("VAROI- heap_array_main_p %p %p\n",n,n+sizeof(struct ptree)-1);
+#endif
+
 				n = 0;
 #ifdef stack_func_pat_insert
     printf("VAROI- stack_func_pat_insert %p %p\n",__builtin_frame_address(0) \
@@ -182,9 +193,6 @@ pat_insert(struct ptree *n, struct ptree *head)
 		 */
 		buf = (struct ptree_mask *)malloc(
 		       sizeof(struct ptree_mask)*(t->p_mlen+1));
-#ifdef heap_array_buf
-    printf("VAROI+ heap_array_insert_buf %p %p\n",*buf,*buf+(sizeof(struct ptree_mask)*(t->p_mlen+1)-1));
-#endif
 		/*
 		 * Insert the new mask in the proper order from least
 		 * to greatest mask.
@@ -204,20 +212,35 @@ pat_insert(struct ptree *n, struct ptree *head)
 		if (!copied) {
 			bcopy(n->p_m, pm, sizeof(struct ptree_mask));
 		}
+ 
+        free(n->p_m->pm_data);
+#ifdef heap_array_main_p_pm_data
+    printf("VAROI- heap_array_main_p_pm_data %p %p\n",n->p_m->pm_data , n->p_m->pm_data+sizeof(struct MyNode)-1);
+#endif
 		free(n->p_m);
+#ifdef heap_array_main_p_pm
+    printf("VAROI- heap_array_main_p_pm %p %p\n",n->p_m, n->p_m+sizeof(struct ptree_mask)-1);
+#endif
 		free(n);
+#ifdef heap_array_main_p
+    printf("VAROI- heap_array_main_p %p %p\n",n,n+sizeof(struct ptree)-1);
+#endif
 		n = 0;
 		t->p_mlen++;
 
 		/*
 		 * Free old masks and point to new ones.
 		 */
-		free(t->p_m);
-		t->p_m = buf;
-        free(buf);
-#ifdef heap_array_buf
-    printf("VAROI- heap_array_insert_buf %p %p\n",*buf,*buf+(sizeof(struct ptree_mask)*(t->p_mlen+1)-1));
+        
+        free(t->p_m->pm_data);
+#ifdef heap_array_main_phead_pm_data
+    printf("VAROI- heap_array_main_phead_pm_data %p %p\n",t->p_m->pm_data,t->p_m->pm_data + sizeof(struct MyNode)-1);
 #endif
+		free(t->p_m);
+#ifdef heap_array_main_phead_pm
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(ptree_mask)-1);
+#endif
+		t->p_m = buf;
 
 #ifdef stack_func_pat_insert
     printf("VAROI- stack_func_pat_insert %p %p\n",__builtin_frame_address(0) \
@@ -242,9 +265,6 @@ pat_insert(struct ptree *n, struct ptree *head)
 		head->p_right = insertR(head->p_right, n, i, head);
 	else
 		head->p_left = insertR(head->p_left, n, i, head);
-#ifdef heap_array_buf
-    printf("VAROI- heap_array_insert_buf %p %p\n",*buf,*buf+(sizeof(struct ptree_mask)*(t->p_mlen+1)-1));
-#endif
 
 #ifdef stack_func_pat_insert
     printf("VAROI- stack_func_pat_insert %p %p\n",__builtin_frame_address(0) \
@@ -378,15 +398,25 @@ pat_remove(struct ptree *n, struct ptree *head)
 		 * Delete the target's data and copy in its parent's
 		 * data, but not the bit value.
 		 */
-		if (t->p_m->pm_data)
-			free(t->p_m->pm_data);
+		free(t->p_m->pm_data);
+#ifdef heap_array_main_phead_pm_data
+    printf("VAROI- heap_array_main_phead_pm_data %p %p\n",t->p_m->pm_data,t->p_m->pm_data + sizeof(struct MyNode)-1);
+#endif
 		free(t->p_m);
+#ifdef heap_array_main_phead_pm
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(ptree_mask)-1);
+#endif
+
 		if (t != p) {
 			t->p_key = p->p_key;
 			t->p_m = p->p_m;
 			t->p_mlen = p->p_mlen;
 		}
 		free(p);
+#ifdef heap_array_main_phead
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",p,p+sizeof(ptree)-1);
+#endif
+
 #ifdef stack_func_pat_remove
     printf("VAROI- stack_func_pat_remove %p %p\n",__builtin_frame_address(0) \
             - stack_func_pat_remove_size +1, __builtin_frame_address(0));
@@ -422,9 +452,6 @@ pat_remove(struct ptree *n, struct ptree *head)
 	 */
 	buf = (struct ptree_mask *)malloc(
 	       sizeof(struct ptree_mask)*(t->p_mlen-1));
-#ifdef heap_array_remove_buf
-    printf("VAROI+ heap_array_remove_buf %p %p\n",*buf,*buf+(sizeof(struct ptree_mask)*(t->p_mlen-1)-1));
-#endif
 
 	for (i=0, pm=buf; i < t->p_mlen; i++) {
 		if (n->p_m->pm_mask != t->p_m[i].pm_mask) {
@@ -438,10 +465,6 @@ pat_remove(struct ptree *n, struct ptree *head)
 	t->p_mlen--;
 	free(t->p_m);
 	t->p_m = buf;
-    free(buf);
-#ifdef heap_array_remove_buf
-    printf("VAROI- heap_array_remove_buf %p %p\n",*buf,*buf+(sizeof(struct ptree_mask)*(t->p_mlen-1)-1));
-#endif
 
 #ifdef stack_func_pat_remove
     printf("VAROI- stack_func_pat_remove %p %p\n",__builtin_frame_address(0) \

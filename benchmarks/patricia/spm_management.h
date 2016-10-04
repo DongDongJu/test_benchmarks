@@ -16,8 +16,6 @@
 #define stack_func_pat_search
 #define stack_func_pat_search_size 12
 
-#define heap_array_insert_buf
-#define heap_array_remove_buf
 #define heap_array_main_phead
 #define heap_array_main_phead_pm
 #define heap_array_main_phead_pm_data 
