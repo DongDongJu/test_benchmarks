@@ -49,6 +49,10 @@ struct ptree {
 	struct ptree *p_right;		/* Right pointer	*/
 };
 
+struct MyNode{
+    int foo;
+    double bar;
+};
 
 extern struct ptree *pat_insert(struct ptree *n, struct ptree *head);
 extern int           pat_remove(struct ptree *n, struct ptree *head);

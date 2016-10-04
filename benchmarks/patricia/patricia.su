@@ -1,0 +1,4 @@
+patricia.c:67:1:0	32	static
+patricia.c:115:1:pat_insert	48	static
+patricia.c:286:1:pat_remove	16	static
+patricia.c:486:1:pat_search	24	static

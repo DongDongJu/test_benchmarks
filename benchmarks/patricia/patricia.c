@@ -22,6 +22,7 @@
  * $Id: patricia.c,v 1.1.1.1 2000/11/06 19:53:17 mguthaus Exp $
  */
 
+#include <stdio.h>
 #include <stdlib.h>	/* free(), malloc() */
 #include <string.h>	/* bcopy() */
 #include "patricia.h"
@@ -66,10 +67,10 @@ static struct ptree *
 insertR(struct ptree *h, struct ptree *n, int d, struct ptree *p)
 {
 #ifdef TROI_insertR
-    printf("TROI+ TROI_insertR\n")
+    printf("TROI+ TROI_insertR\n");
 #endif
 #ifdef stack_func_insertR
-    printf("VAROI+ stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +! , __builtin_frame_address(0));
+    printf("VAROI+ stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +1 , __builtin_frame_address(0));
 #endif
 
 	if ((h->p_b >= d) || (h->p_b <= p->p_b)) {
@@ -77,7 +78,7 @@ insertR(struct ptree *h, struct ptree *n, int d, struct ptree *p)
 		n->p_left = bit(d, n->p_key) ? h : n;
 		n->p_right = bit(d, n->p_key) ? n : h;
 #ifdef stack_func_insertR
-    printf("VAROI- stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +! , __builtin_frame_address(0));
+    printf("VAROI- stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +1 , __builtin_frame_address(0));
 #endif
 
 #ifdef TROI_insertR
@@ -91,7 +92,7 @@ insertR(struct ptree *h, struct ptree *n, int d, struct ptree *p)
 	else
 		h->p_left = insertR(h->p_left, n, d, h);
 #ifdef stack_func_insertR
-    printf("VAROI- stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +! , __builtin_frame_address(0));
+    printf("VAROI- stack_func_insertR %p %p\n",__builtin_frame_address(0) - stack_func_insertR_size +1 , __builtin_frame_address(0));
 #endif
 
 #ifdef TROI_insertR
@@ -238,7 +239,7 @@ pat_insert(struct ptree *n, struct ptree *head)
 #endif
 		free(t->p_m);
 #ifdef heap_array_main_phead_pm
-    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(ptree_mask)-1);
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(struct ptree_mask)-1);
 #endif
 		t->p_m = buf;
 
@@ -404,7 +405,7 @@ pat_remove(struct ptree *n, struct ptree *head)
 #endif
 		free(t->p_m);
 #ifdef heap_array_main_phead_pm
-    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(ptree_mask)-1);
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",t->p_m,t->p_m+sizeof(struct ptree_mask)-1);
 #endif
 
 		if (t != p) {
@@ -414,7 +415,7 @@ pat_remove(struct ptree *n, struct ptree *head)
 		}
 		free(p);
 #ifdef heap_array_main_phead
-    printf("VAROI- heap_array_main_phead_pm %p %p\n",p,p+sizeof(ptree)-1);
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",p,p+sizeof(struct ptree)-1);
 #endif
 
 #ifdef stack_func_pat_remove
@@ -491,14 +492,14 @@ pat_search(unsigned long key, struct ptree *head)
 #endif
 #ifdef stack_func_pat_search
     printf("VAROI+ stack_func_pat_search %p %p\n",__builtin_frame_address(0) \
-            - stack_func_pat_serarch_size +1, __builtin_frame_address(0));
+            - stack_func_pat_search_size +1, __builtin_frame_address(0));
 #endif
 
 	if (!t)
     {
 #ifdef stack_func_pat_search
     printf("VAROI- stack_func_pat_search %p %p\n",__builtin_frame_address(0) \
-            - stack_func_pat_serarch_size +1, __builtin_frame_address(0));
+            - stack_func_pat_search_size +1, __builtin_frame_address(0));
 #endif
 
 #ifdef TROI_pat_search
@@ -527,7 +528,7 @@ pat_search(unsigned long key, struct ptree *head)
 	 */
 #ifdef stack_func_pat_search
     printf("VAROI- stack_func_pat_search %p %p\n",__builtin_frame_address(0) \
-            - stack_func_pat_serarch_size +1, __builtin_frame_address(0));
+            - stack_func_pat_search_size +1, __builtin_frame_address(0));
 #endif
 
 #ifdef TROI_pat_search
