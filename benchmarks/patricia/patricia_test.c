@@ -199,6 +199,20 @@ main(int argc, char **argv)
 		{
 			printf("%f %08x: ", time, addr.s_addr);
 			printf("Found.\n");
+            free(pm->pm_data);
+#ifdef heap_array_main_p_pm_data
+    printf("VAROI- heap_array_main_p_pm_data %p %p\n",pm->pm_data,pm->pm_data+sizeof(struct MyNode)-1);
+#endif 
+            free(p->p_m);
+#ifdef heap_array_main_p_pm
+    printf("VAROI- heap_array_main_p_pm %p %p\n",p->p_m,p->p_m+sizeof(struct ptree_mask)-1);
+#endif
+            free(p);
+#ifdef heap_array_main_p
+    printf("VAROI- heap_array_main_p %p %p\n",p, p + sizeof(struct ptree) -1);
+#endif
+
+
 		}
 		else
 		{
@@ -215,6 +229,18 @@ main(int argc, char **argv)
 			exit(0);
 		}
 	}
+    free(pm->pm_data);
+#ifdef heap_array_main_phead_pm_data
+    printf("VAROI- heap_array_main_phead_pm_data %p %p\n",pm->pm_data,pm->pm_data+sizeof(struct MyNode)-1);
+#endif
+    free(phead->p_m);
+#ifdef heap_array_main_phead_pm
+    printf("VAROI- heap_array_main_phead_pm %p %p\n",phead->p_m,phead->p_m + sizeof(struct ptree_mask)-1);
+#endif
+    free(phead);
+#ifdef head_array_main_phead
+    printf("VAROI- heap_array_main_phead %p %p\n",phead,phead+sizeof(struct ptree)-1);
+#endif
 #ifdef stack_func_main
     printf("VAROI- stack_func_main %p %p\n",__builtin_frame_address(0) - stack_func_main_size +1,__builtin_frame_address(0));
 #endif
