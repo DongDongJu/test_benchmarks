@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GEM5_PATH=/data/users/dongjos2/gem5
+GEM5_PATH=/pub/dongjos2/majid/gem5-trace-generator
 MEM_TRACE_ANALYZER_PATH=/pub/dongjos2/majid/mem-trace-analyzer
 
 CUR_DIR=$(pwd)
