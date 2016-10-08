@@ -7,6 +7,7 @@
 #include <string.h>
 #include <math.h>
 #include <limits.h>
+#include "spm_management.h"
 
 /* various #defines for the C code */
 #ifndef true
@@ -19,12 +20,35 @@
 #define Allocate(type, count)				(type *)malloc((count) * sizeof(type))
 
 long Min(const long a, const long b) {
-	if (a < b) return a;
-	return b;
+#ifdef TROI_Min
+    printf("TROI+ TROI_Min\n");
+#endif
+
+	if (a < b){
+#ifdef TROI_Min
+    printf("TROI- TROI_Min\n");
+#endif
+        return a;
+	}
+#ifdef TROI_Min
+    printf("TROI- TROI_Min\n");
+#endif
+    return b;
 }
 
 long Max(const long a, const long b) {
-	if (a > b) return a;
+#ifdef TROI_Max
+    printf("TROI+ TROI_Max\n");
+#endif
+    if (a > b){
+        return a;
+#ifdef TROI_Max
+    printf("TROI- TROI_Max\n");
+#endif
+    }
+#ifdef TROI_Max
+    printf("TROI- TROI_Max\n");
+#endif
 	return b;
 }
 
@@ -51,8 +75,14 @@ long Range_length(Range range) { return range.end - range.start; }
 
 Range MakeRange(const long start, const long end) {
 	Range range;
+#ifdef TROI_MakeRange
+    printf("TROI+ TROI_MakeRange\n");
+#endif
 	range.start = start;
 	range.end = end;
+#ifdef TROI_MakeRange
+    printf("TROI- TROI_MakeRange\n");
+#endif
 	return range;
 }
 
@@ -73,6 +103,9 @@ Range MakeRange(const long start, const long end) {
 /* apparently this comes from Hacker's Delight? */
 long FloorPowerOfTwo (const long value) {
 	long x = value;
+#ifdef TROI_FloorPowerOfTwo
+    printf("TROI+ TROI_FloorPowerOfTwo\n");
+#endif
 	x = x | (x >> 1);
 	x = x | (x >> 2);
 	x = x | (x >> 4);
@@ -81,12 +114,18 @@ long FloorPowerOfTwo (const long value) {
 #if __LP64__
 	x = x | (x >> 32);
 #endif
+#ifdef TROI_FloorPowerOfTwo
+    printf("TROI- TROI_FloorPowerOfTwo\n");
+#endif
 	return x - (x >> 1);
 }
 
 /* find the index of the first value within the range that is equal to array[index] */
 long BinaryFirst(const Test array[], const long index, const Range range, const Comparison compare) {
 	long start = range.start, end = range.end - 1;
+#ifdef TROI_BinaryFirst
+    printf("TROI+ TROI_BinaryFirst\n");
+#endif
 	while (start < end) {
 		long mid = start + (end - start)/2;
 		if (compare(array[mid], array[index]))
@@ -95,6 +134,9 @@ long BinaryFirst(const Test array[], const long index, const Range range, const 
 			end = mid;
 	}
 	if (start == range.end - 1 && compare(array[start], array[index])) start++;
+#ifdef TROI_BinaryFirst
+    printf("TROI- TROI_BinaryFirst\n");
+#endif
 	return start;
 }
 
