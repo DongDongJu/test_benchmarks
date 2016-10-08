@@ -334,9 +334,12 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
     printf("TROI+ WikiSort\n");
 #endif
 
+
 //add    
     cache=(Test*)malloc(sizeof(struct Test)*CACHE_SIZE);
-
+#ifdef heap_array_cache
+    printf("VAROI+ heap_array_cache %p %p\n",cache, cache + (sizeof(struct Test)* CACHE_SIZE) -1);
+#endif
 	long index, merge_size, start, mid, end, fractional, decimal;
 	long power_of_two, fractional_base, fractional_step, decimal_step;
 
@@ -711,6 +714,9 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 		}
 	}
     free(cache);
+#ifdef heap_array_cache
+    printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(struct Test)* CACHE_SIZE) -1);
+#endif
 	#undef CACHE_SIZE
 #ifdef TROI_WikiSort
     printf("TROI- WikiSort\n");
@@ -823,11 +829,25 @@ long TestingEqual(long index, long total) {
 }
 
 long TestingJittered(long index, long total) {
-	return (rand() * 1.0/RAND_MAX <= 0.9) ? index : (index - 2);
+#ifdef TROI_TestingJittered
+    printf("TROI+ TestingJittered\n");
+#endif
+    long i = (rand() * 1.0/RAND_MAX <= 0.9) ? index : (index - 2);
+#ifdef TROI_TestingJittered
+    printf("TROI- TestingJittered\n");
+#endif
+	return i;
 }
 
 long TestingMostlyEqual(long index, long total) {
-	return 1000 + rand() * 1.0/RAND_MAX * 4;
+#ifdef TROI_TestingMostlyEqual
+    printf("TROI+ TestingMostlyEqual\n");
+#endif
+    long i = 1000 + rand() * 1.0/RAND_MAX * 4;
+#ifdef TROI_TestingMostlyEqual
+    printf("TROI- TestingMostlyEqual\n");
+#endif
+	return i;
 }
 
 
@@ -852,7 +872,9 @@ int benchmark() {
 		TestingJittered,
 		TestingMostlyEqual
 	};
-
+#ifdef TROI_benchmark
+	printf("TROI+ benchmark\n");
+#endif
 	/* initialize the random-number generator */
 	srand(0);
 	/*srand(10141985);*/ /* in case you want the same random numbers */
@@ -871,23 +893,33 @@ int benchmark() {
 		}
 
 		WikiSort(array1, total, compare);
-        printf("1\n");
 	}
-
+#ifdef TROI_benchmark
+	printf("TROI- benchmark\n");
+#endif
 	return 0;
 }
 
 int main(){
 
-    int result;
+#ifdef TROI_main
+    printf("TROI+ main\n");
+#endif
     //add
     array1=(Test*)malloc(sizeof(struct Test)*400);
-
-    result=benchmark();
-    printf("%d\n",result);
+#ifdef heap_array_array1
+    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(struct Test)*400)-1);
+#endif
+    benchmark();
     
     //add
     free(array1)
+#ifdef heap_array_array1
+    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(struct Test)*400)-1);
+#endif
+#ifdef TROI_main
+    printf("TROI- main\n");
+#endif
     return 1;
 }
 

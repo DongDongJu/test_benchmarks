@@ -73,3 +73,8 @@
 #define stack_func_benchmark_size 72
 #define stack_func_main
 #define stack_func_main_size 16
+
+#define heap_array_cache
+#define heap_array_array1
+
+
