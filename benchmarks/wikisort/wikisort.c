@@ -143,6 +143,9 @@ long BinaryFirst(const Test array[], const long index, const Range range, const 
 /* find the index of the last value within the range that is equal to array[index], plus 1 */
 long BinaryLast(const Test array[], const long index, const Range range, const Comparison compare) {
 	long start = range.start, end = range.end - 1;
+#ifdef TROI_BinaryLast
+    printf("TROI+ BinaryLast\n");
+#endif
 	while (start < end) {
 		long mid = start + (end - start)/2;
 		if (!compare(array[index], array[mid]))
@@ -151,40 +154,67 @@ long BinaryLast(const Test array[], const long index, const Range range, const C
 			end = mid;
 	}
 	if (start == range.end - 1 && !compare(array[index], array[start])) start++;
+#ifdef TROI_BinaryLast
+    printf("TROI- BinaryLast\n");
+#endif
 	return start;
 }
 
 /* n^2 sorting algorithm used to sort tiny chunks of the full array */
 void InsertionSort(Test array[], const Range range, const Comparison compare) {
 	long i;
+#ifdef TROI_InsertionSort
+    printf("TROI+ InsertionSort\n");
+#endif
 	for (i = range.start + 1; i < range.end; i++) {
 		const Test temp = array[i]; long j;
 		for (j = i; j > range.start && compare(temp, array[j - 1]); j--)
 			array[j] = array[j - 1];
 		array[j] = temp;
 	}
+#ifdef TROI_InsertionSort
+    printf("TROI- InsertionSort\n");
+#endif
 }
 
 /* reverse a range within the array */
 void Reverse(Test array[], const Range range) {
 	long index;
+#ifdef TROI_Reverse
+    printf("TROI+ Reverse\n");
+#endif
 	for (index = Range_length(range)/2 - 1; index >= 0; index--)
 		Swap(array[range.start + index], array[range.end - index - 1]);
+#ifdef TROI_Reverse
+    printf("TROI- Reverse\n");
+#endif
 }
 
 /* swap a series of values in the array */
 void BlockSwap(Test array[], const long start1, const long start2, const long block_size) {
 	long index;
+#ifdef TROI_BlockSwap
+    printf("TROI+ BlockSwap\n");
+#endif
 	for (index = 0; index < block_size; index++)
 		Swap(array[start1 + index], array[start2 + index]);
+#ifdef TROI_BlockSwap
+    printf("TROI- BlockSwap\n");
+#endif
 }
 
 /* rotate the values in an array ([0 1 2 3] becomes [1 2 3 0] if we rotate by 1) */
 void Rotate(Test array[], const long amount, const Range range, Test cache[], const long cache_size) {
 	long split; Range range1, range2;
-
-	if (Range_length(range) == 0) return;
-
+#ifdef TROI_Rotate
+    printf("TROI+ Rotate\n");
+#endif
+	if (Range_length(range) == 0){
+        return;
+#ifdef TROI_Rotate
+    printf("TROI- Rotate\n");
+#endif
+    }
 	if (amount >= 0)
 		split = range.start + amount;
 	else
@@ -199,6 +229,9 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 			memcpy(&cache[0], &array[range1.start], Range_length(range1) * sizeof(array[0]));
 			memmove(&array[range1.start], &array[range2.start], Range_length(range2) * sizeof(array[0]));
 			memcpy(&array[range1.start + Range_length(range2)], &cache[0], Range_length(range1) * sizeof(array[0]));
+#ifdef TROI_Rotate
+    printf("TROI- Rotate\n");
+#endif
 			return;
 		}
 	} else {
@@ -206,6 +239,9 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 			memcpy(&cache[0], &array[range2.start], Range_length(range2) * sizeof(array[0]));
 			memmove(&array[range2.end - Range_length(range1)], &array[range1.start], Range_length(range1) * sizeof(array[0]));
 			memcpy(&array[range1.start], &cache[0], Range_length(range2) * sizeof(array[0]));
+#ifdef TROI_Rotate
+    printf("TROI- Rotate\n");
+#endif
 			return;
 		}
 	}
@@ -213,11 +249,18 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 	Reverse(array, range1);
 	Reverse(array, range2);
 	Reverse(array, range);
+#ifdef TROI_Rotate
+    printf("TROI- Rotate\n");
+#endif
+
 }
 
 /* standard merge operation using an internal or external buffer */
 void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, const Comparison compare, Test cache[], const long cache_size) {
 	/* if A fits into the cache, use that instead of the internal buffer */
+#ifdef TROI_WikiMerge
+    printf("TROI+ WikiMerge\n");
+#endif
 	if (Range_length(A) <= cache_size) {
 		Test *A_index = &cache[0];
 		Test *B_index = &array[B.start];
@@ -267,6 +310,9 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 		/* swap the remainder of A into the final array */
 		BlockSwap(array, buffer.start + A_count, A.start + insert, Range_length(A) - A_count);
 	}
+#ifdef TROI_WikiMerge
+    printf("TROI- WikiMerge\n");
+#endif
 }
 
 /* bottom-up merge sort combined with an in-place merge algorithm for O(1) memory use */
@@ -281,7 +327,15 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 	/* the algorithm seamlessly degenerates into a standard merge sort! */
 	#define CACHE_SIZE 512
 	const long cache_size = CACHE_SIZE;
-	Test cache[CACHE_SIZE];
+//	Test cache[CACHE_SIZE];
+//add
+    Test* cache;
+#ifdef TROI_WikiSort
+    printf("TROI+ WikiSort\n");
+#endif
+
+//add    
+    cache=(Test*)malloc(sizeof(struct Test)*CACHE_SIZE);
 
 	long index, merge_size, start, mid, end, fractional, decimal;
 	long power_of_two, fractional_base, fractional_step, decimal_step;
@@ -289,6 +343,11 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 	/* if there are 32 or fewer items, just insertion sort the entire array */
 	if (size <= 32) {
 		InsertionSort(array, MakeRange(0, size), compare);
+//add
+        free(cache);
+#ifdef TROI_WikiSort
+    printf("TROI- WikiSort\n");
+#endif
 		return;
 	}
 
@@ -651,41 +710,116 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 			decimal_step += 1;
 		}
 	}
-
+    free(cache);
 	#undef CACHE_SIZE
+#ifdef TROI_WikiSort
+    printf("TROI- WikiSort\n");
+#endif
+
 }
 
 
 
 long TestingPathological(long index, long total) {
-	if (index == 0) return 10;
-	else if (index < total/2) return 11;
-	else if (index == total - 1) return 10;
+#ifdef TROI_TestingPathological
+    printf("TROI+ TestingPathological\n");
+#endif
+	if (index == 0){
+#ifdef TROI_TestingPathological
+    printf("TROI- TestingPathological\n");
+#endif
+        return 10;
+    }
+	else if (index < total/2){
+#ifdef TROI_TestingPathological
+    printf("TROI- TestingPathological\n");
+#endif
+         return 11;
+    }
+	else if (index == total - 1){
+#ifdef TROI_TestingPathological
+    printf("TROI- TestingPathological\n");
+#endif
+         return 10;
+    }
+#ifdef TROI_TestingPathological
+    printf("TROI- TestingPathological\n");
+#endif
+
 	return 9;
 }
 
 long TestingRandom(long index, long total) {
-	return rand();
+#ifdef TROI_TestingRandom
+    printf("TROI+ TestingRandom\n");
+#endif
+//add
+    long i = rand();
+#ifdef TROI_TestingRandom
+    printf("TROI- TestingRandom\n");
+#endif
+
+	return i;
 }
 
 long TestingMostlyDescending(long index, long total) {
-	return total - index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef TROI_TestingMostlyDescending
+    printf("TROI+ TestingMostlyDescending\n");
+#endif
+//add
+    long i = total - index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef TROI_TestingMostlyDescending
+    printf("TROI- TestingMostlyDescending\n");
+#endif
+    return i;
 }
 
 long TestingMostlyAscending(long index, long total) {
-	return index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef TROI_TestingMostlyAscending
+    printf("TROI+ TestingMostlyAescending\n");
+#endif
+//add
+    long i = index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef TROI_TestingMostlyAscending
+    printf("TROI- TestingMostlyAescending\n");
+#endif
+    return i;
 }
 
 long TestingAscending(long index, long total) {
-	return index;
+#ifdef TROI_TestingAscending
+    printf("TROI+ TestingAescending\n");
+#endif
+//add
+    long i = index;
+#ifdef TROI_TestingAscending
+    printf("TROI- TestingAescending\n");
+#endif
+
+	return i;
 }
 
 long TestingDescending(long index, long total) {
-	return total - index;
+#ifdef TROI_TestingDescending
+    printf("TROI+ TestingDescending\n");
+#endif
+    long i = total - index;
+#ifdef TROI_TestingDescending
+    printf("TROI- TestingDescending\n");
+#endif
+
+	return i;
 }
 
 long TestingEqual(long index, long total) {
-	return 1000;
+#ifdef TROI_TestingEqual
+    printf("TROI+ TestingEqual\n");
+#endif
+    long i = 1000;
+#ifdef TROI_TestingEqual
+    printf("TROI- TestingEqual\n");
+#endif
+	return i;
 }
 
 long TestingJittered(long index, long total) {
@@ -698,8 +832,11 @@ long TestingMostlyEqual(long index, long total) {
 
 
 const long max_size = 400;
-Test array1[400];
+//original ones;
+//Test array1[400];
 
+//add
+Test* array1;
 int benchmark() {
 	long total, index, test_case;
 	Comparison compare = TestCompare;
@@ -742,8 +879,15 @@ int benchmark() {
 
 int main(){
 
-    int result=benchmark();
+    int result;
+    //add
+    array1=(Test*)malloc(sizeof(struct Test)*400);
+
+    result=benchmark();
     printf("%d\n",result);
+    
+    //add
+    free(array1)
     return 1;
 }
 
