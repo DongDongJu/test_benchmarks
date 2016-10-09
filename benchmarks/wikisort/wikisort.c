@@ -23,13 +23,21 @@ long Min(const long a, const long b) {
 #ifdef TROI_Min
     printf("TROI+ TROI_Min\n");
 #endif
-
+#ifdef stack_func_Min
+    printf("VAROI+ stack_func_Min %p %p\n",STACK_BASE - stack_func_Min_size +1 , STACK_BASE);
+#endif
 	if (a < b){
+#ifdef stack_func_Min
+    printf("VAROI- stack_func_Min %p %p\n",STACK_BASE - stack_func_Min_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_Min
     printf("TROI- TROI_Min\n");
 #endif
         return a;
 	}
+#ifdef stack_func_Min
+    printf("VAROI- stack_func_Min %p %p\n",STACK_BASE - stack_func_Min_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_Min
     printf("TROI- TROI_Min\n");
 #endif
@@ -40,12 +48,21 @@ long Max(const long a, const long b) {
 #ifdef TROI_Max
     printf("TROI+ TROI_Max\n");
 #endif
+#ifdef stack_func_Max
+    printf("VAROI+ stack_func_Max %p %p\n",STACK_BASE - stack_func_Max_size +1 , STACK_BASE);
+#endif
     if (a > b){
-        return a;
+#ifdef stack_func_Max
+    printf("VAROI- stack_func_Max %p %p\n",STACK_BASE - stack_func_Max_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_Max
     printf("TROI- TROI_Max\n");
 #endif
+        return a;
     }
+#ifdef stack_func_Max
+    printf("VAROI- stack_func_Max %p %p\n",STACK_BASE - stack_func_Max_size +1 , STACK_BASE);
+#endif  
 #ifdef TROI_Max
     printf("TROI- TROI_Max\n");
 #endif
@@ -78,8 +95,14 @@ Range MakeRange(const long start, const long end) {
 #ifdef TROI_MakeRange
     printf("TROI+ TROI_MakeRange\n");
 #endif
+#ifdef stack_MakeRange
+    printf("VAROI+ MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
+#endif
 	range.start = start;
 	range.end = end;
+#ifdef stack_MakeRange
+    printf("VAROI- MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_MakeRange
     printf("TROI- TROI_MakeRange\n");
 #endif
@@ -106,6 +129,9 @@ long FloorPowerOfTwo (const long value) {
 #ifdef TROI_FloorPowerOfTwo
     printf("TROI+ TROI_FloorPowerOfTwo\n");
 #endif
+#ifdef stack_func_FloorPowerOfTwo
+    printf("VAROI+ stack_func_FloorPowerOfTwo %p %p\n",STACK_BASE - stack_func_FloorPowerOfTwo_size +1 , STACK_BASE);
+#endif
 	x = x | (x >> 1);
 	x = x | (x >> 2);
 	x = x | (x >> 4);
@@ -113,6 +139,9 @@ long FloorPowerOfTwo (const long value) {
 	x = x | (x >> 16);
 #if __LP64__
 	x = x | (x >> 32);
+#endif
+#ifdef stack_func_FloorPowerOfTwo
+    printf("VAROI- stack_func_FloorPowerOfTwo %p %p\n",STACK_BASE - stack_func_FloorPowerOfTwo_size +1 , STACK_BASE);
 #endif
 #ifdef TROI_FloorPowerOfTwo
     printf("TROI- TROI_FloorPowerOfTwo\n");
@@ -126,6 +155,9 @@ long BinaryFirst(const Test array[], const long index, const Range range, const 
 #ifdef TROI_BinaryFirst
     printf("TROI+ TROI_BinaryFirst\n");
 #endif
+#ifdef stack_func_BinaryFirst
+    printf("VAROI+ stack_func_BinaryFirst %p %p\n",STACK_BASE - stack_func_BinaryFirst_size +1 , STACK_BASE);
+#endif
 	while (start < end) {
 		long mid = start + (end - start)/2;
 		if (compare(array[mid], array[index]))
@@ -134,6 +166,9 @@ long BinaryFirst(const Test array[], const long index, const Range range, const 
 			end = mid;
 	}
 	if (start == range.end - 1 && compare(array[start], array[index])) start++;
+#ifdef stack_func_BinaryFirst
+    printf("VAROI- stack_func_BinaryFirst %p %p\n",STACK_BASE - stack_func_BinaryFirst_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_BinaryFirst
     printf("TROI- TROI_BinaryFirst\n");
 #endif
@@ -144,7 +179,10 @@ long BinaryFirst(const Test array[], const long index, const Range range, const 
 long BinaryLast(const Test array[], const long index, const Range range, const Comparison compare) {
 	long start = range.start, end = range.end - 1;
 #ifdef TROI_BinaryLast
-    printf("TROI+ BinaryLast\n");
+    printf("TROI+ TROI_BinaryLast\n");
+#endif
+#ifdef stack_func_BinaryLast
+    printf("VAROI+ stack_func_BinaryLast %p %p\n",STACK_BASE - stack_func_BinaryLast_size +1 , STACK_BASE);
 #endif
 	while (start < end) {
 		long mid = start + (end - start)/2;
@@ -154,8 +192,11 @@ long BinaryLast(const Test array[], const long index, const Range range, const C
 			end = mid;
 	}
 	if (start == range.end - 1 && !compare(array[index], array[start])) start++;
+#ifdef stack_func_BinaryLast
+    printf("VAROI- stack_func_BinaryLast %p %p\n",STACK_BASE - stack_func_BinaryLast_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_BinaryLast
-    printf("TROI- BinaryLast\n");
+    printf("TROI- TROI_BinaryLast\n");
 #endif
 	return start;
 }
@@ -164,16 +205,22 @@ long BinaryLast(const Test array[], const long index, const Range range, const C
 void InsertionSort(Test array[], const Range range, const Comparison compare) {
 	long i;
 #ifdef TROI_InsertionSort
-    printf("TROI+ InsertionSort\n");
+    printf("TROI+ TROI_InsertionSort\n");
 #endif
+#ifdef stack_func_InsertionSort
+    printf("VAROI+ stack_func_InsertionSort %p %p\n",STACK_BASE - stack_func_InsertionSort_size +1 , STACK_BASE);
+#endif    
 	for (i = range.start + 1; i < range.end; i++) {
 		const Test temp = array[i]; long j;
 		for (j = i; j > range.start && compare(temp, array[j - 1]); j--)
 			array[j] = array[j - 1];
 		array[j] = temp;
 	}
+#ifdef stack_func_InsertionSort
+    printf("VAROI- stack_func_InsertionSort %p %p\n",STACK_BASE - stack_func_InsertionSort_size +1 , STACK_BASE);
+#endif    	
 #ifdef TROI_InsertionSort
-    printf("TROI- InsertionSort\n");
+    printf("TROI- TROI_InsertionSort\n");
 #endif
 }
 
@@ -181,12 +228,18 @@ void InsertionSort(Test array[], const Range range, const Comparison compare) {
 void Reverse(Test array[], const Range range) {
 	long index;
 #ifdef TROI_Reverse
-    printf("TROI+ Reverse\n");
+    printf("TROI+ TROI_Reverse\n");
 #endif
+#ifdef stack_func_Reverse
+    printf("VAROI+ stack_func_Reverse %p %p\n",STACK_BASE - stack_func_Reverse_size +1 , STACK_BASE);
+#endif        
 	for (index = Range_length(range)/2 - 1; index >= 0; index--)
 		Swap(array[range.start + index], array[range.end - index - 1]);
+#ifdef stack_func_Reverse
+    printf("VAROI- stack_func_Reverse %p %p\n",STACK_BASE - stack_func_Reverse_size +1 , STACK_BASE);
+#endif 
 #ifdef TROI_Reverse
-    printf("TROI- Reverse\n");
+    printf("TROI- TROI_Reverse\n");
 #endif
 }
 
@@ -194,12 +247,18 @@ void Reverse(Test array[], const Range range) {
 void BlockSwap(Test array[], const long start1, const long start2, const long block_size) {
 	long index;
 #ifdef TROI_BlockSwap
-    printf("TROI+ BlockSwap\n");
+    printf("TROI+ TROI_BlockSwap\n");
 #endif
+#ifdef stack_func_BlockSwap
+    printf("VAROI+ stack_func_BlockSwap %p %p\n",STACK_BASE - stack_func_BlockSwap_size +1 , STACK_BASE);
+#endif 
 	for (index = 0; index < block_size; index++)
 		Swap(array[start1 + index], array[start2 + index]);
+#ifdef stack_func_BlockSwap
+    printf("VAROI- stack_func_BlockSwap %p %p\n",STACK_BASE - stack_func_BlockSwap_size +1 , STACK_BASE);
+#endif 
 #ifdef TROI_BlockSwap
-    printf("TROI- BlockSwap\n");
+    printf("TROI- TROI_BlockSwap\n");
 #endif
 }
 
@@ -207,12 +266,18 @@ void BlockSwap(Test array[], const long start1, const long start2, const long bl
 void Rotate(Test array[], const long amount, const Range range, Test cache[], const long cache_size) {
 	long split; Range range1, range2;
 #ifdef TROI_Rotate
-    printf("TROI+ Rotate\n");
+    printf("TROI+ TROI_Rotate\n");
 #endif
+#ifdef stack_func_Rotate
+    printf("VAROI+ stack_func_Rotate %p %p\n",STACK_BASE - stack_func_Rotate_size +1 , STACK_BASE);
+#endif     
 	if (Range_length(range) == 0){
         return;
+#ifdef stack_func_Rotate
+    printf("VAROI- stack_func_Rotate %p %p\n",STACK_BASE - stack_func_Rotate_size +1 , STACK_BASE);
+#endif     
 #ifdef TROI_Rotate
-    printf("TROI- Rotate\n");
+    printf("TROI- TROI_Rotate\n");
 #endif
     }
 	if (amount >= 0)
@@ -229,8 +294,11 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 			memcpy(&cache[0], &array[range1.start], Range_length(range1) * sizeof(array[0]));
 			memmove(&array[range1.start], &array[range2.start], Range_length(range2) * sizeof(array[0]));
 			memcpy(&array[range1.start + Range_length(range2)], &cache[0], Range_length(range1) * sizeof(array[0]));
+#ifdef stack_func_Rotate
+    printf("VAROI- stack_func_Rotate %p %p\n",STACK_BASE - stack_func_Rotate_size +1 , STACK_BASE);
+#endif     
 #ifdef TROI_Rotate
-    printf("TROI- Rotate\n");
+    printf("TROI- TROI_Rotate\n");
 #endif
 			return;
 		}
@@ -239,8 +307,11 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 			memcpy(&cache[0], &array[range2.start], Range_length(range2) * sizeof(array[0]));
 			memmove(&array[range2.end - Range_length(range1)], &array[range1.start], Range_length(range1) * sizeof(array[0]));
 			memcpy(&array[range1.start], &cache[0], Range_length(range2) * sizeof(array[0]));
+#ifdef stack_func_Rotate
+    printf("VAROI- stack_func_Rotate %p %p\n",STACK_BASE - stack_func_Rotate_size +1 , STACK_BASE);
+#endif     
 #ifdef TROI_Rotate
-    printf("TROI- Rotate\n");
+    printf("TROI- TROI_Rotate\n");
 #endif
 			return;
 		}
@@ -249,8 +320,11 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 	Reverse(array, range1);
 	Reverse(array, range2);
 	Reverse(array, range);
+#ifdef stack_func_Rotate
+    printf("VAROI- stack_func_Rotate %p %p\n",STACK_BASE - stack_func_Rotate_size +1 , STACK_BASE);
+#endif     	
 #ifdef TROI_Rotate
-    printf("TROI- Rotate\n");
+    printf("TROI- TROI_Rotate\n");
 #endif
 
 }
@@ -261,6 +335,9 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 #ifdef TROI_WikiMerge
     printf("TROI+ WikiMerge\n");
 #endif
+#ifdef stack_func_WikiMerge
+    printf("VAROI+ stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
+#endif     
 	if (Range_length(A) <= cache_size) {
 		Test *A_index = &cache[0];
 		Test *B_index = &array[B.start];
@@ -310,8 +387,11 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 		/* swap the remainder of A into the final array */
 		BlockSwap(array, buffer.start + A_count, A.start + insert, Range_length(A) - A_count);
 	}
+#ifdef stack_func_WikiMerge
+    printf("VAROI- stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
+#endif     
 #ifdef TROI_WikiMerge
-    printf("TROI- WikiMerge\n");
+    printf("TROI- TROI_WikiMerge\n");
 #endif
 }
 
@@ -331,14 +411,16 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 //add
     Test* cache;
 #ifdef TROI_WikiSort
-    printf("TROI+ WikiSort\n");
+    printf("TROI+ TROI_WikiSort\n");
 #endif
-
+#ifdef stack_func_WikiSort
+    printf("VAROI+ stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
+#endif     
 
 //add    
-    cache=(Test*)malloc(sizeof(struct Test)*CACHE_SIZE);
+    cache=(Test*)malloc(sizeof(Test)*CACHE_SIZE);
 #ifdef heap_array_cache
-    printf("VAROI+ heap_array_cache %p %p\n",cache, cache + (sizeof(struct Test)* CACHE_SIZE) -1);
+    printf("VAROI+ heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
 #endif
 	long index, merge_size, start, mid, end, fractional, decimal;
 	long power_of_two, fractional_base, fractional_step, decimal_step;
@@ -348,8 +430,11 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 		InsertionSort(array, MakeRange(0, size), compare);
 //add
         free(cache);
+#ifdef stack_func_WikiSort
+    printf("VAROI- stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
+#endif     
 #ifdef TROI_WikiSort
-    printf("TROI- WikiSort\n");
+    printf("TROI- TROI_WikiSort\n");
 #endif
 		return;
 	}
@@ -714,12 +799,16 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 		}
 	}
     free(cache);
+
 #ifdef heap_array_cache
-    printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(struct Test)* CACHE_SIZE) -1);
+    printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
 #endif
+#ifdef stack_func_WikiSort
+    printf("VAROI- stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
+#endif         
 	#undef CACHE_SIZE
 #ifdef TROI_WikiSort
-    printf("TROI- WikiSort\n");
+    printf("TROI- TROI_WikiSort\n");
 #endif
 
 }
@@ -728,28 +817,43 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 
 long TestingPathological(long index, long total) {
 #ifdef TROI_TestingPathological
-    printf("TROI+ TestingPathological\n");
+    printf("TROI+ TROI_TestingPathological\n");
 #endif
+#ifdef stack_func_TestingPathological
+    printf("VAROI+ stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
+#endif    
 	if (index == 0){
+#ifdef stack_func_TestingPathological
+    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingPathological
-    printf("TROI- TestingPathological\n");
+    printf("TROI- TROI_TestingPathological\n");
 #endif
         return 10;
     }
 	else if (index < total/2){
+#ifdef stack_func_TestingPathological
+    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingPathological
-    printf("TROI- TestingPathological\n");
+    printf("TROI- TROI_TestingPathological\n");
 #endif
          return 11;
     }
 	else if (index == total - 1){
+#ifdef stack_func_TestingPathological
+    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingPathological
-    printf("TROI- TestingPathological\n");
+    printf("TROI- TROI_TestingPathological\n");
 #endif
          return 10;
     }
+#ifdef stack_func_TestingPathological
+    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingPathological
-    printf("TROI- TestingPathological\n");
+    printf("TROI- TROI_TestingPathological\n");
 #endif
 
 	return 9;
@@ -757,12 +861,18 @@ long TestingPathological(long index, long total) {
 
 long TestingRandom(long index, long total) {
 #ifdef TROI_TestingRandom
-    printf("TROI+ TestingRandom\n");
+    printf("TROI+ TROI_TestingRandom\n");
 #endif
+#ifdef stack_func_TestingPathological
+    printf("VAROI+ stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
+#endif    
 //add
     long i = rand();
+#ifdef stack_func_TestingPathological
+    printf("VAROI- stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingRandom
-    printf("TROI- TestingRandom\n");
+    printf("TROI- TROI_TestingRandom\n");
 #endif
 
 	return i;
@@ -770,36 +880,54 @@ long TestingRandom(long index, long total) {
 
 long TestingMostlyDescending(long index, long total) {
 #ifdef TROI_TestingMostlyDescending
-    printf("TROI+ TestingMostlyDescending\n");
+    printf("TROI+ TROI_TestingMostlyDescending\n");
 #endif
+#ifdef stack_func_TestingMostlyDescending
+    printf("VAROI+ stack_func_TestingMostlyDescending %p %p\n",STACK_BASE - stack_func_TestingMostlyDescending_size +1 , STACK_BASE);
+#endif    
 //add
     long i = total - index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef stack_func_TestingMostlyDescending
+    printf("VAROI- stack_func_TestingMostlyDescending %p %p\n",STACK_BASE - stack_func_TestingMostlyDescending_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingMostlyDescending
-    printf("TROI- TestingMostlyDescending\n");
+    printf("TROI- TROI_TestingMostlyDescending\n");
 #endif
     return i;
 }
 
 long TestingMostlyAscending(long index, long total) {
 #ifdef TROI_TestingMostlyAscending
-    printf("TROI+ TestingMostlyAescending\n");
+    printf("TROI+ TROI_TestingMostlyAescending\n");
 #endif
+#ifdef stack_func_TestingMostlyAscending
+    printf("VAROI+ stack_func_TestingMostlyAscending %p %p\n",STACK_BASE - stack_func_TestingMostlyAscending_size +1 , STACK_BASE);
+#endif    
 //add
     long i = index + rand() * 1.0/RAND_MAX * 5 - 2.5;
+#ifdef stack_func_TestingMostlyAscending
+    printf("VAROI- stack_func_TestingMostlyAscending %p %p\n",STACK_BASE - stack_func_TestingMostlyAscending_size +1 , STACK_BASE);
+#endif    
 #ifdef TROI_TestingMostlyAscending
-    printf("TROI- TestingMostlyAescending\n");
+    printf("TROI- TROI_TestingMostlyAescending\n");
 #endif
     return i;
 }
 
 long TestingAscending(long index, long total) {
 #ifdef TROI_TestingAscending
-    printf("TROI+ TestingAescending\n");
+    printf("TROI+ TROI_TestingAescending\n");
+#endif
+#ifdef stack_func_TestingMostlyAscending
+    printf("VAROI+ stack_func_TestingAscending %p %p\n",STACK_BASE - stack_func_TestingAscending_size +1 , STACK_BASE);
 #endif
 //add
     long i = index;
+#ifdef stack_func_TestingMostlyAscending
+    printf("VAROI- stack_func_TestingAscending %p %p\n",STACK_BASE - stack_func_TestingAscending_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_TestingAscending
-    printf("TROI- TestingAescending\n");
+    printf("TROI- TROI_TestingAescending\n");
 #endif
 
 	return i;
@@ -807,11 +935,17 @@ long TestingAscending(long index, long total) {
 
 long TestingDescending(long index, long total) {
 #ifdef TROI_TestingDescending
-    printf("TROI+ TestingDescending\n");
+    printf("TROI+ TROI_TestingDescending\n");
+#endif
+#ifdef stack_func_TestingDescending
+    printf("VAROI+ stack_func_TestingDescending %p %p\n",STACK_BASE - stack_func_TestingDescending_size +1 , STACK_BASE);
 #endif
     long i = total - index;
+#ifdef stack_func_TestingDescending
+    printf("VAROI- stack_func_TestingDescending %p %p\n",STACK_BASE - stack_func_TestingDescending_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_TestingDescending
-    printf("TROI- TestingDescending\n");
+    printf("TROI- TROI_TestingDescending\n");
 #endif
 
 	return i;
@@ -819,33 +953,51 @@ long TestingDescending(long index, long total) {
 
 long TestingEqual(long index, long total) {
 #ifdef TROI_TestingEqual
-    printf("TROI+ TestingEqual\n");
+    printf("TROI+ TROI_TestingEqual\n");
+#endif
+#ifdef stack_func_TestingEqual
+    printf("VAROI+ stack_func_TestingEqual %p %p\n",STACK_BASE - stack_func_TestingEqual_size +1 , STACK_BASE);
 #endif
     long i = 1000;
+#ifdef stack_func_TestingEqual
+    printf("VAROI- stack_func_TestingEqual %p %p\n",STACK_BASE - stack_func_TestingEqual_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_TestingEqual
-    printf("TROI- TestingEqual\n");
+    printf("TROI- TROI_TestingEqual\n");
 #endif
 	return i;
 }
 
 long TestingJittered(long index, long total) {
 #ifdef TROI_TestingJittered
-    printf("TROI+ TestingJittered\n");
+    printf("TROI+ TROI_TestingJittered\n");
+#endif
+#ifdef stack_func_TestingJittered
+    printf("VAROI+ stack_func_TestingJittered %p %p\n",STACK_BASE - stack_func_TestingJittered_size +1 , STACK_BASE);
 #endif
     long i = (rand() * 1.0/RAND_MAX <= 0.9) ? index : (index - 2);
+#ifdef stack_func_TestingJittered
+    printf("VAROI- stack_func_TestingJittered %p %p\n",STACK_BASE - stack_func_TestingJittered_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_TestingJittered
-    printf("TROI- TestingJittered\n");
+    printf("TROI- TROI_TestingJittered\n");
 #endif
 	return i;
 }
 
 long TestingMostlyEqual(long index, long total) {
 #ifdef TROI_TestingMostlyEqual
-    printf("TROI+ TestingMostlyEqual\n");
+    printf("TROI+ TROI_TestingMostlyEqual\n");
+#endif
+#ifdef stack_func_TestingMostlyEqual
+    printf("VAROI+ stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
 #endif
     long i = 1000 + rand() * 1.0/RAND_MAX * 4;
+#ifdef stack_func_TestingMostlyEqual
+    printf("VAROI- stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_TestingMostlyEqual
-    printf("TROI- TestingMostlyEqual\n");
+    printf("TROI- TROI_TestingMostlyEqual\n");
 #endif
 	return i;
 }
@@ -873,7 +1025,10 @@ int benchmark() {
 		TestingMostlyEqual
 	};
 #ifdef TROI_benchmark
-	printf("TROI+ benchmark\n");
+	printf("TROI+ TROI_benchmark\n");
+#endif
+#ifdef stack_func_benchmark
+    printf("VAROI+ stack_func_benchmark %p %p\n",STACK_BASE - stack_func_benchmark_size +1 , STACK_BASE);
 #endif
 	/* initialize the random-number generator */
 	srand(0);
@@ -894,8 +1049,11 @@ int benchmark() {
 
 		WikiSort(array1, total, compare);
 	}
+#ifdef stack_func_benchmark
+    printf("VAROI- stack_func_benchmark %p %p\n",STACK_BASE - stack_func_benchmark_size +1 , STACK_BASE);
+#endif
 #ifdef TROI_benchmark
-	printf("TROI- benchmark\n");
+	printf("TROI- TROI_benchmark\n");
 #endif
 	return 0;
 }
@@ -903,22 +1061,28 @@ int benchmark() {
 int main(){
 
 #ifdef TROI_main
-    printf("TROI+ main\n");
+    printf("TROI+ TROI_main\n");
+#endif
+#ifdef stack_func_benchmark
+    printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
 #endif
     //add
-    array1=(Test*)malloc(sizeof(struct Test)*400);
+    array1=(Test*)malloc(sizeof(Test)*400);
 #ifdef heap_array_array1
-    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(struct Test)*400)-1);
+    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
 #endif
     benchmark();
     
     //add
-    free(array1)
+    free(array1);
 #ifdef heap_array_array1
-    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(struct Test)*400)-1);
+    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
+#endif
+#ifdef stack_func_benchmark
+    printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
 #endif
 #ifdef TROI_main
-    printf("TROI- main\n");
+    printf("TROI- TROI_main\n");
 #endif
     return 1;
 }

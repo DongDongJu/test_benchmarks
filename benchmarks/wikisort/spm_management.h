@@ -1,3 +1,4 @@
+#define STACK_BASE __builtin_frame_address(0)
 #define TROI_Min
 #define TROI_Max
 #define TROI_TestCompare
@@ -50,29 +51,29 @@
 #define stack_func_WikiMerge
 #define stack_func_WikiMerge_size 88
 #define stack_func_WikiSort
-#define stack_func_WikiSort_size 4512
+#define stack_func_WikiSort_size 424
 #define stack_func_TestingPathological
 #define stack_func_TestingPathological_size 16
 #define stack_func_TestingRandom
-#define stack_func_TestingRandom_size 16
+#define stack_func_TestingRandom_size 24
 #define stack_func_TestingMostlyDescending
-#define stack_func_TestingMostlyDescending_size 32
+#define stack_func_TestingMostlyDescending_size 40
 #define stack_func_TestingMostlyAscending
-#define stack_func_TestingMostlyAscending_size 32
+#define stack_func_TestingMostlyAscending_size 40
 #define stack_func_TestingAscending
-#define stack_func_TestingAscending_size 16
+#define stack_func_TestingAscending_size 24
 #define stack_func_TestingDescending
-#define stack_func_TestingDescending_size 16
+#define stack_func_TestingDescending_size 24
 #define stack_func_TestingEqual
-#define stack_func_TestingEqual_size 16
+#define stack_func_TestingEqual_size 24
 #define stack_func_TestingJittered
-#define stack_func_TestingJittered_size 24
+#define stack_func_TestingJittered_size 32
 #define stack_func_TestingMostlyEqual
-#define stack_func_TestingMostlyEqual_size 24
+#define stack_func_TestingMostlyEqual_size 32
 #define stack_func_benchmark
 #define stack_func_benchmark_size 72
 #define stack_func_main
-#define stack_func_main_size 16
+#define stack_func_main_size 8
 
 #define heap_array_cache
 #define heap_array_array1
