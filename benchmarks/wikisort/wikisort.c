@@ -96,12 +96,12 @@ Range MakeRange(const long start, const long end) {
     printf("TROI+ TROI_MakeRange\n");
 #endif
 #ifdef stack_MakeRange
-    printf("VAROI+ MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
+    printf("VAROI+ stack_func_MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
 #endif
 	range.start = start;
 	range.end = end;
 #ifdef stack_MakeRange
-    printf("VAROI- MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
+    printf("VAROI- stack_func_MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
 #endif
 #ifdef TROI_MakeRange
     printf("TROI- TROI_MakeRange\n");
@@ -1071,8 +1071,7 @@ int main(){
 #ifdef heap_array_array1
     printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
 #endif
-    benchmark();
-    
+    benchmark();    
     //add
     free(array1);
 #ifdef heap_array_array1
