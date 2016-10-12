@@ -26,7 +26,7 @@ static char	ident[] = "$Header: /home/mguthaus/.cvsroot/mibench/telecomm/gsm/src
 #endif
 
 #include <stdio.h>
-
+#include "spm_management.h"
 #include "gsm.h"
 #include "private.h"
 #include "proto.h"
@@ -44,12 +44,35 @@ gsm gsm_create P0()
 	}
 
 #endif
+#ifdef TROI_gsm_create
+	printf("TROI+ TROI_gsm_create\n");
+#endif
+#ifdef stack_func_gsm_create
+	printf("VAROI+ stack_func_gsm_create %p %p\n", STACK_BASE - stack_func_gsm_create_size +1 , STACK_BASE);
+#endif
 
 	r = (gsm)malloc(sizeof(struct gsm_state));
-	if (!r) return r;
 
+#ifdef heap_array_gsm_state
+	printf("VAROI+ heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+#endif
+	if (!r){
+#ifdef stack_func_gsm_create
+	printf("VAROI- stack_func_gsm_create %p %p\n", STACK_BASE - stack_func_gsm_create_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_gsm_create
+	printf("TROI- TROI_gsm_create\n");
+#endif
+		return r;
+	}
 	memset((char *)r, 0, sizeof(*r));
 	r->nrp = 40;
 
+#ifdef stack_func_gsm_create
+	printf("VAROI- stack_func_gsm_create %p %p\n", STACK_BASE - stack_func_gsm_create_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_gsm_create
+	printf("TROI- TROI_gsm_create\n");
+#endif
 	return r;
 }

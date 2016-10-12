@@ -5,7 +5,7 @@
  */
 
 /* $Header: /home/mguthaus/.cvsroot/mibench/telecomm/gsm/src/toast.c,v 1.1.1.1 2000/11/06 19:54:26 mguthaus Exp $ */
-
+#include 	"spm_management.h"
 #include	"toast.h"
 
 /*  toast -- lossy sound compression using the gsm library.
@@ -522,6 +522,13 @@ static int process_encode P0()
  
 	int		cc;
 
+#ifdef TROI_process_encode
+	printf("TROI+ TROI_\n");
+#endif
+#ifdef stack_func_process_encode
+	printf("VAROI+ stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
+#endif
+
 	if (!(r = gsm_create())) {
 		perror(progname);
 		return -1;
@@ -538,6 +545,12 @@ static int process_encode P0()
 			fprintf(stderr, "%s: error writing to %s\n",
 				progname, outname ? outname : "stdout");
 			gsm_destroy(r);
+#ifdef stack_func_process_encode
+	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_process_encode
+	printf("TROI- TROI_process_encode\n");
+#endif
 			return -1;
 		}
 	}
@@ -546,10 +559,22 @@ static int process_encode P0()
 		fprintf(stderr, "%s: error reading from %s\n",
 			progname, inname ? inname : "stdin");
 		gsm_destroy(r);
+#ifdef stack_func_process_encode
+	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_process_encode
+	printf("TROI- TROI_process_encode\n");
+#endif
 		return -1;
 	}
 	gsm_destroy(r);
 
+#ifdef stack_func_process_encode
+	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_process_encode
+	printf("TROI- TROI_process_encode\n");
+#endif
 	return 0;
 }
 
@@ -618,6 +643,12 @@ static int process P1((name), char * name)
 
 	outname = (char *)0;
 	inname  = (char *)0;
+#ifdef TROI_process
+	printf("TROI+ TROI_process\n");
+#endif
+#ifdef stack_func_process
+	printf("VAROI+ stack_func_process %p %p\n", STACK_BASE - stack_func_process_size +1 , STACK_BASE);
+#endif
 
 	if (!open_input(name, &instat) || !open_output(name))
 		goto err;
@@ -671,8 +702,15 @@ static int process P1((name), char * name)
 		if (inname != name) free(inname);
 		inname = (char *)0;
 	}
-	return 0;
 
+
+	return 0;
+#ifdef stack_func_process
+	printf("VAROI- stack_func_process %p %p\n", STACK_BASE - stack_func_process_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_process
+	printf("TROI- TROI_process\n");
+#endif
 	/*
 	 *  Error handling and cleanup: 
 	 *  - error out: close out, unlink it, close in, free the names.
@@ -692,6 +730,12 @@ err:
 	if (inname  && inname  != name) free(inname);
 	if (outname && outname != name) free(outname);
 
+#ifdef stack_func_process
+	printf("VAROI- stack_func_process %p %p\n", STACK_BASE - stack_process_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_process
+	printf("TROI- TROI_process\n");
+#endif
 	return -1;
 }
 
@@ -743,6 +787,13 @@ int main P2((ac, av), int ac, char **av)
 	int  		opt;
 	extern int	optind;
 
+#ifdef TROI_main
+	printf("TROI+ TROI_main\n");
+#endif
+#ifdef stack_func_main
+	printf("VAROI+ stack_func_main %p %p\n", STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+#endif
+
 	parse_argv0( *av );
 
 	while ((opt = getopt(ac, av, "fcdpvhuaslVF")) != EOF)
@@ -783,5 +834,11 @@ int main P2((ac, av), int ac, char **av)
 	if (ac <= 0) process( (char *)0 );
 	else while (ac--) process( *av++ );
 
+#ifdef stack_func_main
+	printf("VAROI- stack_func_main %p %p\n", STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_main
+	printf("TROI- TROI_main\n");
+#endif
 	exit(0);
 }

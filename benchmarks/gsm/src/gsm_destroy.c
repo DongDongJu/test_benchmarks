@@ -9,7 +9,7 @@
 #include "gsm.h"
 #include "config.h"
 #include "proto.h"
-
+#include "spm_management.h"
 #ifdef	HAS_STDLIB_H
 #	include	<stdlib.h>
 #else
@@ -22,5 +22,25 @@
 
 void gsm_destroy P1((S), gsm S)
 {
-	if (S) free((char *)S);
+#ifdef TROI_gsm_destroy
+	printf("TROI+ TROI_gsm_destroy\n");
+#endif
+#ifdef stack_func_gsm_destroy
+	printf("VAROI+ stack_func_gsm_destroy %p %p\n", STACK_BASE - stack_func_gsm_destroy_size +1 , STACK_BASE);
+#endif
+	if (S){
+		free((char *)S);
+#ifdef heap_array_gsm_state
+	printf("VAROI- heap_array_gsm_state %p %p ",S, S + sizeof(gsm_state) -1);
+#endif
+	}
+
+
+#ifdef stack_func_gsm_destroy
+	printf("VAROI- stack_func_gsm_destroy %p %p\n", STACK_BASE - stack_func_gsm_destroy_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_gsm_destroy
+	printf("TROI- TROI_gsm_destroy\n");
+#endif
+
 }
