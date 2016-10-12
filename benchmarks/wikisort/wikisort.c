@@ -1009,7 +1009,7 @@ const long max_size = 400;
 
 //add
 Test* array1;
-int benchmark() {
+int benchmark(Test* item) {
 	long total, index, test_case;
 	Comparison compare = TestCompare;
 
@@ -1039,12 +1039,10 @@ int benchmark() {
 	for (test_case = 0; test_case < sizeof(test_cases)/sizeof(test_cases[0]); test_case++) {
 
 		for (index = 0; index < total; index++) {
-			Test item;
+			(*item).value = test_cases[test_case](index, total);
+			(*item).index = index;
 
-			item.value = test_cases[test_case](index, total);
-			item.index = index;
-
-			array1[index] = item;
+			array1[index] = (*item);
 		}
 
 		WikiSort(array1, total, compare);
@@ -1066,14 +1064,23 @@ int main(){
 #ifdef stack_func_benchmark
     printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
 #endif
+    Test* item;
     //add
-    array1=(Test*)malloc(sizeof(Test)*400);
+    array1=(Test*)malloc(sizeof(Test)*300);
+    item = (Test*)malloc(sizeof(Test));
+#ifdef heap_array_item
+    printf("VAROI+ heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
+#endif
 #ifdef heap_array_array1
     printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
 #endif
-    benchmark();    
+    benchmark(item);    
     //add
+    free(item);
     free(array1);
+#ifdef heap_array_item
+    printf("VAROI- heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
+#endif
 #ifdef heap_array_array1
     printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
 #endif
