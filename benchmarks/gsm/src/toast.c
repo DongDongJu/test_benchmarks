@@ -537,9 +537,13 @@ static int process_encode P0()
 	(void)gsm_option(r, GSM_OPT_VERBOSE, &f_verbose);
 
 	while ((cc = (*input)(s)) > 0) {
+		
 		if (cc < sizeof(s) / sizeof(*s))
 			memset((char *)(s+cc), 0, sizeof(s)-(cc * sizeof(*s)));
+
+		// gsm , signal , byte
 		gsm_encode(r, s, d);
+		
 		if (fwrite((char *)d, sizeof(d), 1, out) != 1) {
 			perror(outname ? outname : "stdout");
 			fprintf(stderr, "%s: error writing to %s\n",

@@ -1,0 +1,14 @@
+encode mode flow :
+
+                                r        s      d                               p_e (s)
+process_encode ( gsm , sig , byte ) - >gsm_encode (  Gsm_Coder ( s, source, LARc, Nc, bc, Mc, xmaxc, xmc )
+
+                                 p_e(s) , G_C(source)                                    p_e(s) , G_C(source)              G_c(source)
+( Gsm_preprocess ( S, s ,so )  : calculate ) ==>  Gsm_LPC_Analysis ( S, s , so )  (   Autocorrelation(s, L_ACF)
+
+                                             G_C(LARc)                                             G_C (LARc)                                        G_C(LARc)
+==> Reflection_coefficient ( L_ACF , r )   ===> Transformation_to_log_area_ratios ( LARc) ===> Quantization_and_coding )
+                                                  p_e(s) ,  p_e(LARc)
+==> Gsm_Short_Term_Analysis_Filter ( S, LARc,so ) ( cal ) ==> Gsm_Long_Term_Predictor ==>Gsm_RPE_Encoding )
+
+-> destroy
