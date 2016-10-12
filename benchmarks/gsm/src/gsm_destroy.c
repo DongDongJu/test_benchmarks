@@ -6,10 +6,14 @@
 
 /* $Header: /home/mguthaus/.cvsroot/mibench/telecomm/gsm/src/gsm_destroy.c,v 1.1.1.1 2000/11/06 19:54:25 mguthaus Exp $ */
 
+
 #include "gsm.h"
+#include "private.h"
 #include "config.h"
-#include "proto.h"
 #include "spm_management.h"
+#include "proto.h"
+
+
 #ifdef	HAS_STDLIB_H
 #	include	<stdlib.h>
 #else
@@ -31,7 +35,7 @@ void gsm_destroy P1((S), gsm S)
 	if (S){
 		free((char *)S);
 #ifdef heap_array_gsm_state
-	printf("VAROI- heap_array_gsm_state %p %p ",S, S + sizeof(gsm_state) -1);
+	printf("VAROI- heap_array_gsm_state %p %p ",S, S + sizeof(struct gsm_state) -1);
 #endif
 	}
 

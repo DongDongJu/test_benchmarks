@@ -13,7 +13,12 @@
 void gsm_encode P3((s, source, c), gsm s, gsm_signal * source, gsm_byte * c)
 {
 	word	 	LARc[8], Nc[4], Mc[4], bc[4], xmaxc[4], xmc[13*4];
-
+#ifdef TROI_gsm_encode
+	printf("TROI+ TROI_gsm_encode\n");
+#endif
+#ifdef stack_func_gsm_encode
+	printf("VAROI+ stack_func_gsm_encode %p %p\n", STACK_BASE - stack_func_gsm_encode_size +1 , STACK_BASE);
+#endif
 	Gsm_Coder(s, source, LARc, Nc, bc, Mc, xmaxc, xmc);
 
 
@@ -204,4 +209,10 @@ void gsm_encode P3((s, source, c), gsm s, gsm_signal * source, gsm_byte * c)
 	*c++ =   ((xmc[49] & 0x3) << 6)
 	       | ((xmc[50] & 0x7) << 3)
 	       | (xmc[51] & 0x7);
+#ifdef stack_func_gsm_encode
+	printf("VAROI- stack_func_gsm_encode %p %p\n", STACK_BASE - stack_func_gsm_encode_size +1 , STACK_BASE);
+#endif
+#ifdef TROI_gsm_encode
+	printf("TROI- TROI_gsm_encode\n");
+#endif
 }

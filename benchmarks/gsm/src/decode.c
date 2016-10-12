@@ -7,9 +7,8 @@
 /* $Header: /home/mguthaus/.cvsroot/mibench/telecomm/gsm/src/decode.c,v 1.1.1.1 2000/11/06 19:54:25 mguthaus Exp $ */
 
 #include <stdio.h>
-
-#include	"private.h"
 #include	"gsm.h"
+#include	"private.h"
 #include	"proto.h"
 
 /*

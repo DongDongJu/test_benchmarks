@@ -54,7 +54,7 @@ gsm gsm_create P0()
 	r = (gsm)malloc(sizeof(struct gsm_state));
 
 #ifdef heap_array_gsm_state
-	printf("VAROI+ heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+	printf("VAROI+ heap_array_gsm_state %p %p ",r, r + sizeof(struct gsm_state) -1);
 #endif
 	if (!r){
 #ifdef stack_func_gsm_create
@@ -64,6 +64,7 @@ gsm gsm_create P0()
 	printf("TROI- TROI_gsm_create\n");
 #endif
 		return r;
+
 	}
 	memset((char *)r, 0, sizeof(*r));
 	r->nrp = 40;

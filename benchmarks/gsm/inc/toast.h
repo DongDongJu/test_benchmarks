@@ -10,6 +10,7 @@
 #define	TOAST_H				/* Guard against multiple includes */
 
 #include "config.h"
+#include "gsm.h"
 #include "spm_management.h"
 #include <sys/types.h>
 #include <sys/stat.h>

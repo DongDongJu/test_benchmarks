@@ -5,9 +5,9 @@
  */
 
 /* $Header: /home/mguthaus/.cvsroot/mibench/telecomm/gsm/src/toast.c,v 1.1.1.1 2000/11/06 19:54:26 mguthaus Exp $ */
-#include 	"spm_management.h"
-#include	"toast.h"
 
+#include	"toast.h"
+#include 	"spm_management.h"
 /*  toast -- lossy sound compression using the gsm library.
  */
 
@@ -517,9 +517,9 @@ static int open_output P1((name), char *name)
 static int process_encode P0()
 {
 	gsm      	r;
-	gsm_signal    	s[ 160 ];
+//	gsm_signal    	s[ 160 ];
 	gsm_frame	d;
- 
+ 	gsm_signal*	s;
 	int		cc;
 
 #ifdef TROI_process_encode
@@ -528,11 +528,19 @@ static int process_encode P0()
 #ifdef stack_func_process_encode
 	printf("VAROI+ stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
 #endif
-
+	//add
+	s = (gsm_signal *)malloc(sizeof(gsm_signal)*160);
+#ifdef heap_array_s
+	printf("VAROI+ heap_array_s %p %p ",s, s + (sizeof(gsm_signal)*160) -1);
+#endif
+	d=(gsm_frame *)malloc(sizeof(gsm_byte)*33);
+#ifdef heap_array_d
+	printf("VAROI+ heap_array_d %p %p ",d, d + (sizeof(gsm_byte)*33) -1);
+#endif
 	if (!(r = gsm_create())) {
 		perror(progname);
 		return -1;
-	}
+	} // r malloc
 	(void)gsm_option(r, GSM_OPT_FAST,    &f_fast);
 	(void)gsm_option(r, GSM_OPT_VERBOSE, &f_verbose);
 
@@ -548,7 +556,20 @@ static int process_encode P0()
 			perror(outname ? outname : "stdout");
 			fprintf(stderr, "%s: error writing to %s\n",
 				progname, outname ? outname : "stdout");
+			free(d);
+#ifdef heap_array_d
+	printf("VAROI- heap_array_d %p %p ",d, d + (sizeof(gsm_byte)*33) -1);
+#endif
+			free(s);
+#ifdef heap_array_s
+	printf("VAROI- heap_array_s %p %p ",s, s + (sizeof(gsm_signal)*160) -1);
+#endif
 			gsm_destroy(r);
+			//r destroy
+			//add
+#ifdef heap_array_gsm_state
+	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(struct gsm_state) -1);
+#endif
 #ifdef stack_func_process_encode
 	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
 #endif
@@ -558,11 +579,24 @@ static int process_encode P0()
 			return -1;
 		}
 	}
+
 	if (cc < 0) {
 		perror(inname ? inname : "stdin");
 		fprintf(stderr, "%s: error reading from %s\n",
 			progname, inname ? inname : "stdin");
+		free(d);
+#ifdef heap_array_d
+	printf("VAROI- heap_array_d %p %p ",d, d + (sizeof(gsm_byte)*33) -1);
+#endif
+		free(s);
+#ifdef heap_array_s
+	printf("VAROI- heap_array_s %p %p ",s, s + (sizeof(gsm_signal)*160) -1);
+#endif
 		gsm_destroy(r);
+#ifdef heap_array_gsm_state
+	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+#endif
+		//r destroy
 #ifdef stack_func_process_encode
 	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
 #endif
@@ -571,8 +605,19 @@ static int process_encode P0()
 #endif
 		return -1;
 	}
+	free(d);
+#ifdef heap_array_d
+	printf("VAROI- heap_array_d %p %p ",d, d + (sizeof(gsm_byte)*33) -1);
+#endif
+	free(s);
+#ifdef heap_array_s
+	printf("VAROI- heap_array_s %p %p ",s, s + (sizeof(gsm_signal)*160) -1);
+#endif
 	gsm_destroy(r);
-
+	//r destroy
+#ifdef heap_array_gsm_state
+	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+#endif
 #ifdef stack_func_process_encode
 	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);
 #endif
@@ -735,7 +780,7 @@ err:
 	if (outname && outname != name) free(outname);
 
 #ifdef stack_func_process
-	printf("VAROI- stack_func_process %p %p\n", STACK_BASE - stack_process_size +1 , STACK_BASE);
+	printf("VAROI- stack_func_process %p %p\n", STACK_BASE - stack_func_process_size +1 , STACK_BASE);
 #endif
 #ifdef TROI_process
 	printf("TROI- TROI_process\n");
