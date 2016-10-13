@@ -354,9 +354,15 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
     printf("VAROI+ stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
 #endif     
 	Test **temp;
+	long* l_temp;
 	temp= (Test**)malloc(sizeof(Test*)*5);
+
 #ifdef heap_array_wiki_temp
-    printf("VAROI+ heap_array_cache %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+    printf("VAROI+ heap_array_wiki_temp %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+#endif
+    l_temp=(long*)malloc(sizeof(long)*3);
+#ifdef heap_array_wiki_l_temp
+    printf("VAROI+ heap_array_wiki_l_temp %p %p\n",l_temp, l_temp + (sizeof(long)*3) -1);
 #endif
 	if (Range_length(A) <= cache_size) {
 		temp[0] = &cache[0];
@@ -385,30 +391,35 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 	} else {
 		/* whenever we find a value to add to the final array, swap it with the value that's already in that spot */
 		/* when this algorithm is finished, 'buffer' will contain its original contents, but in a different order */
-		long A_count = 0, B_count = 0, insert = 0;
-
+		l_temp[0]=0;
+		l_temp[1]=0;
+		l_temp[2]=0;
 		if (Range_length(B) > 0 && Range_length(A) > 0) {
 			while (true) {
-				if (!compare(array[B.start + B_count], array[buffer.start + A_count])) {
-					Swap(array[A.start + insert], array[buffer.start + A_count]);
-					A_count++;
-					insert++;
-					if (A_count >= Range_length(A)) break;
+				if (!compare(array[B.start + l_temp[1]], array[buffer.start + l_temp[0]])) {
+					Swap(array[A.start + l_temp[2]], array[buffer.start + l_temp[0]]);
+					l_temp[0]++;
+					l_temp[2]++;
+					if (l_temp[0] >= Range_length(A)) break;
 				} else {
-					Swap(array[A.start + insert], array[B.start + B_count]);
-					B_count++;
-					insert++;
-					if (B_count >= Range_length(B)) break;
+					Swap(array[A.start + l_temp[2]], array[B.start + l_temp[1]]);
+					l_temp[1]++;
+					l_temp[2]++;
+					if (l_temp[1] >= Range_length(B)) break;
 				}
 			}
 		}
 
 		/* swap the remainder of A into the final array */
-		BlockSwap(array, buffer.start + A_count, A.start + insert, Range_length(A) - A_count);
+		BlockSwap(array, buffer.start + l_temp[0], A.start + l_temp[2], Range_length(A) -l_temp[0]);
 	}
+	free(l_temp);
+#ifdef heap_array_wiki_l_temp
+    printf("VAROI- heap_array_wiki_l_temp %p %p\n",l_temp, l_temp + (sizeof(long)*3) -1);
+#endif
 	free(temp);
 #ifdef heap_array_wiki_temp
-    printf("VAROI- heap_array_cache %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+    printf("VAROI- heap_array_wiki_temp %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
 #endif	
 #ifdef stack_func_WikiMerge
     printf("VAROI- stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
@@ -894,8 +905,12 @@ long TestingRandom(long index, long total) {
 #ifdef stack_func_TestingPathological
     printf("VAROI+ stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
 #endif    
+
 //add
-    long i = rand();
+    long* i;
+    i=(long*)malloc(sizeof(long));
+    *i=rand();
+
 #ifdef stack_func_TestingPathological
     printf("VAROI- stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
 #endif    
@@ -903,7 +918,7 @@ long TestingRandom(long index, long total) {
     printf("TROI- TROI_TestingRandom\n");
 #endif
 
-	return i;
+	return *i;
 }
 
 long TestingMostlyDescending(long index, long total) {

@@ -21,7 +21,7 @@ $GEM5_PATH/build/ARM/gem5.opt \
 $GEM5_PATH/configs/example/se.py \
 --cpu-type=arm_detailed \
 --caches \
---cmd=/pub/dongjos2/majid/test_benchmarks/benchmarks/wikisort/wikisort &
+--cmd=/pub/dongjos2/majid/git/test_benchmarks/benchmarks/wikisort/wikisort &
 fi
 wait
 
