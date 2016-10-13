@@ -385,7 +385,6 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 				}
 			}
 		}
-
 		/* copy the remainder of A into the final array */
 		memcpy(temp[2], temp[0], (temp[3] - temp[0]) * sizeof(array[0]));
 	} else {
@@ -412,6 +411,7 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 
 		/* swap the remainder of A into the final array */
 		BlockSwap(array, buffer.start + l_temp[0], A.start + l_temp[2], Range_length(A) -l_temp[0]);
+		printf("sec__\n");		
 	}
 	free(l_temp);
 #ifdef heap_array_wiki_l_temp
@@ -443,13 +443,15 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 //add
     Test* cache;
     long* Wtemp;
+    int i=0;
+    Range** levels_;
 #ifdef TROI_WikiSort
     printf("TROI+ TROI_WikiSort\n");
 #endif
 #ifdef stack_func_WikiSort
     printf("VAROI+ stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
 #endif     
-	Wtemp=(long*)malloc(sizeof(long)*11);
+	Wtemp=(long*)malloc(sizeof(long)*13);
 #ifdef heap_array_sort_temp
     printf("VAROI+ heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
 #endif
@@ -458,10 +460,23 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 #ifdef heap_array_cache
     printf("VAROI+ heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
 #endif
-
+    levels_ =(Range**)malloc(sizeof(Range*)*4);
+    for(i=0;i<4;i++)
+    	levels_[i]=(Range*)malloc(sizeof(Range));
+#ifdef heap_array_levels_
+    printf("VAROI+ heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+#endif
 	/* if there are 32 or fewer items, just insertion sort the entire array */
 	if (size <= 32) {
 		InsertionSort(array, MakeRange(0, size), compare);
+    free(levels_);
+#ifdef heap_array_levels_
+    printf("VAROI- heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+#endif
+        free(Wtemp);
+#ifdef heap_array_sort_temp
+    printf("VAROI- heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
+#endif
 //add
         free(cache);
 #ifdef heap_array_cache
@@ -475,7 +490,6 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 #endif
 		return;
 	}
-
 	/* calculate how to scale the Wtemp[0] value to the range within the array */
 	/* (this is essentially fixed-point math, where we manually check for and handle overflow) */
 	Wtemp[7] = FloorPowerOfTwo(size);
@@ -496,19 +510,17 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 
 		InsertionSort(array, MakeRange(Wtemp[2], Wtemp[4]), compare);
 	}
-
 	/* then merge sort the higher levels, which can be 32-63, 64-127, 128-255, etc. */
 	for (Wtemp[1] = 16; Wtemp[1] < Wtemp[7]; Wtemp[1] += Wtemp[1]) {
-		long block_size = sqrt(Wtemp[10]);
-		long buffer_size = Wtemp[10]/block_size + 1;
+		Wtemp[11] = sqrt(Wtemp[10]);
+		Wtemp[12] = Wtemp[10]/Wtemp[11] + 1;
 
 		/* as an optimization, we really only need to pull out an internal buffer once for each level of merges */
 		/* after that we can reuse the same buffer over and over, then redistribute it when we're finished with this level */
-		Range level1 = MakeRange(0, 0);
-		Range level2 = MakeRange(0, 0);
-		Range levelA = MakeRange(0, 0);
-		Range levelB = MakeRange(0, 0);
-
+		*(levels_[0]) = MakeRange(0, 0);
+		*(levels_[1]) = MakeRange(0, 0);
+		*(levels_[2]) = MakeRange(0, 0);
+		*(levels_[3]) = MakeRange(0, 0);
 		Wtemp[6] = Wtemp[5] = 0;
 		while (Wtemp[6] < size) {
 			Wtemp[2] = Wtemp[6];
@@ -543,12 +555,12 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 					continue;
 				}
 
-				if (Range_length(level1) > 0) {
+				if (Range_length(*(levels_[0])) > 0) {
 					/* reuse the buffers we found in a previous iteration */
 					bufferA = MakeRange(A.start, A.start);
 					bufferB = MakeRange(B.end, B.end);
-					buffer1 = level1;
-					buffer2 = level2;
+					buffer1 = *(levels_[0]);
+					buffer2 = *(levels_[1]);
 
 				} else {
 					long count, length;
@@ -557,21 +569,21 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 					count = 1;
 					for (buffer1.start = A.start + 1; buffer1.start < A.end; buffer1.start++)
 						if (compare(array[buffer1.start - 1], array[buffer1.start]) || compare(array[buffer1.start], array[buffer1.start - 1]))
-							if (++count == buffer_size)
+							if (++count == Wtemp[12])
 								break;
 					buffer1.end = buffer1.start + count;
 
 					/* if the size of each block fits into the cache, we only need one buffer for tagging the A blocks */
 					/* this is because the other buffer is used as a swap space for merging the A blocks into the B values that follow it, */
 					/* but we can just use the cache as the buffer instead. this skips some memmoves and an insertion sort */
-					if (buffer_size <= cache_size) {
+					if (Wtemp[12] <= cache_size) {
 						buffer2 = MakeRange(A.start, A.start);
 
-						if (Range_length(buffer1) == buffer_size) {
+						if (Range_length(buffer1) == Wtemp[12]) {
 							/* we found enough values for the buffer in A */
-							bufferA = MakeRange(buffer1.start, buffer1.start + buffer_size);
+							bufferA = MakeRange(buffer1.start, buffer1.start + Wtemp[12]);
 							bufferB = MakeRange(B.end, B.end);
-							buffer1 = MakeRange(A.start, A.start + buffer_size);
+							buffer1 = MakeRange(A.start, A.start + Wtemp[12]);
 
 						} else {
 							/* we were unable to find enough unique values in A, so try B */
@@ -582,13 +594,13 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 							count = 1;
 							for (buffer1.start = B.end - 2; buffer1.start >= B.start; buffer1.start--)
 								if (compare(array[buffer1.start], array[buffer1.start + 1]) || compare(array[buffer1.start + 1], array[buffer1.start]))
-									if (++count == buffer_size)
+									if (++count == Wtemp[12])
 										break;
 							buffer1.end = buffer1.start + count;
 
-							if (Range_length(buffer1) == buffer_size) {
-								bufferB = MakeRange(buffer1.start, buffer1.start + buffer_size);
-								buffer1 = MakeRange(B.end - buffer_size, B.end);
+							if (Range_length(buffer1) == Wtemp[12]) {
+								bufferB = MakeRange(buffer1.start, buffer1.start + Wtemp[12]);
+								buffer1 = MakeRange(B.end - Wtemp[12], B.end);
 							}
 						}
 					} else {
@@ -596,33 +608,33 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 						count = 0;
 						for (buffer2.start = buffer1.start + 1; buffer2.start < A.end; buffer2.start++)
 							if (compare(array[buffer2.start - 1], array[buffer2.start]) || compare(array[buffer2.start], array[buffer2.start - 1]))
-								if (++count == buffer_size)
+								if (++count == Wtemp[12])
 									break;
 						buffer2.end = buffer2.start + count;
 
-						if (Range_length(buffer2) == buffer_size) {
+						if (Range_length(buffer2) == Wtemp[12]) {
 							/* we found enough values for both buffers in A */
-							bufferA = MakeRange(buffer2.start, buffer2.start + buffer_size * 2);
+							bufferA = MakeRange(buffer2.start, buffer2.start + Wtemp[12] * 2);
 							bufferB = MakeRange(B.end, B.end);
-							buffer1 = MakeRange(A.start, A.start + buffer_size);
-							buffer2 = MakeRange(A.start + buffer_size, A.start + buffer_size * 2);
+							buffer1 = MakeRange(A.start, A.start + Wtemp[12]);
+							buffer2 = MakeRange(A.start + Wtemp[12], A.start + Wtemp[12] * 2);
 
-						} else if (Range_length(buffer1) == buffer_size) {
+						} else if (Range_length(buffer1) == Wtemp[12]) {
 							/* we found enough values for one buffer in A, so we'll need to find one buffer in B */
-							bufferA = MakeRange(buffer1.start, buffer1.start + buffer_size);
-							buffer1 = MakeRange(A.start, A.start + buffer_size);
+							bufferA = MakeRange(buffer1.start, buffer1.start + Wtemp[12]);
+							buffer1 = MakeRange(A.start, A.start + Wtemp[12]);
 
 							/* like before, the last value is guaranteed to be the first unique value we encounter, so we can.start searching at the next Wtemp[0] */
 							count = 1;
 							for (buffer2.start = B.end - 2; buffer2.start >= B.start; buffer2.start--)
 								if (compare(array[buffer2.start], array[buffer2.start + 1]) || compare(array[buffer2.start + 1], array[buffer2.start]))
-									if (++count == buffer_size)
+									if (++count == Wtemp[12])
 										break;
 							buffer2.end = buffer2.start + count;
 
-							if (Range_length(buffer2) == buffer_size) {
-								bufferB = MakeRange(buffer2.start, buffer2.start + buffer_size);
-								buffer2 = MakeRange(B.end - buffer_size, B.end);
+							if (Range_length(buffer2) == Wtemp[12]) {
+								bufferB = MakeRange(buffer2.start, buffer2.start + Wtemp[12]);
+								buffer2 = MakeRange(B.end - Wtemp[12], B.end);
 
 							} else buffer1.end = buffer1.start; /* failure */
 						} else {
@@ -630,28 +642,28 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 							count = 1;
 							for (buffer1.start = B.end - 2; buffer1.start >= B.start; buffer1.start--)
 								if (compare(array[buffer1.start], array[buffer1.start + 1]) || compare(array[buffer1.start + 1], array[buffer1.start]))
-									if (++count == buffer_size)
+									if (++count == Wtemp[12])
 										break;
 							buffer1.end = buffer1.start + count;
 
 							count = 0;
 							for (buffer2.start = buffer1.start - 1; buffer2.start >= B.start; buffer2.start--)
 								if (compare(array[buffer2.start], array[buffer2.start + 1]) || compare(array[buffer2.start + 1], array[buffer2.start]))
-									if (++count == buffer_size)
+									if (++count == Wtemp[12])
 										break;
 							buffer2.end = buffer2.start + count;
 
-							if (Range_length(buffer2) == buffer_size) {
+							if (Range_length(buffer2) == Wtemp[12]) {
 								bufferA = MakeRange(A.start, A.start);
-								bufferB = MakeRange(buffer2.start, buffer2.start + buffer_size * 2);
-								buffer1 = MakeRange(B.end - buffer_size, B.end);
-								buffer2 = MakeRange(buffer1.start - buffer_size, buffer1.start);
+								bufferB = MakeRange(buffer2.start, buffer2.start + Wtemp[12] * 2);
+								buffer1 = MakeRange(B.end - Wtemp[12], B.end);
+								buffer2 = MakeRange(buffer1.start - Wtemp[12], buffer1.start);
 
 							} else buffer1.end = buffer1.start; /* failure */
 						}
 					}
 
-					if (Range_length(buffer1) < buffer_size) {
+					if (Range_length(buffer1) < Wtemp[12]) {
 						/* we failed to fill both buffers with unique values, which implies we're merging two subarrays with a lot of the same values repeated */
 						/* we can use this knowledge to write a merge operation that is optimized for arrays of repeating values */
 						while (Range_length(A) > 0 && Range_length(B) > 0) {
@@ -693,26 +705,26 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 					bufferB = MakeRange(B.end - length, B.end);
 
 					/* reuse these buffers next time! */
-					level1 = buffer1;
-					level2 = buffer2;
-					levelA = bufferA;
-					levelB = bufferB;
+					*(levels_[0]) = buffer1;
+					*(levels_[1]) = buffer2;
+					*(levels_[2]) = bufferA;
+					*(levels_[3]) = bufferB;
 				}
 
 				/* break the remainder of A into blocks. firstA is the uneven-sized first A block */
 				blockA = MakeRange(bufferA.end, A.end);
-				firstA = MakeRange(bufferA.end, bufferA.end + Range_length(blockA) % block_size);
+				firstA = MakeRange(bufferA.end, bufferA.end + Range_length(blockA) % Wtemp[11]);
 
 				/* swap the second value of each A block with the value in buffer1 */
 				Wtemp[0] = 0;
-				for (indexA = firstA.end + 1; indexA < blockA.end; Wtemp[0]++, indexA += block_size)
+				for (indexA = firstA.end + 1; indexA < blockA.end; Wtemp[0]++, indexA += Wtemp[11])
 					Swap(array[buffer1.start + Wtemp[0]], array[indexA]);
 
 				/* Wtemp[2] rolling the A blocks through the B blocks! */
 				/* whenever we leave an A block behind, we'll need to merge the previous A block with any B blocks that follow it, so track that information as well */
 				lastA = firstA;
 				lastB = MakeRange(0, 0);
-				blockB = MakeRange(B.start, B.start + Min(block_size, Range_length(B) - Range_length(bufferB)));
+				blockB = MakeRange(B.start, B.start + Min(Wtemp[11], Range_length(B) - Range_length(bufferB)));
 				blockA.start += Range_length(firstA);
 
 				minA = blockA.start;
@@ -732,7 +744,7 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 						long B_remaining = lastB.end - B_split;
 
 						/* swap the minimum A block to the beginning of the rolling A blocks */
-						BlockSwap(array, blockA.start, minA, block_size);
+						BlockSwap(array, blockA.start, minA, Wtemp[11]);
 
 						/* we need to swap the second item of the previous A block back with its original value, which is stored in buffer1 */
 						/* since the firstA block did not have its value swapped out, we need to make sure the previous A block is not unevenly sized */
@@ -742,31 +754,31 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 						WikiMerge(array, buffer2, lastA, MakeRange(lastA.end, B_split), compare, cache, cache_size);
 
 						/* copy the previous A block into the cache or buffer2, since that's where we need it to be when we go to merge it anyway */
-						if (block_size <= cache_size)
-							memcpy(&cache[0], &array[blockA.start], block_size * sizeof(array[0]));
+						if (Wtemp[11] <= cache_size)
+							memcpy(&cache[0], &array[blockA.start], Wtemp[11] * sizeof(array[0]));
 						else
-							BlockSwap(array, blockA.start, buffer2.start, block_size);
+							BlockSwap(array, blockA.start, buffer2.start, Wtemp[11]);
 
 						/* this is equivalent to rotating, but faster */
 						/* the area normally taken up by the A block is either the contents of buffer2, or data we don't need anymore since we memcopied it */
 						/* either way, we don't need to retain the order of those items, so instead of rotating we can just block swap B to where it belongs */
-						BlockSwap(array, B_split, blockA.start + block_size - B_remaining, B_remaining);
+						BlockSwap(array, B_split, blockA.start + Wtemp[11] - B_remaining, B_remaining);
 
 						/* now we need to update the ranges and stuff */
-						lastA = MakeRange(blockA.start - B_remaining, blockA.start - B_remaining + block_size);
+						lastA = MakeRange(blockA.start - B_remaining, blockA.start - B_remaining + Wtemp[11]);
 						lastB = MakeRange(lastA.end, lastA.end + B_remaining);
-						blockA.start += block_size;
+						blockA.start += Wtemp[11];
 						if (Range_length(blockA) == 0)
 							break;
 
 						/* search the second value of the remaining A blocks to find the new minimum A block (that's why we wrote unique values to them!) */
 						minA = blockA.start + 1;
-						for (findA = minA + block_size; findA < blockA.end; findA += block_size)
+						for (findA = minA + Wtemp[11]; findA < blockA.end; findA += Wtemp[11])
 							if (compare(array[findA], array[minA])) minA = findA;
 						minA = minA - 1; /* decrement once to get back to the.start of that A block */
 						min_value = array[minA];
 
-					} else if (Range_length(blockB) < block_size) {
+					} else if (Range_length(blockB) < Wtemp[11]) {
 						/* move the last B block, which is unevenly sized, to before the remaining A blocks, by using a rotation */
 						/* (using the cache is disabled since we have the contents of the previous A block in it!) */
 						Rotate(array, -Range_length(blockB), MakeRange(blockA.start, blockB.end), cache, 0);
@@ -778,15 +790,15 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 
 					} else {
 						/* roll the leftmost A block to the.end by swapping it with the next B block */
-						BlockSwap(array, blockA.start, blockB.start, block_size);
-						lastB = MakeRange(blockA.start, blockA.start + block_size);
+						BlockSwap(array, blockA.start, blockB.start, Wtemp[11]);
+						lastB = MakeRange(blockA.start, blockA.start + Wtemp[11]);
 						if (minA == blockA.start)
 							minA = blockA.end;
 
-						blockA.start += block_size;
-						blockA.end += block_size;
-						blockB.start += block_size;
-						blockB.end += block_size;
+						blockA.start += Wtemp[11];
+						blockA.end += Wtemp[11];
+						blockB.start += Wtemp[11];
+						blockB.end += Wtemp[11];
 						if (blockB.end > bufferB.start)
 							blockB.end = bufferB.start;
 					}
@@ -796,33 +808,32 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 				WikiMerge(array, buffer2, lastA, MakeRange(lastA.end, B.end - Range_length(bufferB)), compare, cache, cache_size);
 			}
 		}
-
-		if (Range_length(level1) > 0) {
+		if (Range_length(*(levels_[0])) > 0) {
 			long level_start;
 
 			/* when we're finished with this step we should have b1 b2 left over, where one of the buffers is all jumbled up */
 			/* insertion sort the jumbled up buffer, then redistribute them back into the array using the opposite process used for creating the buffer */
-			InsertionSort(array, level2, compare);
+			InsertionSort(array, *(levels_[1]), compare);
 
 			/* redistribute bufferA back into the array */
-			level_start = levelA.start;
-			for (Wtemp[0] = levelA.end; Range_length(levelA) > 0; Wtemp[0]++) {
-				if (Wtemp[0] == levelB.start || !compare(array[Wtemp[0]], array[levelA.start])) {
-					long amount = Wtemp[0] - levelA.end;
-					Rotate(array, -amount, MakeRange(levelA.start, Wtemp[0]), cache, cache_size);
-					levelA.start += (amount + 1);
-					levelA.end += amount;
+			level_start = (*(levels_[2])).start;
+			for (Wtemp[0] = (*(levels_[2])).end; Range_length(*(levels_[2])) > 0; Wtemp[0]++) {
+				if (Wtemp[0] == (*(levels_[3])).start || !compare(array[Wtemp[0]], array[(*(levels_[2])).start])) {
+					long amount = Wtemp[0] - (*(levels_[2])).end;
+					Rotate(array, -amount, MakeRange((*(levels_[2])).start, Wtemp[0]), cache, cache_size);
+					(*(levels_[2])).start += (amount + 1);
+					(*(levels_[2])).end += amount;
 					Wtemp[0]--;
 				}
 			}
 
 			/* redistribute bufferB back into the array */
-			for (Wtemp[0] = levelB.start; Range_length(levelB) > 0; Wtemp[0]--) {
-				if (Wtemp[0] == level_start || !compare(array[levelB.end - 1], array[Wtemp[0] - 1])) {
-					long amount = levelB.start - Wtemp[0];
-					Rotate(array, amount, MakeRange(Wtemp[0], levelB.end), cache, cache_size);
-					levelB.start -= amount;
-					levelB.end -= (amount + 1);
+			for (Wtemp[0] = (*(levels_[3])).start; Range_length(*(levels_[3])) > 0; Wtemp[0]--) {
+				if (Wtemp[0] == level_start || !compare(array[(*(levels_[3])).end - 1], array[Wtemp[0] - 1])) {
+					long amount = (*(levels_[3])).start - Wtemp[0];
+					Rotate(array, amount, MakeRange(Wtemp[0], ((*(levels_[3])).end)), cache, cache_size);
+					(*(levels_[3])).start -= amount;
+					(*(levels_[3])).end -= (amount + 1);
 					Wtemp[0]++;
 				}
 			}
@@ -835,6 +846,10 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 			Wtemp[10] += 1;
 		}
 	}
+    free(levels_);
+#ifdef heap_array_levels_
+    printf("VAROI- heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+#endif
     free(Wtemp);
 #ifdef heap_array_sort_temp
     printf("VAROI- heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
@@ -1046,7 +1061,7 @@ long TestingMostlyEqual(long index, long total) {
 }
 
 
-const long max_size = 300;
+const long max_size = 3000;
 //original ones;
 //Test array1[400];
 
@@ -1060,17 +1075,16 @@ int benchmark(Test* item) {
 	Comparison compare = TestCompare;
 
 	__typeof__(&TestingPathological) test_cases[] = {
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-		TestingRandom,
-
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual,
+		TestingMostlyEqual
 	};
 #ifdef TROI_benchmark
 	printf("TROI+ TROI_benchmark\n");
@@ -1102,7 +1116,6 @@ int benchmark(Test* item) {
 
 			array1[(*index)] = (*item);
 		}
-
 		WikiSort(array1, (*total), compare);
 	}
 	free(test_case);
@@ -1136,13 +1149,13 @@ int main(){
 #endif
     Test* item;
     //add
-    array1=(Test*)malloc(sizeof(Test)*300);
+    array1=(Test*)malloc(sizeof(Test)*3000);
     item = (Test*)malloc(sizeof(Test));
 #ifdef heap_array_item
     printf("VAROI+ heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*300)-1);
+    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*3000)-1);
 #endif
     benchmark(item);    
     //add
@@ -1152,7 +1165,7 @@ int main(){
     printf("VAROI- heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*300)-1);
+    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*3000)-1);
 #endif
 #ifdef stack_func_benchmark
     printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
