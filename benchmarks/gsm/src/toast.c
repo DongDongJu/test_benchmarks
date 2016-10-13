@@ -516,7 +516,7 @@ static int open_output P1((name), char *name)
 
 static int process_encode P0()
 {
-	gsm      	r;
+	gsm      	r; 
 //	gsm_signal    	s[ 160 ];
 	gsm_frame	d;
  	gsm_signal*	s;
@@ -594,7 +594,7 @@ static int process_encode P0()
 #endif
 		gsm_destroy(r);
 #ifdef heap_array_gsm_state
-	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(struct gsm_state) -1);
 #endif
 		//r destroy
 #ifdef stack_func_process_encode
@@ -616,7 +616,7 @@ static int process_encode P0()
 	gsm_destroy(r);
 	//r destroy
 #ifdef heap_array_gsm_state
-	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(gsm_state) -1);
+	printf("VAROI- heap_array_gsm_state %p %p ",r, r + sizeof(struct gsm_state) -1);
 #endif
 #ifdef stack_func_process_encode
 	printf("VAROI- stack_func_process_encode %p %p\n", STACK_BASE - stack_func_process_encode_size +1 , STACK_BASE);

@@ -9,6 +9,7 @@
 #ifndef	TOAST_H
 #define	TOAST_H				/* Guard against multiple includes */
 
+#include "private.h"
 #include "config.h"
 #include "gsm.h"
 #include "spm_management.h"

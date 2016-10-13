@@ -95,7 +95,7 @@ Range MakeRange(const long start, const long end) {
 #ifdef TROI_MakeRange
     printf("TROI+ TROI_MakeRange\n");
 #endif
-#ifdef stack_MakeRange
+#ifdef stack_MakeRangeFfl
     printf("VAROI+ stack_func_MakeRange %p %p\n",STACK_BASE - stack_func_MakeRange_size +1 , STACK_BASE);
 #endif
 	range.start = start;
@@ -125,20 +125,33 @@ Range MakeRange(const long start, const long end) {
 /* 63 -> 32, 64 -> 64, etc. */
 /* apparently this comes from Hacker's Delight? */
 long FloorPowerOfTwo (const long value) {
-	long x = value;
+	long* x;
+	long re;
 #ifdef TROI_FloorPowerOfTwo
     printf("TROI+ TROI_FloorPowerOfTwo\n");
 #endif
 #ifdef stack_func_FloorPowerOfTwo
     printf("VAROI+ stack_func_FloorPowerOfTwo %p %p\n",STACK_BASE - stack_func_FloorPowerOfTwo_size +1 , STACK_BASE);
 #endif
-	x = x | (x >> 1);
-	x = x | (x >> 2);
-	x = x | (x >> 4);
-	x = x | (x >> 8);
-	x = x | (x >> 16);
+    	x=(long*)malloc(sizeof(long));
+#ifdef heap_array_floor_value
+    printf("VAROI+ heap_array_floor_value %p %p\n",x,x + (sizeof(long)) -1);
+#endif
+    	*x=value;
+	(*x) = (*x) | ((*x) >> 1);
+	(*x) = (*x) | ((*x) >> 2);
+	(*x) = (*x) | ((*x) >> 4);
+	(*x) = (*x) | ((*x) >> 8);
+	(*x) = (*x) | ((*x) >> 16);
+
 #if __LP64__
-	x = x | (x >> 32);
+	(*x) = (*x) | ((*x) >> 32);
+#endif    	
+    	re= (*x) - ((*x) >> 1);
+
+    	free(x);
+#ifdef heap_array_floor_value
+    printf("VAROI- heap_array_floor_value %p %p\n",x,x + (sizeof(long)) -1);
 #endif
 #ifdef stack_func_FloorPowerOfTwo
     printf("VAROI- stack_func_FloorPowerOfTwo %p %p\n",STACK_BASE - stack_func_FloorPowerOfTwo_size +1 , STACK_BASE);
@@ -146,7 +159,8 @@ long FloorPowerOfTwo (const long value) {
 #ifdef TROI_FloorPowerOfTwo
     printf("TROI- TROI_FloorPowerOfTwo\n");
 #endif
-	return x - (x >> 1);
+
+	return re;
 }
 
 /* find the index of the first value within the range that is equal to array[index] */
@@ -211,7 +225,8 @@ void InsertionSort(Test array[], const Range range, const Comparison compare) {
     printf("VAROI+ stack_func_InsertionSort %p %p\n",STACK_BASE - stack_func_InsertionSort_size +1 , STACK_BASE);
 #endif    
 	for (i = range.start + 1; i < range.end; i++) {
-		const Test temp = array[i]; long j;
+		Test temp=array[i];
+		long j;
 		for (j = i; j > range.start && compare(temp, array[j - 1]); j--)
 			array[j] = array[j - 1];
 		array[j] = temp;
@@ -338,31 +353,35 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 #ifdef stack_func_WikiMerge
     printf("VAROI+ stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
 #endif     
+	Test **temp;
+	temp= (Test**)malloc(sizeof(Test*)*5);
+#ifdef heap_array_wiki_temp
+    printf("VAROI+ heap_array_cache %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+#endif
 	if (Range_length(A) <= cache_size) {
-		Test *A_index = &cache[0];
-		Test *B_index = &array[B.start];
-		Test *insert_index = &array[A.start];
-		Test *A_last = &cache[Range_length(A)];
-		Test *B_last = &array[B.end];
-
+		temp[0] = &cache[0];
+		temp[1] = &array[B.start];
+		temp[2] = &array[A.start];
+		temp[3] = &cache[Range_length(A)];
+		temp[4] = &array[B.end];
 		if (Range_length(B) > 0 && Range_length(A) > 0) {
 			while (true) {
-				if (!compare(*B_index, *A_index)) {
-					*insert_index = *A_index;
-					A_index++;
-					insert_index++;
-					if (A_index == A_last) break;
+				if (!compare(*temp[1], *temp[0])) {
+					*temp[2] = *temp[0];
+					temp[0]++;
+					temp[2]++;
+					if (temp[0] == temp[3]) break;
 				} else {
-					*insert_index = *B_index;
-					B_index++;
-					insert_index++;
-					if (B_index == B_last) break;
+					*temp[2] = *temp[1];
+					temp[1]++;
+					temp[2]++;
+					if (temp[1] == temp[4]) break;
 				}
 			}
 		}
 
 		/* copy the remainder of A into the final array */
-		memcpy(insert_index, A_index, (A_last - A_index) * sizeof(array[0]));
+		memcpy(temp[2], temp[0], (temp[3] - temp[0]) * sizeof(array[0]));
 	} else {
 		/* whenever we find a value to add to the final array, swap it with the value that's already in that spot */
 		/* when this algorithm is finished, 'buffer' will contain its original contents, but in a different order */
@@ -387,6 +406,10 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 		/* swap the remainder of A into the final array */
 		BlockSwap(array, buffer.start + A_count, A.start + insert, Range_length(A) - A_count);
 	}
+	free(temp);
+#ifdef heap_array_wiki_temp
+    printf("VAROI- heap_array_cache %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+#endif	
 #ifdef stack_func_WikiMerge
     printf("VAROI- stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
 #endif     
@@ -430,6 +453,9 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 		InsertionSort(array, MakeRange(0, size), compare);
 //add
         free(cache);
+#ifdef heap_array_cache
+    printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
+#endif
 #ifdef stack_func_WikiSort
     printf("VAROI- stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
 #endif     
@@ -1003,26 +1029,31 @@ long TestingMostlyEqual(long index, long total) {
 }
 
 
-const long max_size = 400;
+const long max_size = 300;
 //original ones;
 //Test array1[400];
 
 //add
 Test* array1;
 int benchmark(Test* item) {
-	long total, index, test_case;
+	//long total, index, test_case;
+	long* total;
+	long* index;
+	long* test_case;
 	Comparison compare = TestCompare;
 
 	__typeof__(&TestingPathological) test_cases[] = {
-		TestingPathological,
 		TestingRandom,
-		TestingMostlyDescending,
-		TestingMostlyAscending,
-		TestingAscending,
-		TestingDescending,
-		TestingEqual,
-		TestingJittered,
-		TestingMostlyEqual
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+		TestingRandom,
+
 	};
 #ifdef TROI_benchmark
 	printf("TROI+ TROI_benchmark\n");
@@ -1033,20 +1064,42 @@ int benchmark(Test* item) {
 	/* initialize the random-number generator */
 	srand(0);
 	/*srand(10141985);*/ /* in case you want the same random numbers */
+	total=(long*)malloc(sizeof(long));
+#ifdef heap_array_total
+    printf("VAROI+ heap_array_total %p %p\n",total,total+(sizeof(long))-1);
+#endif
+	index=(long*)malloc(sizeof(index));
+#ifdef heap_array_index
+    printf("VAROI+ heap_array_index %p %p\n",index,index+(sizeof(long))-1);
+#endif
+	test_case=(long*)malloc(sizeof(test_case));
+#ifdef heap_array_test_case
+    printf("VAROI+ heap_array_test_case %p %p\n",test_case,test_case+(sizeof(long))-1);
+#endif
+	(*total) = max_size;
+	for ((*test_case) = 0; (*test_case) < sizeof(test_cases)/sizeof(test_cases[0]); (*test_case)++) {
 
+		for ((*index) = 0; (*index) < (*total); (*index)++) {
+			(*item).value = test_cases[(*test_case)]((*index), (*total));
+			(*item).index = (*index);
 
-	total = max_size;
-	for (test_case = 0; test_case < sizeof(test_cases)/sizeof(test_cases[0]); test_case++) {
-
-		for (index = 0; index < total; index++) {
-			(*item).value = test_cases[test_case](index, total);
-			(*item).index = index;
-
-			array1[index] = (*item);
+			array1[(*index)] = (*item);
 		}
 
-		WikiSort(array1, total, compare);
+		WikiSort(array1, (*total), compare);
 	}
+	free(test_case);
+#ifdef heap_array_test_case
+    printf("VAROI- heap_array_test_case %p %p\n",test_case,test_case+(sizeof(long))-1);
+#endif
+	free(index);
+#ifdef heap_array_index
+    printf("VAROI- heap_array_index %p %p\n",index,index+(sizeof(long))-1);
+#endif
+	free(total);
+#ifdef heap_array_total
+    printf("VAROI- heap_array_total %p %p\n",total,total+(sizeof(long))-1);
+#endif
 #ifdef stack_func_benchmark
     printf("VAROI- stack_func_benchmark %p %p\n",STACK_BASE - stack_func_benchmark_size +1 , STACK_BASE);
 #endif
@@ -1072,7 +1125,7 @@ int main(){
     printf("VAROI+ heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
+    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*300)-1);
 #endif
     benchmark(item);    
     //add
@@ -1082,7 +1135,7 @@ int main(){
     printf("VAROI- heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*400)-1);
+    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*300)-1);
 #endif
 #ifdef stack_func_benchmark
     printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
