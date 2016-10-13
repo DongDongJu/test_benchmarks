@@ -348,7 +348,7 @@ void Rotate(Test array[], const long amount, const Range range, Test cache[], co
 void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, const Comparison compare, Test cache[], const long cache_size) {
 	/* if A fits into the cache, use that instead of the internal buffer */
 #ifdef TROI_WikiMerge
-    printf("TROI+ WikiMerge\n");
+    printf("TROI+ TROI_WikiMerge\n");
 #endif
 #ifdef stack_func_WikiMerge
     printf("VAROI+ stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
