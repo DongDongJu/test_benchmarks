@@ -76,7 +76,6 @@ typedef struct {
 	int index;
 } Test;
 
-bool TestCompare(Test item1, Test item2) { return (item1.value < item2.value); }
 
 typedef bool (*Comparison)(Test, Test);
 
@@ -121,6 +120,7 @@ Range MakeRange(const long start, const long end) {
 	*a = *b; \
 	*b = c; \
 }
+static inline bool TestCompare(Test item1, Test item2) { return (item1.value < item2.value); }
 
 /* 63 -> 32, 64 -> 64, etc. */
 /* apparently this comes from Hacker's Delight? */
@@ -1062,7 +1062,7 @@ long TestingMostlyEqual(long index, long total) {
 }
 
 
-const long max_size = 3000;
+const long max_size = 300;
 //original ones;
 //Test array1[400];
 
@@ -1073,6 +1073,7 @@ int benchmark(Test* item) {
 	long* total;
 	long* index;
 	long* test_case;
+	Comparison compare = TestCompare;
 
 #ifdef TROI_benchmark
 	printf("TROI+ TROI_benchmark\n");
