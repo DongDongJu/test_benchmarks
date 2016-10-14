@@ -350,19 +350,36 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 #ifdef TROI_WikiMerge
     printf("TROI+ TROI_WikiMerge\n");
 #endif
+
 #ifdef stack_func_WikiMerge
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)(STACK_BASE - stack_func_WikiMerge_size +1),(unsigned long)STACK_BASE, COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif     
 	Test **temp;
 	long* l_temp;
 	temp= (Test**)malloc(sizeof(Test*)*5);
 
 #ifdef heap_array_wiki_temp
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_wiki_temp %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
+    #endif
+    #ifdef SPM_on
+   SPM_ALLOC((unsigned long)temp,(unsigned long)(temp + (sizeof(Test*)* 5)) -1, COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
+
     l_temp=(long*)malloc(sizeof(long)*3);
 #ifdef heap_array_wiki_l_temp
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_wiki_l_temp %p %p\n",l_temp, l_temp + (sizeof(long)*3) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)l_temp,(unsigned long)( l_temp + (sizeof(long)*3) -1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
 	if (Range_length(A) <= cache_size) {
 		temp[0] = &cache[0];
@@ -415,15 +432,31 @@ void WikiMerge(Test array[], const Range buffer, const Range A, const Range B, c
 	}
 	free(l_temp);
 #ifdef heap_array_wiki_l_temp
+    #ifdef TRACE_on
     printf("VAROI- heap_array_wiki_l_temp %p %p\n",l_temp, l_temp + (sizeof(long)*3) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)l_temp,(unsigned long)( l_temp + (sizeof(long)*3) -1),WRITE_BACK);
+    #endif
 #endif
 	free(temp);
 #ifdef heap_array_wiki_temp
+    #ifdef TRACE_on
     printf("VAROI- heap_array_wiki_temp %p %p\n",temp, temp + (sizeof(Test*)* 5) -1);
-#endif	
+    #endif
+    #ifdef SPM_on
+   SPM_FREE((unsigned long)temp,(unsigned long)(temp + (sizeof(Test*)* 5)) -1, WRITE_BACK);
+    #endif
+#endif
+
 #ifdef stack_func_WikiMerge
+    #ifdef TRACE_on
     printf("VAROI- stack_func_WikiMerge %p %p\n",STACK_BASE - stack_func_WikiMerge_size +1 , STACK_BASE);
-#endif     
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)(STACK_BASE - stack_func_WikiMerge_size +1),(unsigned long)STACK_BASE,WRITE_BACK);
+    #endif
+#endif
 #ifdef TROI_WikiMerge
     printf("TROI- TROI_WikiMerge\n");
 #endif
@@ -448,46 +481,105 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 #ifdef TROI_WikiSort
     printf("TROI+ TROI_WikiSort\n");
 #endif
+
 #ifdef stack_func_WikiSort
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_WikiMerge_size +1,(unsigned long)STACK_BASE, COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif     
+
+
 	Wtemp=(long*)malloc(sizeof(long)*13);
 #ifdef heap_array_sort_temp
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)Wtemp,(unsigned long)(Wtemp + (sizeof(long)* 11) -1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
+
+
 //add    
     cache=(Test*)malloc(sizeof(Test)*CACHE_SIZE);
 #ifdef heap_array_cache
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)cache,(unsigned long)(cache + (sizeof(Test)* CACHE_SIZE) -1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif    
 #endif
+
+
     levels_ =(Range**)malloc(sizeof(Range*)*4);
     for(i=0;i<4;i++)
     	levels_[i]=(Range*)malloc(sizeof(Range));
 #ifdef heap_array_levels_
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)levels_,(unsigned long)(levels_ + (sizeof(Range)* 4) -1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif        
 #endif
+
+
 	/* if there are 32 or fewer items, just insertion sort the entire array */
 	if (size <= 32) {
 		InsertionSort(array, MakeRange(0, size), compare);
     free(levels_);
 #ifdef heap_array_levels_
+    #ifdef TRACE_on
     printf("VAROI- heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)levels_,(unsigned long)(levels_ + (sizeof(Range)* 4) -1), WRITE_BACK);
+    #endif        
 #endif
+
+
         free(Wtemp);
 #ifdef heap_array_sort_temp
+    #ifdef TRACE_on
     printf("VAROI- heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)Wtemp,(unsigned long)(Wtemp + (sizeof(long)* 11) -1), WRITE_BACK);
+    #endif
 #endif
+
+
 //add
         free(cache);
 #ifdef heap_array_cache
+    #ifdef TRACE_on
     printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)cache,(unsigned long)(cache + (sizeof(Test)* CACHE_SIZE) -1), WRITE_BACK);
+    #endif    
 #endif
+
+
 #ifdef stack_func_WikiSort
+    #ifdef TRACE_on
     printf("VAROI- stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
-#endif     
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_WikiMerge_size +1,(unsigned long)STACK_BASE,WRITE_BACK);
+    #endif
+#endif      
+
+
 #ifdef TROI_WikiSort
     printf("TROI- TROI_WikiSort\n");
 #endif
+
+
 		return;
 	}
 	/* calculate how to scale the Wtemp[0] value to the range within the array */
@@ -848,20 +940,41 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 	}
     free(levels_);
 #ifdef heap_array_levels_
+    #ifdef TRACE_on
     printf("VAROI- heap_array_levels_ %p %p\n",levels_, levels_ + (sizeof(Range)* 4) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)levels_,(unsigned long)(levels_ + (sizeof(Range)* 4) -1), WRITE_BACK);
+    #endif        
 #endif
     free(Wtemp);
 #ifdef heap_array_sort_temp
+    #ifdef TRACE_on
     printf("VAROI- heap_array_sort_temp %p %p\n",Wtemp, Wtemp + (sizeof(long)* 11) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)Wtemp,(unsigned long)(Wtemp + (sizeof(long)* 11) -1), WRITE_BACK);
+    #endif
 #endif
     free(cache);
 
 #ifdef heap_array_cache
+    #ifdef TRACE_on
     printf("VAROI- heap_array_cache %p %p\n",cache, cache + (sizeof(Test)* CACHE_SIZE) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)cache,(unsigned long)(cache + (sizeof(Test)* CACHE_SIZE) -1), WRITE_BACK);
+    #endif    
 #endif
+
 #ifdef stack_func_WikiSort
+    #ifdef TRACE_on
     printf("VAROI- stack_func_WikiSort %p %p\n",STACK_BASE - stack_func_WikiSort_size +1 , STACK_BASE);
-#endif         
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_WikiMerge_size +1,(unsigned long)STACK_BASE,WRITE_BACK);
+    #endif
+#endif      
 	#undef CACHE_SIZE
 #ifdef TROI_WikiSort
     printf("TROI- TROI_WikiSort\n");
@@ -869,200 +982,7 @@ void WikiSort(Test array[], const long size, const Comparison compare) {
 
 }
 
-long TestingPathological(long index, long total) {
-#ifdef TROI_TestingPathological
-    printf("TROI+ TROI_TestingPathological\n");
-#endif
-#ifdef stack_func_TestingPathological
-    printf("VAROI+ stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
-#endif    
-	if (index == 0){
-#ifdef stack_func_TestingPathological
-    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingPathological
-    printf("TROI- TROI_TestingPathological\n");
-#endif
-        return 10;
-    }
-	else if (index < total/2){
-#ifdef stack_func_TestingPathological
-    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingPathological
-    printf("TROI- TROI_TestingPathological\n");
-#endif
-         return 11;
-    }
-	else if (index == total - 1){
-#ifdef stack_func_TestingPathological
-    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingPathological
-    printf("TROI- TROI_TestingPathological\n");
-#endif
-         return 10;
-    }
-#ifdef stack_func_TestingPathological
-    printf("VAROI- stack_func_TestingPathological %p %p\n",STACK_BASE - stack_func_TestingPathological_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingPathological
-    printf("TROI- TROI_TestingPathological\n");
-#endif
-
-	return 9;
-}
-
-long TestingRandom(long index, long total) {
-#ifdef TROI_TestingRandom
-    printf("TROI+ TROI_TestingRandom\n");
-#endif
-#ifdef stack_func_TestingPathological
-    printf("VAROI+ stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
-#endif    
-
-//add
-    long* i;
-    i=(long*)malloc(sizeof(long));
-    *i=rand();
-
-#ifdef stack_func_TestingPathological
-    printf("VAROI- stack_func_TestingRandom %p %p\n",STACK_BASE - stack_func_TestingRandom_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingRandom
-    printf("TROI- TROI_TestingRandom\n");
-#endif
-
-	return *i;
-}
-
-long TestingMostlyDescending(long index, long total) {
-#ifdef TROI_TestingMostlyDescending
-    printf("TROI+ TROI_TestingMostlyDescending\n");
-#endif
-#ifdef stack_func_TestingMostlyDescending
-    printf("VAROI+ stack_func_TestingMostlyDescending %p %p\n",STACK_BASE - stack_func_TestingMostlyDescending_size +1 , STACK_BASE);
-#endif    
-//add
-    long i = total - index + rand() * 1.0/RAND_MAX * 5 - 2.5;
-#ifdef stack_func_TestingMostlyDescending
-    printf("VAROI- stack_func_TestingMostlyDescending %p %p\n",STACK_BASE - stack_func_TestingMostlyDescending_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingMostlyDescending
-    printf("TROI- TROI_TestingMostlyDescending\n");
-#endif
-    return i;
-}
-
-long TestingMostlyAscending(long index, long total) {
-#ifdef TROI_TestingMostlyAscending
-    printf("TROI+ TROI_TestingMostlyAescending\n");
-#endif
-#ifdef stack_func_TestingMostlyAscending
-    printf("VAROI+ stack_func_TestingMostlyAscending %p %p\n",STACK_BASE - stack_func_TestingMostlyAscending_size +1 , STACK_BASE);
-#endif    
-//add
-    long i = index + rand() * 1.0/RAND_MAX * 5 - 2.5;
-#ifdef stack_func_TestingMostlyAscending
-    printf("VAROI- stack_func_TestingMostlyAscending %p %p\n",STACK_BASE - stack_func_TestingMostlyAscending_size +1 , STACK_BASE);
-#endif    
-#ifdef TROI_TestingMostlyAscending
-    printf("TROI- TROI_TestingMostlyAescending\n");
-#endif
-    return i;
-}
-
-long TestingAscending(long index, long total) {
-#ifdef TROI_TestingAscending
-    printf("TROI+ TROI_TestingAescending\n");
-#endif
-#ifdef stack_func_TestingMostlyAscending
-    printf("VAROI+ stack_func_TestingAscending %p %p\n",STACK_BASE - stack_func_TestingAscending_size +1 , STACK_BASE);
-#endif
-//add
-    long i = index;
-#ifdef stack_func_TestingMostlyAscending
-    printf("VAROI- stack_func_TestingAscending %p %p\n",STACK_BASE - stack_func_TestingAscending_size +1 , STACK_BASE);
-#endif
-#ifdef TROI_TestingAscending
-    printf("TROI- TROI_TestingAescending\n");
-#endif
-
-	return i;
-}
-
-long TestingDescending(long index, long total) {
-#ifdef TROI_TestingDescending
-    printf("TROI+ TROI_TestingDescending\n");
-#endif
-#ifdef stack_func_TestingDescending
-    printf("VAROI+ stack_func_TestingDescending %p %p\n",STACK_BASE - stack_func_TestingDescending_size +1 , STACK_BASE);
-#endif
-    long i = total - index;
-#ifdef stack_func_TestingDescending
-    printf("VAROI- stack_func_TestingDescending %p %p\n",STACK_BASE - stack_func_TestingDescending_size +1 , STACK_BASE);
-#endif
-#ifdef TROI_TestingDescending
-    printf("TROI- TROI_TestingDescending\n");
-#endif
-
-	return i;
-}
-
-long TestingEqual(long index, long total) {
-#ifdef TROI_TestingEqual
-    printf("TROI+ TROI_TestingEqual\n");
-#endif
-#ifdef stack_func_TestingEqual
-    printf("VAROI+ stack_func_TestingEqual %p %p\n",STACK_BASE - stack_func_TestingEqual_size +1 , STACK_BASE);
-#endif
-    long i = 1000;
-#ifdef stack_func_TestingEqual
-    printf("VAROI- stack_func_TestingEqual %p %p\n",STACK_BASE - stack_func_TestingEqual_size +1 , STACK_BASE);
-#endif
-#ifdef TROI_TestingEqual
-    printf("TROI- TROI_TestingEqual\n");
-#endif
-	return i;
-}
-
-long TestingJittered(long index, long total) {
-#ifdef TROI_TestingJittered
-    printf("TROI+ TROI_TestingJittered\n");
-#endif
-#ifdef stack_func_TestingJittered
-    printf("VAROI+ stack_func_TestingJittered %p %p\n",STACK_BASE - stack_func_TestingJittered_size +1 , STACK_BASE);
-#endif
-    long i = (rand() * 1.0/RAND_MAX <= 0.9) ? index : (index - 2);
-#ifdef stack_func_TestingJittered
-    printf("VAROI- stack_func_TestingJittered %p %p\n",STACK_BASE - stack_func_TestingJittered_size +1 , STACK_BASE);
-#endif
-#ifdef TROI_TestingJittered
-    printf("TROI- TROI_TestingJittered\n");
-#endif
-	return i;
-}
-
-long TestingMostlyEqual(long index, long total) {
-#ifdef TROI_TestingMostlyEqual
-    printf("TROI+ TROI_TestingMostlyEqual\n");
-#endif
-#ifdef stack_func_TestingMostlyEqual
-    printf("VAROI+ stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
-#endif
-    long i=1000 + rand() * 1.0/RAND_MAX * 4;
-    
-#ifdef stack_func_TestingMostlyEqual
-    printf("VAROI- stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
-#endif
-#ifdef TROI_TestingMostlyEqual
-    printf("TROI- TROI_TestingMostlyEqual\n");
-#endif
-	return i;
-}
-
-
-long max_size = 3000;
+long max_size = 30000;
 //original ones;
 //Test array1[400];
 
@@ -1079,22 +999,42 @@ int benchmark(Test* item) {
 	printf("TROI+ TROI_benchmark\n");
 #endif
 #ifdef stack_func_benchmark
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_benchmark %p %p\n",STACK_BASE - stack_func_benchmark_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)(STACK_BASE - stack_func_benchmark_size +1),(unsigned long)(STACK_BASE), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
 	/* initialize the random-number generator */
 	srand(0);
 	/*srand(10141985);*/ /* in case you want the same random numbers */
 	total=(long*)malloc(sizeof(long));
 #ifdef heap_array_total
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_total %p %p\n",total,total+(sizeof(long))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)total,(unsigned long)(total+(sizeof(long))-1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif      
 #endif
 	index=(long*)malloc(sizeof(index));
 #ifdef heap_array_index
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_index %p %p\n",index,index+(sizeof(long))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)index,(unsigned long)(index+(sizeof(long))-1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
 	test_case=(long*)malloc(sizeof(test_case));
 #ifdef heap_array_test_case
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_test_case %p %p\n",test_case,test_case+(sizeof(long))-1);
+    #endif
+    #ifdef
+    SPM_ALLOC((unsigned long)test_case,(unsigned long)(test_case+(sizeof(long))-1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
 	(*total) = max_size;
 	for ((*test_case) = 0; (*test_case) < 4; (*test_case)++) {
@@ -1117,19 +1057,41 @@ int benchmark(Test* item) {
 	}
 	free(test_case);
 #ifdef heap_array_test_case
+    #ifdef TRACE_on
     printf("VAROI- heap_array_test_case %p %p\n",test_case,test_case+(sizeof(long))-1);
+    #endif
+    #ifdef
+    SPM_FREE((unsigned long)test_case,(unsigned long)(test_case+(sizeof(long))-1),WRITE_BACK);
+    #endif
 #endif
 	free(index);
 #ifdef heap_array_index
+    #ifdef TRACE_on
     printf("VAROI- heap_array_index %p %p\n",index,index+(sizeof(long))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)index,(unsigned long)(index+(sizeof(long))-1),WRITE_BACK);
+    #endif
 #endif
 	free(total);
 #ifdef heap_array_total
-    printf("VAROI- heap_array_total %p %p\n",total,total+(sizeof(long))-1);
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_total %p %p\n",total,total+(sizeof(long))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)total,(unsigned long)(total+(sizeof(long))-1),WRITE_BACK);
+    #endif      
 #endif
+
 #ifdef stack_func_benchmark
+    #ifdef TRACE_on
     printf("VAROI- stack_func_benchmark %p %p\n",STACK_BASE - stack_func_benchmark_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)(STACK_BASE - stack_func_benchmark_size +1),(unsigned long)(STACK_BASE), WRITE_BACK);
+    #endif
 #endif
+
 #ifdef TROI_benchmark
 	printf("TROI- TROI_benchmark\n");
 #endif
@@ -1142,30 +1104,60 @@ int main(int argc, char* argv[]){
     printf("TROI+ TROI_main\n");
 #endif
 #ifdef stack_func_benchmark
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)(STACK_BASE - stack_func_main_size +1),(unsigned long)(STACK_BASE), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
     Test* item;
     //add
     array1=(Test*)malloc(sizeof(Test)*max_size);
     item = (Test*)malloc(sizeof(Test));
 #ifdef heap_array_item
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)item,(unsigned long)(item+(sizeof(Test))-1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
 #ifdef heap_array_array1
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*max_size)-1);
+    #endif 
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)array1,(unsigned long)(array1+(sizeof(Test)*max_size)-1), COPY,MAX_IMPORTANCE,HIGH_PRIORITY);
+    #endif
 #endif
     benchmark(item);    
     //add
     free(item);
     free(array1);
 #ifdef heap_array_item
+    #ifdef TRACE_on
     printf("VAROI- heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)item,(unsigned long)(item+(sizeof(Test))-1), WRITE_BACK);
+    #endif
 #endif
 #ifdef heap_array_array1
+    #ifdef TRACE_on
     printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*max_size)-1);
+    #endif 
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)array1,(unsigned long)(array1+(sizeof(Test)*max_size)-1), WRITE_BACK);
+    #endif
 #endif
 #ifdef stack_func_benchmark
+    #ifdef TRACE_on
     printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)(STACK_BASE - stack_func_main_size +1),(unsigned long)(STACK_BASE),WRITE_BACK);
+    #endif
 #endif
 #ifdef TROI_main
     printf("TROI- TROI_main\n");
