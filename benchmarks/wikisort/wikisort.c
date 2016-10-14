@@ -1062,7 +1062,7 @@ long TestingMostlyEqual(long index, long total) {
 }
 
 
-const long max_size = 300;
+long max_size = 3000;
 //original ones;
 //Test array1[400];
 
@@ -1136,7 +1136,7 @@ int benchmark(Test* item) {
 	return 0;
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
 #ifdef TROI_main
     printf("TROI+ TROI_main\n");
