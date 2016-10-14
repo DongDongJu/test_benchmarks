@@ -1050,7 +1050,8 @@ long TestingMostlyEqual(long index, long total) {
 #ifdef stack_func_TestingMostlyEqual
     printf("VAROI+ stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
 #endif
-    long i = 1000 + rand() * 1.0/RAND_MAX * 4;
+    long i=1000 + rand() * 1.0/RAND_MAX * 4;
+    
 #ifdef stack_func_TestingMostlyEqual
     printf("VAROI- stack_func_TestingMostlyEqual %p %p\n",STACK_BASE - stack_func_TestingMostlyEqual_size +1 , STACK_BASE);
 #endif
@@ -1072,20 +1073,7 @@ int benchmark(Test* item) {
 	long* total;
 	long* index;
 	long* test_case;
-	Comparison compare = TestCompare;
 
-	__typeof__(&TestingPathological) test_cases[] = {
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual,
-		TestingMostlyEqual
-	};
 #ifdef TROI_benchmark
 	printf("TROI+ TROI_benchmark\n");
 #endif
@@ -1108,10 +1096,18 @@ int benchmark(Test* item) {
     printf("VAROI+ heap_array_test_case %p %p\n",test_case,test_case+(sizeof(long))-1);
 #endif
 	(*total) = max_size;
-	for ((*test_case) = 0; (*test_case) < sizeof(test_cases)/sizeof(test_cases[0]); (*test_case)++) {
+	for ((*test_case) = 0; (*test_case) < 4; (*test_case)++) {
 
 		for ((*index) = 0; (*index) < (*total); (*index)++) {
-			(*item).value = test_cases[(*test_case)]((*index), (*total));
+			if((*index)==0)
+				(*item).value = 1000 + rand() * 1.0/RAND_MAX * 4;
+			if((*index)==1)
+				(*item).value = (rand() * 1.0/RAND_MAX <= 0.9) ? index : (index - 2);
+			if((*index)==2)
+				(*item).value = 1000;
+			if((*index)==3)
+				(*item).value = 1000 + rand() * 1.0/RAND_MAX * 4;
+
 			(*item).index = (*index);
 
 			array1[(*index)] = (*item);
@@ -1149,13 +1145,13 @@ int main(){
 #endif
     Test* item;
     //add
-    array1=(Test*)malloc(sizeof(Test)*3000);
+    array1=(Test*)malloc(sizeof(Test)*max_size);
     item = (Test*)malloc(sizeof(Test));
 #ifdef heap_array_item
     printf("VAROI+ heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*3000)-1);
+    printf("VAROI+ heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*max_size)-1);
 #endif
     benchmark(item);    
     //add
@@ -1165,7 +1161,7 @@ int main(){
     printf("VAROI- heap_array_item %p %p\n",item,item+(sizeof(Test))-1);
 #endif
 #ifdef heap_array_array1
-    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*3000)-1);
+    printf("VAROI- heap_array_array1 %p %p\n",array1,array1+(sizeof(Test)*max_size)-1);
 #endif
 #ifdef stack_func_benchmark
     printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
