@@ -34,17 +34,8 @@ static void do_bwe();
 static unsigned int do_rle();
 unsigned int do_ari(unsigned int insize); /* In "arithmetic.c" */
 
-int stat_(char* filename)
+void compress(char* filename)
 {
-
-}
-void compress(int argc, char *argv[])
-{
-  char *filename;
-  char outname[1000];
-  struct stat buf;
-  unsigned int filesize, outsize;
-
 #ifdef TROI_compress
   printf("TROI+ TROI_compress\n");
 #endif
@@ -52,13 +43,9 @@ void compress(int argc, char *argv[])
   printf("VAROI+ stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
 #endif
 
-
-  if (argc < 2) {
-    fprintf(stderr,"USAGE: %s <FILENAME>\n",argv[0]);
-    exit(1);
-  }
-  filename = argv[1];
-
+  char outname[1000];
+  struct stat buf;
+  unsigned int filesize, outsize;
 
   fpi=fopen(filename,"r"); /* open the infile */
   if (fpi==NULL) {

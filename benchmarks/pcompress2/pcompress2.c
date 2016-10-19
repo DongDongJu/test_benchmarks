@@ -19,53 +19,38 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "compress.h"
 #include "uncompress.h"
-
+#include "spm_management.h"
 
 int main(int argc, char *argv[])
 {
-#ifndef BENCHMARK 
-  const char* argv0;
-#else
-  char filename[1000];
-#endif  
 #ifdef TROI_main
-  printf("TROI+ TROI_main\n");
+    printf("TROI+ TROI_main\n");
 #endif
 #ifdef stack_func_main
-  printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
 #endif
 
+    char* filename;
+    int opt;
+    enum { COMPRESS_MODE, DECOMPRESS_MODE } mode = COMPRESS_MODE;
 
-#ifdef BENCHMARK  
-//  fprintf(stderr,"Compile date: %s\n", COMPDATE);
-//  fprintf(stderr,"Compiler switches: %s\n", CFLAGS);
-  compress(argc,argv); /* Compress four times to make it take some time... */
-  compress(argc,argv);
-  compress(argc,argv); 
-  compress(argc,argv);
-//  strcpy(filename,argv[1]);
-//  strcat(filename,".compr"); /* add the suffix '.compr' */
-//  argv[1]=filename;
-//  uncompress(argc,argv); /* Uncompress the stuff */
-//  remove(filename);
-#else
-  if((argv0 = strrchr(argv[0], '/')) == NULL)
-        argv0 = argv[0];
-    else
-        argv0 += 1;
+    while (( opt = getopt(argc,argv,"c:d:")) != -1)
+    {
+        switch(opt){
+            case 'c':
+            filename= optarg;
+            compress(filename);
+            break;
 
-  if (!strcmp(argv0,"pcompress2")) {
-    compress(argc,argv);
-  } else if (!strcmp(argv0,"puncompress2")) {
-    uncompress(argc,argv);
-  } else {
-    printf("Call pCompress as 'pcompress2' or 'puncompress2', NOT %s\n",argv[0]);
-  }
-#endif
-
-
+            case 'd':
+            filename=optarg;
+            uncompress(filename);
+            break;
+        }
+    }
 #ifdef stack_func_main
   printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
 #endif

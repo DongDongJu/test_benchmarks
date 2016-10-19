@@ -15,4 +15,4 @@
 /* Peter Rundberg, April 2001                           */
 /********************************************************/
 
-void compress(int argc, char *argv[]);
+void compress(char* filename);

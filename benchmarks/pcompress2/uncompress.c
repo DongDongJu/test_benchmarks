@@ -35,7 +35,7 @@ static void do_debwe();
 static void do_derle(int insize);
 unsigned int do_deari(unsigned int insize);  /* In "unarithmetic.c" */
 
-void uncompress(int argc, char *argv[]) 
+void uncompress(char* filename)
 {
   FILE *fpi;
 #ifndef BENCHMARK
@@ -44,14 +44,14 @@ void uncompress(int argc, char *argv[])
 #endif
   unsigned int insize, outsize;
 
-  fpi=fopen(argv[1],"r"); /* open the infile */
+  fpi=fopen(filename,"r"); /* open the infile */
   if (fpi==NULL) {
     fprintf(stderr,"ERROR: Could not find infile.\n");
     exit(1);
   }
-  
+
 #ifndef BENCHMARK
-  strcpy(outname,argv[1]); /* name the outfile */
+  strcpy(outname,filename); /* name the outfile */
   strcat(outname,".uncompr"); /* add the suffix '.uncompr' */
   fpo=fopen(outname,"w");
   if (fpo==NULL) {
@@ -62,7 +62,7 @@ void uncompress(int argc, char *argv[])
 
   fread(&size,sizeof(unsigned int),1,fpi); /* Read size of original file */
   fread(&orgpos,sizeof(unsigned int),1,fpi); /* Read the position of the original string */
-  
+
   in=(unsigned char *)malloc(2*size*sizeof(unsigned char));
   deari=(unsigned char *)malloc(2*size*sizeof(unsigned char));
   derle=(unsigned char *)malloc(2*size*sizeof(unsigned char));
@@ -87,18 +87,18 @@ void uncompress(int argc, char *argv[])
   free(debw); /* We are done with 'debw' now... */
 #else
   /* Write the results to file */
-  fwrite(debw, sizeof(unsigned char), size, fpo); 
+  fwrite(debw, sizeof(unsigned char), size, fpo);
   free(debw); /* We are done with 'debw' now... */
   fclose(fpo);
 #endif
-    
+
 }
 
 static void do_derle(int rlesize)
 {
   unsigned int j,k;
   unsigned int derlepos=0;
-  
+
   /* Do the deRLE coding */
   for (j=0;j<rlesize;) {
     if (deari[j] & 0x80) { /* is bit 7 set? YES! */
@@ -114,28 +114,28 @@ static void do_derle(int rlesize)
 }
 
 static void do_debwe()
-{ 
+{
   unsigned char *L=derle;
   unsigned int *T;
   unsigned int count[256];
   unsigned int total[256];
   unsigned int k,i,sum=0,indx;
-  
+
   T=(unsigned int *)malloc(size*sizeof(unsigned int));
-  
+
   for (k=0;k<256;k++)
     count[k]=0;
-  
+
   for (k=0;k<size;k++) {
     count[L[k]]++;
   }
-  
+
   for (i=0;i<256;i++) {
     total[i] = sum;
     sum += count[i];
     count[i] = 0;
   }
-  
+
   for (i=0;i<size;i++) {
     indx = L[i];
     T[i] = count[indx]+total[indx];
@@ -147,7 +147,7 @@ static void do_debwe()
     debw[size-k-1]=L[T[orgpos]];
     orgpos=T[orgpos];
   }
-  
+
   free(T);
 
 }

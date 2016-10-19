@@ -15,4 +15,4 @@
 /* Peter Rundberg, April 2001                           */
 /********************************************************/
 
-void uncompress(int argc, char *argv[]);
+void uncompress(char* filename);

@@ -101,8 +101,8 @@ static void update_model( int symbol );
 
 unsigned int do_deari(unsigned int insize)
 {
-  in_size = (unsigned int)insize;    
-  
+  in_size = (unsigned int)insize;
+
   in_pos = 0;
   deari_pos = 0;
 
@@ -117,7 +117,7 @@ unsigned int do_deari(unsigned int insize)
     deari[deari_pos++]=(unsigned char)ch;   /* Write that character.    */
     update_model(symbol);                   /* Update the model.        */
   }
-  
+
   return deari_pos;
 }
 
