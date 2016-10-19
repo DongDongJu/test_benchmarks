@@ -40,7 +40,12 @@ void compress(char* filename)
     printf("TROI+ TROI_compress\n");
 #endif
 #ifdef stack_func_compress
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_compress_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
 
     char outname[1000];
@@ -68,23 +73,52 @@ void compress(char* filename)
     /* Allocate some memory... */
     in=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
 #ifdef heap_array_in
-    printf("VAROI+ heap_array_bw %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_in %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)in, (unsigned long)in+(sizeof(char)*filesize*2 -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
+
     bw=(unsigned char *)malloc(filesize*sizeof(unsigned char));
 #ifdef heap_array_bw
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_bw %p %p\n",bw,bw + (sizeof(char)*filesize) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)bw, (unsigned long)bw+(sizeof(char)*filesize -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
+
     rot=(unsigned int *)malloc(filesize*sizeof(unsigned int));
 #ifdef heap_array_rot
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_rot %p %p\n",rot,rot + (sizeof(int)*filesize) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)rot, (unsigned long)rot+(sizeof(int)*filesize -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
-  rle=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
+
+    rle=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
 #ifdef heap_array_rle
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_rle %p %p\n",rle,rle + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)rle, (unsigned long)rle+(sizeof(char)*filesize*2 -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
-  ari=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
+
+    ari=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
 #ifdef heap_array_ari
+    #ifdef TRACE_on
     printf("VAROI+ heap_array_ari %p %p\n",ari,ari + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)ari, (unsigned long)ari+(sizeof(char)*filesize*2 -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
 
   if (!in || !bw || !rot || !rle || !ari) {
@@ -102,36 +136,70 @@ void compress(char* filename)
     do_bwe();
     free(in); /* We can get rid of 'in' now */
 #ifdef heap_array_in
-    printf("VAROI- heap_array_floor_in %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_in %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)in, (unsigned long)in+(sizeof(char)*filesize*2 -1), WRITE_BACK);
+    #endif
 #endif
+
     free(rot); /* We can get rid of 'rot' now */
 #ifdef heap_array_rot
+    #ifdef TRACE_on
     printf("VAROI- heap_array_rot %p %p\n",rot,rot + (sizeof(int)*filesize) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)rot, (unsigned long)rot+(sizeof(int)*filesize -1), WRITE_BACK);
+    #endif
 #endif
   /* Do the RLE */
     outsize=do_rle();
     free(bw); /* We can get rid of 'bw' now */
 #ifdef heap_array_bw
+    #ifdef TRACE_on
     printf("VAROI- heap_array_bw %p %p\n",bw,bw + (sizeof(char)*filesize) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)bw, (unsigned long)bw+(sizeof(char)*filesize -1), WRITE_BACK);
+    #endif
 #endif
+
   /* Do the arithmetic encoding */
     outsize=do_ari(outsize);
     free(rle); /* We can get rid of 'rle' now */
 #ifdef heap_array_rle
+    #ifdef TRACE_on
     printf("VAROI- heap_array_rle %p %p\n",rle,rle + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)rle, (unsigned long)rle+(sizeof(char)*filesize*2 -1), WRITE_BACK);
+    #endif
 #endif
+
   /* Write to file */
     fwrite(ari,sizeof(unsigned char),outsize,fpo);
     free(ari); /* We can get rid of 'ari' now */
 #ifdef heap_array_ari
+    #ifdef TRACE_on
     printf("VAROI- heap_array_ari %p %p\n",ari,ari + (sizeof(char)*filesize*2) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)ari, (unsigned long)ari+(sizeof(char)*filesize*2 -1), WRITE_BACK);
+    #endif
 #endif
     fclose(fpi);
     fclose(fpo);
 
 #ifdef stack_func_compress
+    #ifdef TRACE_on
     printf("VAROI- stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_compress_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
 #endif
+
 #ifdef TROI_compress
     printf("TROI- TROI_compress\n");
 #endif
@@ -179,6 +247,18 @@ static void do_bwe()
 
 static unsigned int do_rle()
 {
+#ifdef TROI_do_rle
+    printf("TROI+ TROI_do_rle\n");
+#endif
+#ifdef stack_func_do_rle
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_rle %p %p\n",STACK_BASE - stack_func_do_rle_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_rle_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     unsigned int i, c, rlepos=0;
     unsigned char teck, count;
   /* RLE --
@@ -218,7 +298,18 @@ static unsigned int do_rle()
           i+=c;
       }
     }
-  return rlepos;
+#ifdef stack_func_do_rle
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_rle %p %p\n",STACK_BASE - stack_func_do_rle_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_do_rle_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+#ifdef TROI_do_rle
+    printf("TROI- TROI_do_rle\n");
+#endif
+    return rlepos;
 }
 
 

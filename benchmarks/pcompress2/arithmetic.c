@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "spm_management.h"
 
 #define No_of_chars 256                 /* Number of character symbols      */
 #define EOF_symbol (No_of_chars+1)      /* Index of EOF symbol              */
@@ -108,6 +109,17 @@ static void bit_plus_follow( int bit )
 
 unsigned int do_ari(unsigned int insize)
 {
+#ifdef TROI_do_ari
+    printf("TROI+ TROI_do_ari\n");
+#endif
+#ifdef stack_func_do_ari
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_ari %p %p\n",STACK_BASE - stack_func_do_ari_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_ari_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
     rle_pos=0;
     ari_pos=0;
 
@@ -125,6 +137,17 @@ unsigned int do_ari(unsigned int insize)
     encode_symbol(EOF_symbol,cum_freq);         /* Encode the EOF symbol.   */
     done_encoding();                            /* Send the last few bits.  */
     done_outputing_bits();
+#ifdef stack_func_do_ari
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_do_ari %p %p\n",STACK_BASE - stack_func_do_ari_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_do_ari_size +1, (unsigned long)STACK_BASE,WRITE_BACK);
+    #endif
+#endif
+#ifdef TROI_do_ari
+    printf("TROI- TROI_do_ari\n");
+#endif
     return ari_pos;
 }
 

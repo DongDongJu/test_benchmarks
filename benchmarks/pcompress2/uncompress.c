@@ -16,7 +16,7 @@
 /********************************************************/
 
 #define BENCHMARK
-
+#include "spm_management.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -37,6 +37,18 @@ unsigned int do_deari(unsigned int insize);  /* In "unarithmetic.c" */
 
 void uncompress(char* filename)
 {
+#ifdef TROI_uncompress
+    printf("TROI+ TROI_uncompress\n");
+#endif
+#ifdef stack_func_uncompress
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_uncompress %p %p\n",STACK_BASE - stack_func_uncompress_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_uncompress_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     FILE *fpi;
 #ifndef BENCHMARK
     FILE *fpo;
@@ -63,9 +75,45 @@ void uncompress(char* filename)
     fread(&orgpos,sizeof(unsigned int),1,fpi); /* Read the position of the original string */
 
     in=(unsigned char *)malloc(2*size*sizeof(unsigned char));
+#ifdef heap_array_un_in
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_un_in %p %p\n",in,in + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)in, (unsigned long)in+2*size*sizeof(unsigned char) -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     deari=(unsigned char *)malloc(2*size*sizeof(unsigned char));
+#ifdef heap_array_deari
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_deari %p %p\n",deari,deari + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)deari, (unsigned long)deari+2*size*sizeof(unsigned char) -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     derle=(unsigned char *)malloc(2*size*sizeof(unsigned char));
+#ifdef heap_array_derle
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_derle %p %p\n",derle,derle + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)derle, (unsigned long)derle+2*size*sizeof(unsigned char) -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     debw=(unsigned char *)malloc(2*size*sizeof(unsigned char));
+#ifdef heap_array_debw
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_debw %p %p\n",debw,debw + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)debw, (unsigned long)debw+2*size*sizeof(unsigned char) -1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     if (!in || !deari || !derle || !debw) {
         fprintf(stderr,"ERROR: Out of memory\n");
         exit(1);
@@ -76,19 +124,74 @@ void uncompress(char* filename)
 
     outsize=do_deari(insize);
     free(in); /* We are done with 'in' now... */
+#ifdef heap_array_un_in
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_un_in %p %p\n",in,in + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)in, (unsigned long)in+2*size*sizeof(unsigned char) -1), WRITE_BACK);
+    #endif
+#endif
+
     do_derle(outsize);
     free(deari); /* We are done with 'deari' now... */
+#ifdef heap_array_deari
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_deari %p %p\n",deari,deari + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)deari, (unsigned long)deari+2*size*sizeof(unsigned char) -1), WRITE_BACK);
+    #endif
+#endif
+
     do_debwe();
     free(derle); /* We are done with 'derle' now... */
+#ifdef heap_array_derle
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_derle %p %p\n",derle,derle + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)derle, (unsigned long)derle+2*size*sizeof(unsigned char) -1), WRITE_BACK);
+    #endif
+#endif
 
 #ifdef BENCHMARK
     fwrite(debw, sizeof(unsigned char), size, stdout);
     free(debw); /* We are done with 'debw' now... */
+#ifdef heap_array_debw
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_debw %p %p\n",debw,debw + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)debw, (unsigned long)debw+2*size*sizeof(unsigned char) -1), FREE);
+    #endif
+#endif
 #else
   /* Write the results to file */
     fwrite(debw, sizeof(unsigned char), size, fpo);
     free(debw); /* We are done with 'debw' now... */
+#ifdef heap_array_debw
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_debw %p %p\n",debw,debw + 2*size*sizeof(unsigned char) -1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)debw, (unsigned long)debw+2*size*sizeof(unsigned char) -1), FREE);
+    #endif
+#endif
     fclose(fpo);
+#endif
+
+#ifdef stack_func_uncompress
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_uncompress %p %p\n",STACK_BASE - stack_func_uncompress_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_uncompress_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+
+#ifdef TROI_uncompress
+    printf("TROI- TROI_uncompress\n");
 #endif
 }
 
@@ -115,6 +218,17 @@ static void do_derle(int rlesize)
 
 static void do_debwe()
 {
+#ifdef TROI_do_debwe
+    printf("TROI+ TROI_do_debwe\n");
+#endif
+#ifdef stack_func_do_debwe
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_debwe %p %p\n",STACK_BASE - stack_func_do_debwe_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_debwe_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
     unsigned char *L=derle;
     unsigned int *T;
     unsigned int count[256];
@@ -149,5 +263,16 @@ static void do_debwe()
     }
 
     free(T);
+#ifdef stack_func_do_debwe
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_do_debwe %p %p\n",STACK_BASE - stack_func_do_debwe_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_do_debwe_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
 
+#ifdef TROI_do_debwe
+    printf("TROI- TROI_do_debwe\n");
+#endif
 }

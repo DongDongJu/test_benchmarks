@@ -30,7 +30,12 @@ int main(int argc, char *argv[])
     printf("TROI+ TROI_main\n");
 #endif
 #ifdef stack_func_main
+    #ifdef TRACE_on
     printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_main_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
 #endif
 
     char* filename;
@@ -52,7 +57,12 @@ int main(int argc, char *argv[])
         }
     }
 #ifdef stack_func_main
-  printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_main_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
 #endif
 #ifdef TROI_main
   printf("TROI- TROI_main\n");
