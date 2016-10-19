@@ -37,44 +37,44 @@ unsigned int do_ari(unsigned int insize); /* In "arithmetic.c" */
 void compress(char* filename)
 {
 #ifdef TROI_compress
-  printf("TROI+ TROI_compress\n");
+    printf("TROI+ TROI_compress\n");
 #endif
 #ifdef stack_func_compress
-  printf("VAROI+ stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
+    printf("VAROI+ stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
 #endif
 
-  char outname[1000];
-  struct stat buf;
-  unsigned int filesize, outsize;
+    char outname[1000];
+    struct stat buf;
+    unsigned int filesize, outsize;
 
-  fpi=fopen(filename,"r"); /* open the infile */
-  if (fpi==NULL) {
+    fpi=fopen(filename,"r"); /* open the infile */
+    if (fpi==NULL) {
     fprintf(stderr,"ERROR: Could not find infile %s\n",filename);
     exit(1);
-  }
+    }
     fseek(fpi, 0L, SEEK_END);
     filesize=ftell(fpi);
     fseek(fpi, 0L, SEEK_SET);
-  strcpy(outname,filename); /* name the outfile */
-  strcat(outname,".compr"); /* add the suffix '.compr' */
-  fpo=fopen(outname,"w");
-  if (fpo==NULL) {
-    fprintf(stderr,"ERROR: Could not open outfile (do you have write permission here?)\n");
-    exit(1);
-  }
+    strcpy(outname,filename); /* name the outfile */
+    strcat(outname,".compr"); /* add the suffix '.compr' */
+    fpo=fopen(outname,"w");
+    if (fpo==NULL) {
+        fprintf(stderr,"ERROR: Could not open outfile (do you have write permission here?)\n");
+        exit(1);
+    }
 
-  /* Write the infile size to the outfile */
-  fwrite(&filesize,sizeof(unsigned int),1,fpo);
-  /* Allocate some memory... */
-  in=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
+    /* Write the infile size to the outfile */
+    fwrite(&filesize,sizeof(unsigned int),1,fpo);
+    /* Allocate some memory... */
+    in=(unsigned char *)malloc(2*filesize*sizeof(unsigned char));
 #ifdef heap_array_in
     printf("VAROI+ heap_array_bw %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
 #endif
-  bw=(unsigned char *)malloc(filesize*sizeof(unsigned char));
+    bw=(unsigned char *)malloc(filesize*sizeof(unsigned char));
 #ifdef heap_array_bw
     printf("VAROI+ heap_array_bw %p %p\n",bw,bw + (sizeof(char)*filesize) -1);
 #endif
-  rot=(unsigned int *)malloc(filesize*sizeof(unsigned int));
+    rot=(unsigned int *)malloc(filesize*sizeof(unsigned int));
 #ifdef heap_array_rot
     printf("VAROI+ heap_array_rot %p %p\n",rot,rot + (sizeof(int)*filesize) -1);
 #endif
@@ -97,90 +97,90 @@ void compress(char* filename)
     exit(1);
   }
 
-  size=filesize;
-  /* Do the Burrows Wheeler encoding */
-  do_bwe();
-  free(in); /* We can get rid of 'in' now */
+    size=filesize;
+    /* Do the Burrows Wheeler encoding */
+    do_bwe();
+    free(in); /* We can get rid of 'in' now */
 #ifdef heap_array_in
     printf("VAROI- heap_array_floor_in %p %p\n",in,in + (sizeof(char)*filesize*2) -1);
 #endif
-  free(rot); /* We can get rid of 'rot' now */
+    free(rot); /* We can get rid of 'rot' now */
 #ifdef heap_array_rot
     printf("VAROI- heap_array_rot %p %p\n",rot,rot + (sizeof(int)*filesize) -1);
 #endif
   /* Do the RLE */
-  outsize=do_rle();
-  free(bw); /* We can get rid of 'bw' now */
+    outsize=do_rle();
+    free(bw); /* We can get rid of 'bw' now */
 #ifdef heap_array_bw
     printf("VAROI- heap_array_bw %p %p\n",bw,bw + (sizeof(char)*filesize) -1);
 #endif
   /* Do the arithmetic encoding */
-  outsize=do_ari(outsize);
-  free(rle); /* We can get rid of 'rle' now */
+    outsize=do_ari(outsize);
+    free(rle); /* We can get rid of 'rle' now */
 #ifdef heap_array_rle
     printf("VAROI- heap_array_rle %p %p\n",rle,rle + (sizeof(char)*filesize*2) -1);
 #endif
   /* Write to file */
-  fwrite(ari,sizeof(unsigned char),outsize,fpo);
-  free(ari); /* We can get rid of 'ari' now */
+    fwrite(ari,sizeof(unsigned char),outsize,fpo);
+    free(ari); /* We can get rid of 'ari' now */
 #ifdef heap_array_ari
     printf("VAROI- heap_array_ari %p %p\n",ari,ari + (sizeof(char)*filesize*2) -1);
 #endif
-  fclose(fpi);
-  fclose(fpo);
+    fclose(fpi);
+    fclose(fpo);
 
 #ifdef stack_func_compress
-  printf("VAROI- stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
+    printf("VAROI- stack_func_compress %p %p\n",STACK_BASE - stack_func_compress_size +1 , STACK_BASE);
 #endif
 #ifdef TROI_compress
-  printf("TROI- TROI_compress\n");
+    printf("TROI- TROI_compress\n");
 #endif
 }
 
 /* Compare two strings */
 static int compare(const void *a, const void *b)
 {
-  unsigned int *first=(unsigned int *)a;
-  unsigned int *sec=(unsigned int *)b;
+    unsigned int *first=(unsigned int *)a;
+    unsigned int *sec=(unsigned int *)b;
 
   /* Compare strings using memcmp */
-  return (memcmp(in+*first,in+*sec,size));
+    return (memcmp(in+*first,in+*sec,size));
 }
 
 static void do_bwe()
 {
-  unsigned int i;
+    unsigned int i;
 
   /*
    * Put a copy of the string at the end of the string,
    * this speeds up rotating.
    */
-  memcpy(in+size,in,size);
+    memcpy(in+size,in,size);
 
-  for (i=0;i<size;i++)  /* Initialize 'rot' vector... */
-    rot[i]=i;
+    for (i=0;i<size;i++)  /* Initialize 'rot' vector... */
+      rot[i]=i;
 
   /* sort the strings using STDLIB qsort */
-  qsort(rot,size,sizeof(unsigned int),(*compare));
+    qsort(rot,size,sizeof(unsigned int),(*compare));
 
   /* make BW array... */
-  for (i=0;i<size;i++) {
-    bw[i]=in[(rot[i]+size-1)%size];
-  }
+    for (i=0;i<size;i++) {
+        bw[i]=in[(rot[i]+size-1)%size];
+    }
 
   /* Find place of original string, and write it to the outfile*/
-  for (i=0;i<size;i++) {
-    if (rot[i]==0) {
-      fwrite(&i,sizeof(unsigned int),1,fpo);
-      break;
+    for (i=0;i<size;i++) {
+        if (rot[i]==0) {
+            fwrite(&i,sizeof(unsigned int),1,fpo);
+            break;
+        }
     }
-  }
 }
 
 static unsigned int do_rle()
 {
-  unsigned int i, c, rlepos=0;
-  unsigned char teck, count;
+    unsigned int i, c, rlepos=0;
+    unsigned char teck, count;
   /* RLE --
    * If the same byte occurs twice or more in s row, put a byte
    * before to show number of repeats. If different bytes occur in a row
@@ -188,39 +188,36 @@ static unsigned int do_rle()
    * A set (1) bit 7 in the describer byte indicates repeats, a cleared
    * bit 7 indicates block of unique bytes.
    */
-  for (i=0;i<size;) {
-    c=1;
-    teck=bw[i];
-    while ((i+c)<size && teck==bw[i+c]) { /* How many repeats? */
-      c++;
-      if (c>=127)
-	break;
-    }
-    if (c==1) { /* No repeats */
-      if ((i+c)<size) {
-	while (bw[i+c-1]!=bw[i+c] && bw[i+c]!=bw[i+c+1])
-	  c++;
+    for (i=0;i<size;) {
+      c=1;
+      teck=bw[i];
+      while ((i+c)<size && teck==bw[i+c]) { /* How many repeats? */
+          c++;
+          if (c>=127)
+              break;
       }
-
-      count=(unsigned char)c & 0x7f;
-      rle[rlepos++]=count;
-      memcpy(rle+rlepos,bw+i,c);
-      rlepos+=c;
-      i+=c;
-    } else {  /* c repeats */
-      if ((rlepos+2)>2*size) {
-	fprintf(stderr,"PANIC: RLE buf larger than %d bytes needed (repeat)\n",size);
-	exit(1);
+      if (c==1) { /* No repeats */
+          if ((i+c)<size) {
+	       while (bw[i+c-1]!=bw[i+c] && bw[i+c]!=bw[i+c+1])
+	           c++;
+          }
+          count=(unsigned char)c & 0x7f;
+          rle[rlepos++]=count;
+          memcpy(rle+rlepos,bw+i,c);
+          rlepos+=c;
+          i+=c;
+      } else {  /* c repeats */
+          if ((rlepos+2)>2*size) {
+	       fprintf(stderr,"PANIC: RLE buf larger than %d bytes needed (repeat)\n",size);
+	       exit(1);
+          }
+          count=(unsigned char)c | 0x80;
+          rle[rlepos]=count;
+          rle[rlepos+1]=teck;
+          rlepos+=2;
+          i+=c;
       }
-
-      count=(unsigned char)c | 0x80;
-      rle[rlepos]=count;
-      rle[rlepos+1]=teck;
-      rlepos+=2;
-      i+=c;
     }
-  }
-
   return rlepos;
 }
 

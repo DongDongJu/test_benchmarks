@@ -68,7 +68,8 @@ static int bits_to_go;                 /* Number of bits free in buffer         
 /* INITIALIZE FOR BIT OUTPUT. */
 
 static void start_outputing_bits( void )
-{   buffer = 0;                                 /* Buffer is empty to start */
+{
+    buffer = 0;                                 /* Buffer is empty to start */
     bits_to_go= 8;                              /* with.                    */
 }
 
@@ -79,7 +80,7 @@ static void output_bit( int bit )
     bits_to_go -= 1;
     if (bits_to_go==0) {                        /* Output buffer if full.   */
         ari[ari_pos++]=(unsigned char)buffer;
-	bits_to_go = 8;
+        bits_to_go = 8;
     }
 }
 
@@ -109,7 +110,7 @@ unsigned int do_ari(unsigned int insize)
 {
     rle_pos=0;
     ari_pos=0;
-    
+
     start_model();                              /* Set up other modules.    */
     start_outputing_bits();
     start_encoding();
@@ -145,9 +146,9 @@ static void encode_symbol(int symbol,int cum_freq[] )
 {   long range;                 /* Size of the current code region          */
     range = (long)(high-low)+1;
     high = low +                                /* Narrow the code region   */
-      (range*cum_freq[symbol-1])/cum_freq[0]-1; /* to that allotted to this */
+    (range*cum_freq[symbol-1])/cum_freq[0]-1; /* to that allotted to this */
     low = low +                                 /* symbol.                  */
-      (range*cum_freq[symbol])/cum_freq[0];
+    (range*cum_freq[symbol])/cum_freq[0];
     for (;;) {                                  /* Loop to output bits.     */
         if (high<Half) {
             bit_plus_follow(0);                 /* Output 0 if in low half. */
