@@ -16,7 +16,6 @@ extern unsigned char *rle;
 extern unsigned char *ari;
 
 /* Positions in buffers */
-unsigned int rle_pos;
 unsigned int ari_pos;
 
 /* TRANSLATION TABLES BETWEEN CHARACTERS AND SYMBOL INDEXES. */
@@ -27,7 +26,7 @@ static unsigned char index_to_char[No_of_symbols+1]; /* To character from index 
 /* ADAPTIVE SOURCE MODEL */
 
 static int freq[No_of_symbols+1];      /* Symbol frequencies                       */
-static int cum_freq[No_of_symbols+1];  /* Cumulative symbol frequencies            */
+
 
 /* DECLARATIONS USED FOR ARITHMETIC ENCODING AND DECODING */
 
@@ -51,10 +50,10 @@ typedef long code_value;                /* Type of an arithmetic code value */
 #define Max_frequency 16383             /* Maximum allowed frequency count  */
 
 
-static void start_model( void );
+static void start_model( int cum_freq[] );
 static void start_encoding( void );
 static void encode_symbol(int symbol,int cum_freq[] );
-static void update_model(int symbol);
+static void update_model(int symbol, int cum_freq[]);
 static void done_encoding( void );
 static void done_outputing_bits( void );
 
@@ -120,10 +119,11 @@ unsigned int do_ari(unsigned int insize)
     SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_ari_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
     #endif
 #endif
-    rle_pos=0;
+    int cum_freq[No_of_symbols+1];  /* Cumulative symbol frequencies            */
+    unsigned int rle_pos=0;
     ari_pos=0;
 
-    start_model();                              /* Set up other modules.    */
+    start_model(cum_freq);                              /* Set up other modules.    */
     start_outputing_bits();
     start_encoding();
     for (;;) {                                  /* Loop through characters. */
@@ -132,7 +132,7 @@ unsigned int do_ari(unsigned int insize)
         if (rle_pos>insize) break;             /* Exit loop when done.     */
         symbol = char_to_index[ch];             /* Translate to an index.   */
         encode_symbol(symbol,cum_freq);         /* Encode that symbol.      */
-        update_model(symbol);                   /* Update the model.        */
+        update_model(symbol,cum_freq);                   /* Update the model.        */
     }
     encode_symbol(EOF_symbol,cum_freq);         /* Encode the EOF symbol.   */
     done_encoding();                            /* Send the last few bits.  */
@@ -166,7 +166,19 @@ static void start_encoding( void )
 /* ENCODE A SYMBOL. */
 
 static void encode_symbol(int symbol,int cum_freq[] )
-{   long range;                 /* Size of the current code region          */
+{
+#ifdef TROI_encode_symbol
+    printf("TROI+ TROI_encode_symbol\n");
+#endif
+#ifdef stack_func_encode_symbol
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_encode_symbol %p %p\n",STACK_BASE - stack_func_encode_symbol_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_encode_symbol_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+    long range;                 /* Size of the current code region          */
     range = (long)(high-low)+1;
     high = low +                                /* Narrow the code region   */
     (range*cum_freq[symbol-1])/cum_freq[0]-1; /* to that allotted to this */
@@ -191,6 +203,17 @@ static void encode_symbol(int symbol,int cum_freq[] )
         low = 2*low;
         high = 2*high+1;                        /* Scale up code range.     */
     }
+#ifdef stack_func_encode_symbol
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_encode_symbol %p %p\n",STACK_BASE - stack_func_encode_symbol_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_encode_symbol_size +1, (unsigned long)STACK_BASE,WRITE_BACK);
+    #endif
+#endif
+#ifdef TROI_encode_symbol
+    printf("TROI- TROI_encode_symbol\n");
+#endif
 }
 
 
@@ -207,7 +230,7 @@ static void done_encoding( void )
 
 /* INITIALIZE THE MODEL. */
 
-static void start_model( void )
+static void start_model( int cum_freq[] )
 {   int i;
     for (i = 0; i<No_of_chars; i++) {           /* Set up tables that       */
         char_to_index[i] = i+1;                 /* translate between symbol */
@@ -223,7 +246,7 @@ static void start_model( void )
 
 /* UPDATE THE MODEL TO ACCOUNT FOR A NEW SYMBOL. */
 
-static void update_model( int symbol )
+static void update_model( int symbol, int cum_freq[] )
 {   int i;                      /* New index for symbol                     */
     if (cum_freq[0]==Max_frequency) {           /* See if frequency counts  */
         int cum;                                /* are at their maximum.    */
