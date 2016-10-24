@@ -39,7 +39,7 @@
 #define stack_func_main_size 24
 #define stack_func_compress_size 1072
 #define stack_func_do_debwe_size 2080
-#define stack_func_uncompress_size 48
+#define stack_func_uncompress_size 32
 #elif ARM64_ARCH
 #elif ALPHA_ARCH
 #elif X86_ARCH

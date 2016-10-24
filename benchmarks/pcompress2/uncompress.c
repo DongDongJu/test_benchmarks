@@ -154,9 +154,6 @@ void uncompress(char* filename)
     SPM_FREE((unsigned long)derle, (unsigned long)derle+2*size*sizeof(unsigned char) -1), WRITE_BACK);
     #endif
 #endif
-
-#ifdef BENCHMARK
-    fwrite(debw, sizeof(unsigned char), size, stdout);
     free(debw); /* We are done with 'debw' now... */
 #ifdef heap_array_debw
     #ifdef TRACE_on
@@ -166,21 +163,6 @@ void uncompress(char* filename)
     SPM_FREE((unsigned long)debw, (unsigned long)debw+2*size*sizeof(unsigned char) -1), FREE);
     #endif
 #endif
-#else
-  /* Write the results to file */
-    fwrite(debw, sizeof(unsigned char), size, fpo);
-    free(debw); /* We are done with 'debw' now... */
-#ifdef heap_array_debw
-    #ifdef TRACE_on
-    printf("VAROI- heap_array_debw %p %p\n",debw,debw + 2*size*sizeof(unsigned char) -1);
-    #endif
-    #ifdef SPM_on
-    SPM_FREE((unsigned long)debw, (unsigned long)debw+2*size*sizeof(unsigned char) -1), FREE);
-    #endif
-#endif
-    fclose(fpo);
-#endif
-
 #ifdef stack_func_uncompress
     #ifdef TRACE_on
     printf("VAROI- stack_func_uncompress %p %p\n",STACK_BASE - stack_func_uncompress_size +1 , STACK_BASE);
@@ -189,7 +171,6 @@ void uncompress(char* filename)
     SPM_FREE((unsigned long)STACK_BASE - stack_func_uncompress_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
     #endif
 #endif
-
 #ifdef TROI_uncompress
     printf("TROI- TROI_uncompress\n");
 #endif
