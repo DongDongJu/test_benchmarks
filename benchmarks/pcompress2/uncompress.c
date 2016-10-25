@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#define No_of_chars 256                 /* Number of character symbols      */
+#define No_of_symbols (No_of_chars+1)   /* Total number of symbols          */
 unsigned char *in; /* The infile */
 unsigned char *deari;
 unsigned char *derle;
@@ -31,10 +33,15 @@ unsigned char *debw;
 unsigned int size;
 unsigned int orgpos;
 
+//added code
+int* char_to_index;
+unsigned char* index_to_char;
+int* freq;
+int* cum_freq;
+
 static void do_debwe();
 static void do_derle(int insize);
-unsigned int do_deari(unsigned int insize);  /* In "unarithmetic.c" */
-
+unsigned int do_deari(unsigned int insize,int* cum_freq,unsigned char* index_to_char,int* freq,int* char_to_index);
 void uncompress(char* filename)
 {
 #ifdef TROI_uncompress
@@ -122,7 +129,18 @@ void uncompress(char* filename)
     insize=fread(in, sizeof(unsigned char), 2*size, fpi);
     fclose(fpi);
 
-    outsize=do_deari(insize);
+    char_to_index = (int*)malloc(sizeof(int)*No_of_chars);
+    index_to_char = (unsigned char *)malloc(sizeof(unsigned char)*No_of_symbols+1);
+    freq=(int*)malloc(sizeof(int)*No_of_symbols+1);
+    cum_freq=(int*)malloc(sizeof(int)*No_of_symbols+1);
+
+    outsize=do_deari(insize,cum_freq,index_to_char,freq,char_to_index);
+
+    free(char_to_index);
+    free(index_to_char);
+    free(freq);
+    free(cum_freq);
+
     free(in); /* We are done with 'in' now... */
 #ifdef heap_array_un_in
     #ifdef TRACE_on

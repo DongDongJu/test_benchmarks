@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "spm_management.h"
 /* The indata and outdata buffer, defined and allocated in "uncompress.c" */
 extern unsigned char *in;
 extern unsigned char *deari;
@@ -25,11 +25,13 @@ unsigned int in_size;
 
 /* TRANSLATION TABLES BETWEEN CHARACTERS AND SYMBOL INDEXES. */
 
-int char_to_index[No_of_chars];         /* To index from character          */
-unsigned char index_to_char[No_of_symbols+1]; /* To character from index    */
+//origin code
+//int char_to_index[No_of_chars];         /* To index from character          */
+//unsigned char index_to_char[No_of_symbols+1]; /* To character from index    */
+//int freq[No_of_symbols+1];      /* Symbol frequencies                       */
+//int cum_freq[No_of_symbols+1];  /* Cumulative symbol frequencies            */
 
-int freq[No_of_symbols+1];      /* Symbol frequencies                       */
-int cum_freq[No_of_symbols+1];  /* Cumulative symbol frequencies            */
+
 
 /* CUMULATIVE FREQUENCY TABLE. */
 
@@ -93,32 +95,52 @@ static int input_bit( void )
   return t;
 }
 
-
-static void start_model( void );
+static void start_model(int* char_to_index,unsigned char* index_to_char ,int* cum_freq ,int* freq);
 static void start_decoding( void );
 static int decode_symbol( int cum_freq[] );
-static void update_model( int symbol );
+static void update_model( int symbol ,int* cum_freq,int* freq, int* char_to_index,unsigned char* index_to_char);
 
-unsigned int do_deari(unsigned int insize)
+unsigned int do_deari(unsigned int insize,int* cum_freq,unsigned char* index_to_char,int* freq,int* char_to_index)
 {
-  in_size = (unsigned int)insize;
+#ifdef TROI_do_deari
+    printf("TROI+ TROI_do_deari\n");
+#endif
+#ifdef stack_func_do_deari
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_deari %p %p\n",STACK_BASE - stack_func_do_deari_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_deari_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+    in_size = (unsigned int)insize;
+    in_pos = 0;
+    deari_pos = 0;
 
-  in_pos = 0;
-  deari_pos = 0;
+    start_model(char_to_index,index_to_char,cum_freq,freq);                              /* Set up other modules.    */
+    start_inputing_bits();
+    start_decoding();
+    for (;;) {                                  /* Loop through characters. */
+        int ch; int symbol;
+        symbol = decode_symbol(cum_freq);       /* Decode next symbol.      */
+        if (symbol==EOF_symbol) break;          /* Exit loop if EOF symbol. */
+            ch = index_to_char[symbol];             /* Translate to a character.*/
+        deari[deari_pos++]=(unsigned char)ch;   /* Write that character.    */
+        update_model(symbol,cum_freq,freq,char_to_index,index_to_char);                   /* Update the model.        */
+    }
+#ifdef stack_func_do_deari
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_do_deari %p %p\n",STACK_BASE - stack_func_do_deari_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_do_deari_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
 
-  start_model();                              /* Set up other modules.    */
-  start_inputing_bits();
-  start_decoding();
-  for (;;) {                                  /* Loop through characters. */
-    int ch; int symbol;
-    symbol = decode_symbol(cum_freq);       /* Decode next symbol.      */
-    if (symbol==EOF_symbol) break;          /* Exit loop if EOF symbol. */
-    ch = index_to_char[symbol];             /* Translate to a character.*/
-    deari[deari_pos++]=(unsigned char)ch;   /* Write that character.    */
-    update_model(symbol);                   /* Update the model.        */
-  }
-
-  return deari_pos;
+#ifdef TROI_do_deari
+    printf("TROI- TROI_do_deari\n");
+#endif
+    return deari_pos;
 }
 
 /* ARITHMETIC DECODING ALGORITHM. */
@@ -144,7 +166,20 @@ static void start_decoding( void )
 /* DECODE THE NEXT SYMBOL. */
 
 static int decode_symbol( int cum_freq[] )
-{   long range;                 /* Size of current code region              */
+{
+#ifdef TROI_decode_symbol
+    printf("TROI+ TROI_decode_symbol\n");
+#endif
+#ifdef stack_func_decode_symbol
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_decode_symbol %p %p\n",STACK_BASE - stack_func_decode_symbol_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_decode_symbol_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
+    long range;                 /* Size of current code region              */
     int cum;                    /* Cumulative frequency calculated          */
     int symbol;                 /* Symbol decoded                           */
     range = (long)(high-low)+1;
@@ -175,6 +210,18 @@ static int decode_symbol( int cum_freq[] )
         high = 2*high+1;                        /* Scale up code range.     */
         value = 2*value+input_bit();            /* Move in next input bit.  */
     }
+#ifdef stack_func_decode_symbol
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_decode_symbol %p %p\n",STACK_BASE - stack_func_decode_symbol_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_decode_symbol_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+
+#ifdef TROI_decode_symbol
+    printf("TROI- TROI_decode_symbol\n");
+#endif
     return symbol;
 }
 
@@ -182,7 +229,7 @@ static int decode_symbol( int cum_freq[] )
 
 /* INITIALIZE THE MODEL. */
 
-static void start_model( void )
+static void start_model(int* char_to_index,unsigned char* index_to_char ,int* cum_freq,int* freq )
 {   int i;
     for (i = 0; i<No_of_chars; i++) {           /* Set up tables that       */
         char_to_index[i] = i+1;                 /* translate between symbol */
@@ -198,8 +245,20 @@ static void start_model( void )
 
 /* UPDATE THE MODEL TO ACCOUNT FOR A NEW SYMBOL. */
 
-static void update_model( int symbol )
-{   int i;                      /* New index for symbol                     */
+static void update_model( int symbol ,int* cum_freq,int* freq, int* char_to_index,unsigned char* index_to_char)
+{
+#ifdef TROI_update_model
+    printf("TROI+ TROI_update_model\n");
+#endif
+#ifdef stack_func_update_model
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_update_model %p %p\n",STACK_BASE - stack_func_update_model_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_update_model_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+    int i;                      /* New index for symbol                     */
     if (cum_freq[0]==Max_frequency) {           /* See if frequency counts  */
         int cum;                                /* are at their maximum.    */
         cum = 0;
@@ -224,6 +283,18 @@ static void update_model( int symbol )
         i -= 1;                                 /* update the cumulative    */
         cum_freq[i] += 1;                       /* frequencies.             */
     }
+#ifdef stack_func_update_model
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_update_model %p %p\n",STACK_BASE - stack_func_update_model_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_update_model_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+
+#ifdef TROI_update_model
+    printf("TROI- TROI_update_model\n");
+#endif
 }
 
 
