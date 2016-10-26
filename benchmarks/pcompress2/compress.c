@@ -134,6 +134,7 @@ void compress(char* filename)
     size=filesize;
     /* Do the Burrows Wheeler encoding */
     do_bwe();
+
     free(in); /* We can get rid of 'in' now */
 #ifdef heap_array_in
     #ifdef TRACE_on
@@ -217,6 +218,19 @@ static int compare(const void *a, const void *b)
 
 static void do_bwe()
 {
+
+#ifdef TROI_do_bwe
+    printf("TROI+ TROI_do_bwe\n");
+#endif
+
+#ifdef stack_func_do_bwe
+    #ifdef TRACE_on
+    printf("VAROI+ stack_func_do_bwe %p %p\n",STACK_BASE - stack_func_do_bwe_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)STACK_BASE - stack_func_do_bwe_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
     unsigned int i;
 
   /*
@@ -243,6 +257,18 @@ static void do_bwe()
             break;
         }
     }
+#ifdef stack_func_do_bwe
+    #ifdef TRACE_on
+    printf("VAROI- stack_func_do_bwe %p %p\n",STACK_BASE - stack_func_do_bwe_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)STACK_BASE - stack_func_do_bwe_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+
+#ifdef TROI_do_bwe
+    printf("TROI- TROI_do_bwe\n");
+#endif
 }
 
 static unsigned int do_rle()
@@ -300,7 +326,7 @@ static unsigned int do_rle()
     }
 #ifdef stack_func_do_rle
     #ifdef TRACE_on
-    printf("VAROI+ stack_func_do_rle %p %p\n",STACK_BASE - stack_func_do_rle_size +1 , STACK_BASE);
+    printf("VAROI- stack_func_do_rle %p %p\n",STACK_BASE - stack_func_do_rle_size +1 , STACK_BASE);
     #endif
     #ifdef SPM_on
     SPM_FREE((unsigned long)STACK_BASE - stack_func_do_rle_size +1, (unsigned long)STACK_BASE, WRITE_BACK);

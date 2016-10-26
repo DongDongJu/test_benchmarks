@@ -130,16 +130,83 @@ void uncompress(char* filename)
     fclose(fpi);
 
     char_to_index = (int*)malloc(sizeof(int)*No_of_chars);
+#ifdef heap_array_char_to_index
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_char_to_index %p %p\n",char_to_index,char_to_index+(sizeof(int)*No_of_chars)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)char_to_index, (unsigned long)(char_to_index+(sizeof(int)*No_of_chars)-1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     index_to_char = (unsigned char *)malloc(sizeof(unsigned char)*No_of_symbols+1);
+#ifdef heap_array_index_to_char
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_index_to_char %p %p\n",index_to_char,index_to_char+(sizeof(unsigned char)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)index_to_char, (unsigned long)(index_to_char+(sizeof(unsigned char)*No_of_symbols+1)-1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     freq=(int*)malloc(sizeof(int)*No_of_symbols+1);
+#ifdef heap_array_freq
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_freq %p %p\n",freq,freq+(sizeof(int)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)freq, (unsigned long)(freq+(sizeof(int)*No_of_symbols+1)-1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
+
     cum_freq=(int*)malloc(sizeof(int)*No_of_symbols+1);
+#ifdef heap_array_cum_freq
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_cum_freq %p %p\n",cum_freq,cum_freq+(sizeof(int)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)cum_freq, (unsigned long)(cum_freq+(sizeof(int)*No_of_symbols+1)-1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
 
     outsize=do_deari(insize,cum_freq,index_to_char,freq,char_to_index);
 
     free(char_to_index);
+#ifdef heap_array_char_to_index
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_char_to_index %p %p\n",char_to_index,char_to_index+(sizeof(int)*No_of_chars)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)char_to_index, (unsigned long)(char_to_index+(sizeof(int)*No_of_chars)-1), WRITE_BACK);
+    #endif
+#endif
     free(index_to_char);
+#ifdef heap_array_index_to_char
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_index_to_char %p %p\n",index_to_char,index_to_char+(sizeof(unsigned char)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)index_to_char, (unsigned long)(index_to_char+(sizeof(unsigned char)*No_of_symbols+1)-1), WRITE_BACK);
+    #endif
+#endif
     free(freq);
+#ifdef heap_array_freq
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_freq %p %p\n",freq,freq+(sizeof(int)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)freq, (unsigned long)(freq+(sizeof(int)*No_of_symbols+1)-1), WRITE_BACK);
+    #endif
+#endif
     free(cum_freq);
+#ifdef heap_array_cum_freq
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_cum_freq %p %p\n",cum_freq,cum_freq+(sizeof(int)*No_of_symbols+1)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)cum_freq, (unsigned long)(cum_freq+(sizeof(int)*No_of_symbols+1)-1), WRITE_BACK);
+    #endif
+#endif
 
     free(in); /* We are done with 'in' now... */
 #ifdef heap_array_un_in
