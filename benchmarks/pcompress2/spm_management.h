@@ -48,7 +48,7 @@
 
 #ifdef ARM32_ARCH
 #define stack_func_do_ari_size 1088
-#define stack_func_main_size 32
+#define stack_func_main_size 168
 #define stack_func_compress_size 1120
 #define stack_func_do_debwe_size 24
 #define stack_func_uncompress_size 40
