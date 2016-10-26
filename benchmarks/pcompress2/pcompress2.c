@@ -39,12 +39,33 @@ int main(int argc, char *argv[])
 #endif
 
     char* filename;
+    int level;
     int opt;
     enum { COMPRESS_MODE, DECOMPRESS_MODE } mode = COMPRESS_MODE;
 
-    while (( opt = getopt(argc,argv,"c:d:")) != -1)
+    while (( opt = getopt(argc,argv,"c:d:L:")) != -1)
     {
         switch(opt){
+            case 'L':
+            level= atoi(optarg);
+            if(level ==1){
+                compress("./data/small.in");
+                uncompress("./data/small.in.compr");
+            }else if(level == 2){
+                compress("./data/small.in");
+                uncompress("./data/small.in.compr");
+                compress("./data/mid.in");
+                uncompress("./data/mid.in.compr");
+            }else if(level==3){
+                compress("./data/small.in");
+                uncompress("./data/small.in.compr");
+                compress("./data/mid.in");
+                uncompress("./data/mid.in.compr");
+                compress("./data/large.in");
+                uncompress("./data/large.in.compr");
+            }
+            break;
+
             case 'c':
             filename= optarg;
             compress(filename);
