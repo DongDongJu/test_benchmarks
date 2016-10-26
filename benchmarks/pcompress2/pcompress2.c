@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     enum { COMPRESS_MODE, DECOMPRESS_MODE } mode = COMPRESS_MODE;
 
 
-    while (( opt = getopt(argc,argv,"c:d:L:f:")) != -1)
+    while (( opt = getopt(argc,argv,"c:d:L:")) != -1)
     {
         switch(opt){
             case 'L':
