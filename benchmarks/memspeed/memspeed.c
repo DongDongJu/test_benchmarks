@@ -11,15 +11,30 @@
 #include <sys/times.h>
 #include <time.h>
 #include <sys/types.h>
+#include "spm_management.h"
 
 #define KB		(1024)
 #define MB		(KB*KB)
 
-#define TESTSIZE	(8*MB)
-#define LOOPSIZE	(256*4*MB)
-
+//#define TESTSIZE	(8*MB)
+#define TESTSIZE   (8*KB)
+//#define LOOPSIZE	(256*4*MB)
+#define LOOPSIZE  (256*4*KB)
 int main(int argc, char *argv[])
 {
+#ifdef TROI_main
+    #ifdef TRACE_on
+        printf("TROI+ TROI_main\n");
+    #endif
+#endif
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        printf("VAROI+ stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC((unsigned long)STACK_BASE - stack_func_main_size +1, (unsigned long)STACK_BASE, COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
     u_long mb = TESTSIZE;
     u_long size, passes, d, i, j;
     volatile u_long *mem;
@@ -31,7 +46,7 @@ int main(int argc, char *argv[])
 
     switch (argc) {
 	case 2:
-	    mb = atol(argv[1])*MB;
+	    mb = atol(argv[1])*KB;
 	case 1:
 	    break;
 
@@ -42,6 +57,14 @@ int main(int argc, char *argv[])
     }
 
     mem = malloc(mb);
+#ifdef heap_array_mem
+    #ifdef TRACE_on
+    printf("VAROI+ heap_array_mem %p %p\n",mem,mem+sizeof(mb)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_ALLOC((unsigned long)mem, (unsigned long)(mem+sizeof(mb)-1), COPY, MAX_IMPORTANCE, HIGH_PRIORITY);
+    #endif
+#endif
 
     fprintf(stderr, "*** MEMORY WRITE PERFORMANCE (%d MB LOOP) ***\n",
 	    LOOPSIZE/MB);
@@ -81,5 +104,27 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "%5.3f MB/s\n",
 		(double)(LOOPSIZE/MB)/(double)(stop-start)*(double)CLK_TCK);
     }
+    free(mem);
+#ifdef heap_array_mem
+    #ifdef TRACE_on
+    printf("VAROI- heap_array_mem %p %p\n",mem,mem+sizeof(mb)-1);
+    #endif
+    #ifdef SPM_on
+    SPM_FREE((unsigned long)mem, (unsigned long)(mem+sizeof(mb)-1), WRITE_BACK);
+    #endif
+#endif
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        printf("VAROI- stack_func_main %p %p\n",STACK_BASE - stack_func_main_size +1 , STACK_BASE);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE((unsigned long)STACK_BASE - stack_func_main_size +1, (unsigned long)STACK_BASE, WRITE_BACK);
+    #endif
+#endif
+#ifdef TROI_main
+    #ifdef TRACE_on
+        printf("TROI- TROI_main\n");
+    #endif
+#endif
     exit(0);
 }
