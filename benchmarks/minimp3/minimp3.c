@@ -23,6 +23,7 @@
 
 #include "libc.h"
 #include "minimp3.h"
+#include "spm_management.h"
 
 #define MP3_FRAME_SIZE 1152
 #define MP3_MAX_CODED_FRAME_SIZE 1792
@@ -875,12 +876,14 @@ static void init_get_bits(bitstream_t *s, const uint8_t *buffer, int bit_size) {
 }
 
 static INLINE unsigned int get_bits(bitstream_t *s, int n){
+PRINT_TROI_PLUS("TROI_get_bits");
     register int tmp;
     OPEN_READER(re, s)
     UPDATE_CACHE(re, s)
     tmp= SHOW_UBITS(re, s, n);
     LAST_SKIP_BITS(re, s, n)
     CLOSE_READER(re, s)
+PRINT_TROI_MINUS("TROI_get_bits");
     return tmp;
 }
 
@@ -944,6 +947,7 @@ static int build_table(
     const void *codes, int codes_wrap, int codes_size,
     uint32_t code_prefix, int n_prefix
 ) {
+PRINT_TROI_PLUS("TROI_build_table");
     int i, j, k, n, table_size, table_index, nb, n1, index, code_prefix2;
     uint32_t code;
     VLC_TYPE (*table)[2];
@@ -1007,6 +1011,7 @@ static int build_table(
             table[i][0] = index; //code
         }
     }
+PRINT_TROI_MINUS("TROI_build_table");
     return table_index;
 }
 
@@ -1148,6 +1153,7 @@ static INLINE int round_sample(int *sum) {
 static void exponents_from_scale_factors(
     mp3_context_t *s, granule_t *g, int16_t *exponents
 ) {
+PRINT_TROI_PLUS("TROI_exponents_from_scale_factors");
     const uint8_t *bstab, *pretab;
     int len, i, j, k, l, v0, shift, gain, gains[3];
     int16_t *exp_ptr;
@@ -1180,16 +1186,21 @@ static void exponents_from_scale_factors(
             }
         }
     }
+PRINT_TROI_MINUS("TROI_exponents_from_scale_factors");
 }
 
 static void reorder_block(mp3_context_t *s, granule_t *g)
 {
+PRINT_TROI_PLUS("TROI_reorder_block");
     int i, j, len;
     int32_t *ptr, *dst, *ptr1;
     int32_t tmp[576];
 
     if (g->block_type != 2)
+    {
+PRINT_TROI_MINUS("TROI_reorder_block");
         return;
+    }
 
     if (g->switch_point) {
         if (s->sample_rate_index != 8) {
@@ -1214,16 +1225,21 @@ static void reorder_block(mp3_context_t *s, granule_t *g)
         ptr+=2*len;
         libc_memcpy(ptr1, tmp, len * 3 * sizeof(*ptr1));
     }
+PRINT_TROI_MINUS("TROI_reorder_block");
 }
 
 static void compute_antialias(mp3_context_t *s, granule_t *g) {
+PRINT_TROI_PLUS("TROI_compute_antialias");
     int32_t *ptr, *csa;
     int n, i;
 
     /* we antialias only "long" bands */
     if (g->block_type == 2) {
         if (!g->switch_point)
+        {
+PRINT_TROI_MINUS("TROI_compute_antialias");
             return;
+        }
         /* XXX: check this for 8000Hz case */
         n = 1;
     } else {
@@ -1252,11 +1268,13 @@ static void compute_antialias(mp3_context_t *s, granule_t *g) {
 
         ptr += 18;
     }
+PRINT_TROI_MINUS("TROI_compute_antialias");
 }
 
 static void compute_stereo(
     mp3_context_t *s, granule_t *g0, granule_t *g1
 ) {
+PRINT_TROI_PLUS("TROI_compute_stereo");
     int i, j, k, l;
     int32_t v1, v2;
     int sf_max, tmp0, tmp1, sf, len, non_zero_found;
@@ -1378,11 +1396,13 @@ static void compute_stereo(
             tab1[i] = tmp0 - tmp1;
         }
     }
+PRINT_TROI_MINUS("TROI_compute_stereo");
 }
 
 static int huffman_decode(
     mp3_context_t *s, granule_t *g, int16_t *exponents, int end_pos2
 ) {
+PRINT_TROI_PLUS("TROI_huffman_decode");
     int s_index;
     int i;
     int last_pos, bits_left;
@@ -1518,7 +1538,7 @@ static int huffman_decode(
 
     i= get_bits_count(&s->gb);
     switch_buffer(s, &i, &end_pos, &end_pos2);
-
+PRINT_TROI_MINUS("TROI_huffman_decode");
     return 0;
 }
 
@@ -1567,6 +1587,7 @@ static void imdct12(int *out, int *in)
 
 static void imdct36(int *out, int *buf, int *in, int *win)
 {
+PRINT_TROI_PLUS("TROI_imdct36");
     int i, j, t0, t1, t2, t3, s0, s1, s2, s3;
     int tmp[18], *tmp1, *in1;
 
@@ -1641,11 +1662,13 @@ static void imdct36(int *out, int *buf, int *in, int *win)
     out[(8 - 4)*SBLIMIT] =  MULH(t1, win[8 - 4]) + buf[8 - 4];
     buf[9 + 4] = MULH(t0, win[18 + 9 + 4]);
     buf[8 - 4] = MULH(t0, win[18 + 8 - 4]);
+PRINT_TROI_MINUS("TROI_imdct36");
 }
 
 static void compute_imdct(
     mp3_context_t *s, granule_t *g, int32_t *sb_samples, int32_t *mdct_buf
 ) {
+PRINT_TROI_PLUS("TROI_compute_imdct");
     int32_t *ptr, *win, *win1, *buf, *out_ptr, *ptr1;
     int32_t out2[12];
     int i, j, mdct_long_end, v, sblimit;
@@ -1729,6 +1752,7 @@ static void compute_imdct(
         }
         buf += 18;
     }
+PRINT_TROI_MINUS("TROI_compute_imdct");
 }
 
 #define SUM8(sum, op, w, p) \
@@ -1999,6 +2023,7 @@ static void mp3_synth_filter(
     int16_t *samples, int incr,
     int32_t sb_samples[SBLIMIT]
 ) {
+PRINT_TROI_PLUS("TROI_mp3_synth_filter");
     int32_t tmp[32];
     register int16_t *synth_buf;
     register const int16_t *w, *w2, *p;
@@ -2062,11 +2087,13 @@ static void mp3_synth_filter(
 
     offset = (offset - 32) & 511;
     *synth_buf_offset = offset;
+PRINT_TROI_MINUS("TROI_mp3_synth_filter");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 static int decode_header(mp3_context_t *s, uint32_t header) {
+PRINT_TROI_PLUS("TROI_decode_header");
     int sample_rate, frame_size, mpeg25, padding;
     int sample_rate_index, bitrate_index;
     if (header & (1<<20)) {
@@ -2096,12 +2123,15 @@ static int decode_header(mp3_context_t *s, uint32_t header) {
         s->frame_size = (frame_size * 144000) / (sample_rate << s->lsf) + padding;
     } else {
         /* if no frame size computed, signal it */
+PRINT_TROI_MINUS("TROI_decode_header");
         return 1;
     }
+PRINT_TROI_MINUS("TROI_decode_header");
     return 0;
 }
 
 static int mp_decode_layer3(mp3_context_t *s) {
+PRINT_TROI_PLUS("TROI_mp_decde_layer3");
     int nb_granules, main_data_begin, private_bits;
     int gr, ch, blocksplit_flag, i, j, k, n, bits_pos;
     granule_t *g;
@@ -2340,7 +2370,7 @@ static int mp_decode_layer3(mp3_context_t *s) {
                             g->scale_factors[j++] = get_bits(&s->gb, sl);
                     }else{
                         libc_memset((void*) &g->scale_factors[j], 0, n);
-                        j += n;                        
+                        j += n;
 //                        for(i=0;i<n;i++)
 //                            g->scale_factors[j++] = 0;
                     }
@@ -2369,6 +2399,7 @@ static int mp_decode_layer3(mp3_context_t *s) {
             compute_imdct(s, g, &s->sb_samples[ch][18 * gr][0], s->mdct_buf[ch]);
         }
     } /* gr */
+PRINT_TROI_MINUS("TROI_mp_decde_layer3");
     return nb_granules * 18;
 }
 
@@ -2376,6 +2407,7 @@ static int mp3_decode_main(
     mp3_context_t *s,
     int16_t *samples, const uint8_t *buf, int buf_size
 ) {
+PRINT_TROI_PLUS("TROI_mp3_decode_main");
     int i, nb_frames, ch;
     int16_t *samples_ptr;
 
@@ -2420,6 +2452,7 @@ static int mp3_decode_main(
             samples_ptr += 32 * s->nb_channels;
         }
     }
+PRINT_TROI_MINUS("TROI_mp3_decode_main");
     return nb_frames * 32 * sizeof(uint16_t) * s->nb_channels;
 }
 
@@ -2593,6 +2626,7 @@ static int mp3_decode_frame(
     int16_t *out_samples, int *data_size,
     uint8_t *buf, int buf_size
 ) {
+PRINT_TROI_PLUS("TROI_mp3_frame");
     uint32_t header;
     int out_size;
     int extra_bytes = 0;
@@ -2611,10 +2645,12 @@ retry:
 
     if (decode_header(s, header) == 1) {
         s->frame_size = -1;
+PRINT_TROI_MINUS("TROI_mp3_frame");
         return -1;
     }
 
     if(s->frame_size<=0 || s->frame_size > buf_size){
+PRINT_TROI_MINUS("TROI_mp3_frame");
         return -1;  // incomplete frame
     }
     if(s->frame_size < buf_size) {
@@ -2626,15 +2662,18 @@ retry:
         *data_size = out_size;
     // else: Error while decoding MPEG audio frame.
     s->frame_size += extra_bytes;
+PRINT_TROI_MINUS("TROI_mp3_frame");
     return buf_size;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 mp3_decoder_t mp3_create(void) {
+PRINT_TROI_PLUS("TROI_mp3_create");
     void *dec = libc_calloc(sizeof(mp3_context_t), 1);
     if (dec) mp3_decode_init((mp3_context_t*) dec);
-    return (mp3_decoder_t) dec;
+PRINT_TROI_MINUS("TROI_mp3_create");
+    return (mp3_decoder_t)dec;
 }
 
 void mp3_done(mp3_decoder_t *dec) {
@@ -2642,15 +2681,20 @@ void mp3_done(mp3_decoder_t *dec) {
 }
 
 int mp3_decode(mp3_decoder_t *dec, void *buf, int bytes, signed short *out, mp3_info_t *info) {
+PRINT_TROI_PLUS("TROI_mp3_decode");
     int res, size = -1;
     mp3_context_t *s = (mp3_context_t*) dec;
     if (!s) return 0;
     res = mp3_decode_frame(s, (int16_t*) out, &size, buf, bytes);
-    if (res < 0) return 0;
+    if (res < 0){
+PRINT_TROI_MINUS("TROI_mp3_decode");
+      return 0;
+    }
     if (info) {
         info->sample_rate = s->sample_rate;
         info->channels = s->nb_channels;
         info->audio_bytes = size;
     }
+PRINT_TROI_MINUS("TROI_mp3_decode");
     return s->frame_size;
 }

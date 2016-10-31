@@ -9,11 +9,13 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <linux/soundcard.h>
+#include "spm_management.h"
 
 size_t strlen(const char *s);
 #define out(text) write(1, (const void *) text, strlen(text))
 
 int main(int argc, char *argv[]) {
+PRINT_TROI_PLUS("TROI_main");
     mp3_decoder_t mp3;
     mp3_info_t info;
     int pcm;
@@ -46,13 +48,15 @@ int main(int argc, char *argv[]) {
 
     stream_pos = (unsigned char *) file_data;
     bytes_left -= 100;
-    out("Now Playing: ");
+    out("Now Playing: \n");
     out(argv[1]);
+    out("\n");
 
     mp3 = mp3_create();
     frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);
     if (!frame_size) {
         out("\nError: not a valid MP3 audio file!\n");
+PRINT_TROI_MINUS("TROI_main");
         return 1;
     }
 
@@ -70,6 +74,6 @@ int main(int argc, char *argv[]) {
     }
 
     close(pcm);
-
+PRINT_TROI_MINUS("TROI_main");
     return 0;
 }
