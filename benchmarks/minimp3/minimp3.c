@@ -21,6 +21,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+
+//build_table huffman get_bits -> heap  mp3_synth_filter imdct -> heap
 #include "libc.h"
 #include "minimp3.h"
 #include "spm_management.h"
@@ -876,14 +878,12 @@ static void init_get_bits(bitstream_t *s, const uint8_t *buffer, int bit_size) {
 }
 
 static INLINE unsigned int get_bits(bitstream_t *s, int n){
-PRINT_TROI_PLUS("TROI_get_bits");
     register int tmp;
     OPEN_READER(re, s)
     UPDATE_CACHE(re, s)
     tmp= SHOW_UBITS(re, s, n);
     LAST_SKIP_BITS(re, s, n)
     CLOSE_READER(re, s)
-PRINT_TROI_MINUS("TROI_get_bits");
     return tmp;
 }
 
@@ -948,6 +948,7 @@ static int build_table(
     uint32_t code_prefix, int n_prefix
 ) {
 PRINT_TROI_PLUS("TROI_build_table");
+PRINT_VAROI_FUNC_PLUS("build_table",STACK_BASE - stack_func_build_table_size +1 ,STACK_BASE);
     int i, j, k, n, table_size, table_index, nb, n1, index, code_prefix2;
     uint32_t code;
     VLC_TYPE (*table)[2];
@@ -1011,6 +1012,7 @@ PRINT_TROI_PLUS("TROI_build_table");
             table[i][0] = index; //code
         }
     }
+PRINT_VAROI_FUNC_MINUS("build_table",STACK_BASE - stack_func_build_table_size +1 ,STACK_BASE);
 PRINT_TROI_MINUS("TROI_build_table");
     return table_index;
 }
@@ -1192,12 +1194,14 @@ PRINT_TROI_MINUS("TROI_exponents_from_scale_factors");
 static void reorder_block(mp3_context_t *s, granule_t *g)
 {
 PRINT_TROI_PLUS("TROI_reorder_block");
+PRINT_VAROI_FUNC_PLUS("reorder_block",STACK_BASE - stack_func_reorder_block_size +1 , STACK_BASE);
     int i, j, len;
     int32_t *ptr, *dst, *ptr1;
     int32_t tmp[576];
 
     if (g->block_type != 2)
     {
+PRINT_VAROI_FUNC_MINUS("reorder_block",STACK_BASE - stack_func_reorder_block_size +1 , STACK_BASE);
 PRINT_TROI_MINUS("TROI_reorder_block");
         return;
     }
@@ -1225,6 +1229,7 @@ PRINT_TROI_MINUS("TROI_reorder_block");
         ptr+=2*len;
         libc_memcpy(ptr1, tmp, len * 3 * sizeof(*ptr1));
     }
+PRINT_VAROI_FUNC_MINUS("reorder_block",STACK_BASE - stack_func_reorder_block_size +1 , STACK_BASE);
 PRINT_TROI_MINUS("TROI_reorder_block");
 }
 
@@ -1403,6 +1408,7 @@ static int huffman_decode(
     mp3_context_t *s, granule_t *g, int16_t *exponents, int end_pos2
 ) {
 PRINT_TROI_PLUS("TROI_huffman_decode");
+PRINT_VAROI_FUNC_PLUS("huffman_decode",STACK_BASE - stack_func_huffman_decode_size + 1 ,STACK_BASE);
     int s_index;
     int i;
     int last_pos, bits_left;
@@ -1538,6 +1544,7 @@ PRINT_TROI_PLUS("TROI_huffman_decode");
 
     i= get_bits_count(&s->gb);
     switch_buffer(s, &i, &end_pos, &end_pos2);
+PRINT_VAROI_FUNC_MINUS("huffman_decode",STACK_BASE - stack_func_huffman_decode_size + 1 ,STACK_BASE);
 PRINT_TROI_MINUS("TROI_huffman_decode");
     return 0;
 }
@@ -1588,6 +1595,7 @@ static void imdct12(int *out, int *in)
 static void imdct36(int *out, int *buf, int *in, int *win)
 {
 PRINT_TROI_PLUS("TROI_imdct36");
+PRINT_VAROI_FUNC_PLUS("imdct36",STACK_BASE - stack_func_imdct36_size +1 , STACK_BASE);
     int i, j, t0, t1, t2, t3, s0, s1, s2, s3;
     int tmp[18], *tmp1, *in1;
 
@@ -1662,13 +1670,14 @@ PRINT_TROI_PLUS("TROI_imdct36");
     out[(8 - 4)*SBLIMIT] =  MULH(t1, win[8 - 4]) + buf[8 - 4];
     buf[9 + 4] = MULH(t0, win[18 + 9 + 4]);
     buf[8 - 4] = MULH(t0, win[18 + 8 - 4]);
+PRINT_VAROI_FUNC_MINUS("imdct36",STACK_BASE - stack_func_imdct36_size +1 , STACK_BASE);
 PRINT_TROI_MINUS("TROI_imdct36");
 }
 
 static void compute_imdct(
     mp3_context_t *s, granule_t *g, int32_t *sb_samples, int32_t *mdct_buf
 ) {
-PRINT_TROI_PLUS("TROI_compute_imdct");
+
     int32_t *ptr, *win, *win1, *buf, *out_ptr, *ptr1;
     int32_t out2[12];
     int i, j, mdct_long_end, v, sblimit;
@@ -1752,7 +1761,7 @@ PRINT_TROI_PLUS("TROI_compute_imdct");
         }
         buf += 18;
     }
-PRINT_TROI_MINUS("TROI_compute_imdct");
+
 }
 
 #define SUM8(sum, op, w, p) \
@@ -2024,6 +2033,7 @@ static void mp3_synth_filter(
     int32_t sb_samples[SBLIMIT]
 ) {
 PRINT_TROI_PLUS("TROI_mp3_synth_filter");
+PRINT_VAROI_FUNC_PLUS("mp3_synth_filter",STACK_BASE - stack_func_mp3_synth_filter_size + 1 ,STACK_BASE);
     int32_t tmp[32];
     register int16_t *synth_buf;
     register const int16_t *w, *w2, *p;
@@ -2087,13 +2097,14 @@ PRINT_TROI_PLUS("TROI_mp3_synth_filter");
 
     offset = (offset - 32) & 511;
     *synth_buf_offset = offset;
+PRINT_VAROI_FUNC_MINUS("mp3_synth_filter",STACK_BASE - stack_func_mp3_synth_filter_size + 1 ,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_synth_filter");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 static int decode_header(mp3_context_t *s, uint32_t header) {
-PRINT_TROI_PLUS("TROI_decode_header");
+
     int sample_rate, frame_size, mpeg25, padding;
     int sample_rate_index, bitrate_index;
     if (header & (1<<20)) {
@@ -2123,15 +2134,15 @@ PRINT_TROI_PLUS("TROI_decode_header");
         s->frame_size = (frame_size * 144000) / (sample_rate << s->lsf) + padding;
     } else {
         /* if no frame size computed, signal it */
-PRINT_TROI_MINUS("TROI_decode_header");
+
         return 1;
     }
-PRINT_TROI_MINUS("TROI_decode_header");
     return 0;
 }
 
 static int mp_decode_layer3(mp3_context_t *s) {
-PRINT_TROI_PLUS("TROI_mp_decde_layer3");
+PRINT_TROI_PLUS("TROI_mp_decode_layer3");
+PRINT_VAROI_FUNC_PLUS("mp_decode_layer3",STACK_BASE - stack_func_mp_decode_layer3_size+1,STACK_BASE);
     int nb_granules, main_data_begin, private_bits;
     int gr, ch, blocksplit_flag, i, j, k, n, bits_pos;
     granule_t *g;
@@ -2399,7 +2410,8 @@ PRINT_TROI_PLUS("TROI_mp_decde_layer3");
             compute_imdct(s, g, &s->sb_samples[ch][18 * gr][0], s->mdct_buf[ch]);
         }
     } /* gr */
-PRINT_TROI_MINUS("TROI_mp_decde_layer3");
+PRINT_VAROI_FUNC_MINUS("mp_decode_layer3",STACK_BASE - stack_func_mp_decode_layer3_size+1,STACK_BASE);
+PRINT_TROI_MINUS("TROI_mp_decode_layer3");
     return nb_granules * 18;
 }
 
@@ -2408,6 +2420,7 @@ static int mp3_decode_main(
     int16_t *samples, const uint8_t *buf, int buf_size
 ) {
 PRINT_TROI_PLUS("TROI_mp3_decode_main");
+PRINT_VAROI_FUNC_PLUS("mp3_decode_main",STACK_BASE - stack_func_mp3_decode_main_size+1,STACK_BASE);
     int i, nb_frames, ch;
     int16_t *samples_ptr;
 
@@ -2452,6 +2465,7 @@ PRINT_TROI_PLUS("TROI_mp3_decode_main");
             samples_ptr += 32 * s->nb_channels;
         }
     }
+PRINT_VAROI_FUNC_MINUS("mp3_decode_main",STACK_BASE - stack_func_mp3_decode_main_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_decode_main");
     return nb_frames * 32 * sizeof(uint16_t) * s->nb_channels;
 }
@@ -2627,6 +2641,7 @@ static int mp3_decode_frame(
     uint8_t *buf, int buf_size
 ) {
 PRINT_TROI_PLUS("TROI_mp3_frame");
+PRINT_VAROI_FUNC_PLUS("mp3_decode_frame",STACK_BASE-stack_func_mp3_decode_frame_size+1,STACK_BASE);
     uint32_t header;
     int out_size;
     int extra_bytes = 0;
@@ -2645,11 +2660,13 @@ retry:
 
     if (decode_header(s, header) == 1) {
         s->frame_size = -1;
+PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",STACK_BASE-stack_func_mp3_decode_frame_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_frame");
         return -1;
     }
 
     if(s->frame_size<=0 || s->frame_size > buf_size){
+PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",STACK_BASE-stack_func_mp3_decode_frame_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_frame");
         return -1;  // incomplete frame
     }
@@ -2662,6 +2679,7 @@ PRINT_TROI_MINUS("TROI_mp3_frame");
         *data_size = out_size;
     // else: Error while decoding MPEG audio frame.
     s->frame_size += extra_bytes;
+PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",STACK_BASE-stack_func_mp3_decode_frame_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_frame");
     return buf_size;
 }
@@ -2670,8 +2688,12 @@ PRINT_TROI_MINUS("TROI_mp3_frame");
 
 mp3_decoder_t mp3_create(void) {
 PRINT_TROI_PLUS("TROI_mp3_create");
+PRINT_VAROI_FUNC_PLUS("mp3_create",STACK_BASE-stack_func_mp3_create_size+1,STACK_BASE);
+
     void *dec = libc_calloc(sizeof(mp3_context_t), 1);
     if (dec) mp3_decode_init((mp3_context_t*) dec);
+
+PRINT_VAROI_FUNC_MINUS("mp3_create",STACK_BASE-stack_func_mp3_create_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_create");
     return (mp3_decoder_t)dec;
 }
@@ -2682,11 +2704,13 @@ void mp3_done(mp3_decoder_t *dec) {
 
 int mp3_decode(mp3_decoder_t *dec, void *buf, int bytes, signed short *out, mp3_info_t *info) {
 PRINT_TROI_PLUS("TROI_mp3_decode");
+PRINT_VAROI_FUNC_PLUS("mp3_decode",STACK_BASE- stack_func_mp3_decode_size+1,STACK_BASE);
     int res, size = -1;
     mp3_context_t *s = (mp3_context_t*) dec;
     if (!s) return 0;
     res = mp3_decode_frame(s, (int16_t*) out, &size, buf, bytes);
     if (res < 0){
+PRINT_VAROI_FUNC_MINUS("mp3_decode",STACK_BASE- stack_func_mp3_decode_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_decode");
       return 0;
     }
@@ -2695,6 +2719,7 @@ PRINT_TROI_MINUS("TROI_mp3_decode");
         info->channels = s->nb_channels;
         info->audio_bytes = size;
     }
+PRINT_VAROI_FUNC_MINUS("mp3_decode",STACK_BASE- stack_func_mp3_decode_size+1,STACK_BASE);
 PRINT_TROI_MINUS("TROI_mp3_decode");
     return s->frame_size;
 }

@@ -16,6 +16,7 @@ size_t strlen(const char *s);
 
 int main(int argc, char *argv[]) {
 PRINT_TROI_PLUS("TROI_main");
+PRINT_VAROI_FUNC_PLUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
     mp3_decoder_t mp3;
     mp3_info_t info;
     int pcm;
@@ -56,6 +57,7 @@ PRINT_TROI_PLUS("TROI_main");
     frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);
     if (!frame_size) {
         out("\nError: not a valid MP3 audio file!\n");
+PRINT_VAROI_FUNC_MINUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
 PRINT_TROI_MINUS("TROI_main");
         return 1;
     }
@@ -74,6 +76,7 @@ PRINT_TROI_MINUS("TROI_main");
     }
 
     close(pcm);
+PRINT_VAROI_FUNC_MINUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
 PRINT_TROI_MINUS("TROI_main");
     return 0;
 }
