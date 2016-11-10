@@ -15,12 +15,23 @@ size_t strlen(const char *s);
 #define out(text) write(1, (const void *) text, strlen(text))
 
 int main(int argc, char *argv[]) {
-PRINT_TROI_PLUS("TROI_main");
-PRINT_VAROI_FUNC_PLUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
+#ifdef TROI_main
+    PRINT_TROI_PLUS("main");
+#endif
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("main",stack_func_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_main_size);
+    #endif
+#endif
+
     mp3_decoder_t mp3;
     mp3_info_t info;
     int pcm;
     void *file_data;
+    int leng;
     unsigned char *stream_pos;
     signed short sample_buf[MP3_MAX_SAMPLES_PER_FRAME];
     int bytes_left;
@@ -44,9 +55,17 @@ PRINT_VAROI_FUNC_PLUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
     }
 
     bytes_left = lseek(fd, 0, SEEK_END);
+    leng=bytes_left;
+
     file_data = mmap(0, bytes_left, PROT_READ, MAP_PRIVATE, fd, 0);
-
-
+#ifdef heap_array_file_data
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("file_data",file_data,bytes_left);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(file_data,bytes_left);
+    #endif
+#endif
     stream_pos = (unsigned char *) file_data;
     bytes_left -= 100;
     out("Now Playing: \n");
@@ -57,8 +76,19 @@ PRINT_VAROI_FUNC_PLUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
     frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);
     if (!frame_size) {
         out("\nError: not a valid MP3 audio file!\n");
-PRINT_VAROI_FUNC_MINUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
-PRINT_TROI_MINUS("TROI_main");
+
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("main",stack_func_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_main_size);
+    #endif
+#endif
+#ifdef TROI_main
+    PRINT_TROI_MINUS("main");
+#endif
+
         return 1;
     }
 
@@ -76,7 +106,26 @@ PRINT_TROI_MINUS("TROI_main");
     }
 
     close(pcm);
-PRINT_VAROI_FUNC_MINUS("main",STACK_BASE - stack_func_main_size +1, STACK_BASE);
-PRINT_TROI_MINUS("TROI_main");
+    munmap(file_data,leng);
+#ifdef heap_array_file_data
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("file_data",file_data,bytes_left);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(file_data,bytes_left);
+    #endif
+#endif
+
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("main",stack_func_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_main_size);
+    #endif
+#endif
+#ifdef TROI_main
+    PRINT_TROI_PLUS("main");
+#endif
     return 0;
 }
