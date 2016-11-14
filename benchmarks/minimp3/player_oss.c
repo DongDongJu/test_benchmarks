@@ -40,7 +40,6 @@ int main(int argc, char *argv[]) {
     char* new_buffer;
     int fd;
     char idx=0;
-    out("minimp3 -- a small MPEG-1 Audio Layer III player based on ffmpeg\n\n");
     if (argc < 2) {
         out("Error: no input file specified!\n");
         return 1;
@@ -101,7 +100,7 @@ int main(int argc, char *argv[]) {
     while ((bytes_left >= 0) && (frame_size > 0)) {
         stream_pos += frame_size;
         bytes_left -= frame_size;
-        write(pcm, (const void *) sample_buf, info.audio_bytes);
+//        write(pcm, (const void *) sample_buf, info.audio_bytes);
         frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, NULL);
     }
 
@@ -109,7 +108,7 @@ int main(int argc, char *argv[]) {
     munmap(file_data,leng);
 #ifdef heap_array_file_data
     #ifdef TRACE_on
-        PRINT_VAROI_HEAP_MINUS("file_data",file_data,bytes_left);
+        PRINT_VAROI_HEAP_MINUS("file_data",file_data,leng);
     #endif
     #ifdef SPM_on
         SPM_FREE_HEAP(file_data,bytes_left);
@@ -125,7 +124,7 @@ int main(int argc, char *argv[]) {
     #endif
 #endif
 #ifdef TROI_main
-    PRINT_TROI_PLUS("main");
+    PRINT_TROI_MINUS("main");
 #endif
     return 0;
 }
