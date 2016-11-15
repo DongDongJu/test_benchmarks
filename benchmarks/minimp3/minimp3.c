@@ -2080,6 +2080,17 @@ static int decode_header(mp3_context_t *s, uint32_t header) {
 }
 
 static int mp_decode_layer3(mp3_context_t *s) {
+#ifdef TROI_mp_decode_layer3
+    PRINT_TROI_PLUS("mp_decode_layer3");
+#endif
+#ifdef stack_func_mp_decode_layer3
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp_decode_layer3",stack_func_mp_decode_layer3_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp_decode_layer3_size);
+    #endif
+#endif
     int nb_granules, main_data_begin, private_bits;
     int gr, ch, blocksplit_flag, i, j, k, n, bits_pos;
     granule_t *g;
@@ -2334,7 +2345,20 @@ static int mp_decode_layer3(mp3_context_t *s) {
             /* read Huffman coded residue */
             if (huffman_decode(s, g, exponents,
                                bits_pos + g->part2_3_length) < 0)
+            {
+#ifdef stack_func_mp_decode_layer3
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp_decode_layer3",stack_func_mp_decode_layer3_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp_decode_layer3_size);
+    #endif
+#endif
+#ifdef TROI_mp_decode_layer3
+    PRINT_TROI_MINUS("mp_decode_layer3");
+#endif
                 return -1;
+            }
         } /* ch */
 
         if (s->nb_channels == 2)
@@ -2347,6 +2371,17 @@ static int mp_decode_layer3(mp3_context_t *s) {
             compute_imdct(s, g, &s->sb_samples[ch][18 * gr][0], s->mdct_buf[ch]);
         }
     } /* gr */
+#ifdef stack_func_mp_decode_layer3
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp_decode_layer3",stack_func_mp_decode_layer3_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp_decode_layer3_size);
+    #endif
+#endif
+#ifdef TROI_mp_decode_layer3
+    PRINT_TROI_MINUS("mp_decode_layer3");
+#endif
     return nb_granules * 18;
 }
 
@@ -2354,6 +2389,17 @@ static int mp3_decode_main(
     mp3_context_t *s,
     int16_t *samples, const uint8_t *buf, int buf_size
 ) {
+#ifdef TROI_mp3_decode_main
+    PRINT_TROI_PLUS("mp3_decode_main");
+#endif
+#ifdef stack_func_mp3_decode_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_decode_main",stack_func_mp3_decode_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_decode_main_size);
+    #endif
+#endif
     int i, nb_frames, ch;
     int16_t *samples_ptr;
 
@@ -2398,6 +2444,17 @@ static int mp3_decode_main(
             samples_ptr += 32 * s->nb_channels;
         }
     }
+#ifdef stack_func_mp3_decode_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_main",stack_func_mp3_decode_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_main_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_main
+    PRINT_TROI_MINUS("mp3_decode_main");
+#endif
     return nb_frames * 32 * sizeof(uint16_t) * s->nb_channels;
 }
 
@@ -2474,11 +2531,40 @@ static int mp3_decode_init(mp3_context_t *s) {
 
         /* compute n ^ (4/3) and store it in mantissa/exp format */
         table_4_3_exp= libc_malloc(TABLE_4_3_SIZE * sizeof(table_4_3_exp[0]));
+#ifdef heap_array_table_4_3_exp
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("table_4_3_exp",table_4_3_exp,TABLE_4_3_SIZE * sizeof(table_4_3_exp[0]));
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(table_4_3_exp,TABLE_4_3_SIZE * sizeof(table_4_3_exp[0]));
+    #endif
+#endif
         if(!table_4_3_exp)
             return -1;
         table_4_3_value= libc_malloc(TABLE_4_3_SIZE * sizeof(table_4_3_value[0]));
+#ifdef heap_array_table_4_3_value
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("table_4_3_value",table_4_3_value,TABLE_4_3_SIZE * sizeof(table_4_3_value[0]));
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(table_4_3_value,TABLE_4_3_SIZE * sizeof(table_4_3_value[0]));
+    #endif
+#endif
         if(!table_4_3_value)
+        {
+#ifdef stack_func_mp3_decode_init
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_init",stack_func_mp3_decode_init_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_init_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_init
+    PRINT_TROI_MINUS("mp3_decode_init");
+#endif
             return -1;
+        }
 
         for(i=1;i<TABLE_4_3_SIZE;i++) {
             double f, fm;
@@ -2715,6 +2801,18 @@ mp3_decoder_t mp3_create(void) {
 
     if (dec) mp3_decode_init((mp3_context_t*) dec);
 
+
+#ifdef stack_func_mp3_decode_init
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_init",stack_func_mp3_decode_init_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_init_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_init
+    PRINT_TROI_MINUS("mp3_decode_init");
+#endif
 #ifdef stack_func_mp3_create
     #ifdef TRACE_on
         PRINT_VAROI_FUNC_MINUS("mp3_create",stack_func_mp3_create_size);
@@ -2744,13 +2842,30 @@ void mp3_done(mp3_decoder_t *dec) {
 
     unsigned long size =0;
     if (dec) libc_free(dec);
-
-#ifdef heap_array_dec
+free(table_4_3_exp);
+#ifdef heap_array_table_4_3_exp
     #ifdef TRACE_on
-        PRINT_VAROI_HEAP_MINUS("dec",dec,_size);
+        PRINT_VAROI_HEAP_MINUS("table_4_3_exp",table_4_3_exp,TABLE_4_3_SIZE * sizeof(table_4_3_exp[0]));
     #endif
     #ifdef SPM_on
-        SPM_FREE_HEAP(dec,_size);
+        SPM_FREE_HEAP(table_4_3_exp,TABLE_4_3_SIZE * sizeof(table_4_3_exp[0]));
+    #endif
+#endif
+free(table_4_3_value);
+#ifdef heap_array_table_4_3_value
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("table_4_3_value",table_4_3_value,TABLE_4_3_SIZE * sizeof(table_4_3_value[0]));
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(table_4_3_value,TABLE_4_3_SIZE * sizeof(table_4_3_value[0]));
+    #endif
+#endif
+#ifdef heap_array_dec
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("dec",(void *)dec,_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP((void *)dec,_size);
     #endif
 #endif
 

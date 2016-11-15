@@ -23,6 +23,8 @@
 #define TROI_mp3_decode
 #define TROI_mp3_decode_frame
 #define TROI_mp3_decode_init
+#define TROI_mp3_decode_main
+#define TROI_mp_decode_layer3
 #endif
 
 #define stack_func_main
@@ -31,15 +33,20 @@
 #define stack_func_mp3_decode
 #define stack_func_mp3_decode_frame
 #define stack_func_mp3_decode_init
+#define stack_func_mp3_decode_main
+#define stack_func_mp_decode_layer3
 
 #define heap_array_file_data
 #define heap_array_dec
-
+#define heap_array_table_4_3_exp
+#define heap_array_table_4_3_value
 
 
 #define stack_func_main_size 4688
 #define stack_func_mp3_create_size 16
-#define stack_func_mp3_done_size 16
+#define stack_func_mp3_done_size 24
 #define stack_func_mp3_decode_size 48
 #define stack_func_mp3_decode_frame_size 40
 #define stack_func_mp3_decode_init_size 1720
+#define stack_func_mp3_decode_main_size 64
+#define stack_func_mp_decode_layer3_size 144
