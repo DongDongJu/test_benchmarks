@@ -2802,17 +2802,6 @@ mp3_decoder_t mp3_create(void) {
     if (dec) mp3_decode_init((mp3_context_t*) dec);
 
 
-#ifdef stack_func_mp3_decode_init
-    #ifdef TRACE_on
-        PRINT_VAROI_FUNC_MINUS("mp3_decode_init",stack_func_mp3_decode_init_size);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(stack_func_mp3_decode_init_size);
-    #endif
-#endif
-#ifdef TROI_mp3_decode_init
-    PRINT_TROI_MINUS("mp3_decode_init");
-#endif
 #ifdef stack_func_mp3_create
     #ifdef TRACE_on
         PRINT_VAROI_FUNC_MINUS("mp3_create",stack_func_mp3_create_size);
