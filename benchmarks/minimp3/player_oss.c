@@ -67,9 +67,6 @@ int main(int argc, char *argv[]) {
 #endif
     stream_pos = (unsigned char *) file_data;
     bytes_left -= 100;
-    out("Now Playing: \n");
-    out(argv[1]);
-    out("\n");
 
     mp3 = mp3_create();
     frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);

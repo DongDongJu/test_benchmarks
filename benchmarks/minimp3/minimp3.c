@@ -25,135 +25,8 @@
 //build_table huffman get_bits -> heap  mp3_synth_filter imdct -> heap
 #include "libc.h"
 #include "minimp3.h"
+#include "spm_management.h"
 
-
-#define MP3_FRAME_SIZE 1152
-#define MP3_MAX_CODED_FRAME_SIZE 1792
-#define MP3_MAX_CHANNELS 2
-#define SBLIMIT 32
-
-#define MP3_STEREO  0
-#define MP3_JSTEREO 1
-#define MP3_DUAL    2
-#define MP3_MONO    3
-
-#define SAME_HEADER_MASK \
-   (0xffe00000 | (3 << 17) | (0xf << 12) | (3 << 10) | (3 << 19))
-
-#define FRAC_BITS   15
-#define WFRAC_BITS  14
-
-#define OUT_MAX (32767)
-#define OUT_MIN (-32768)
-#define OUT_SHIFT (WFRAC_BITS + FRAC_BITS - 15)
-
-#define MODE_EXT_MS_STEREO 2
-#define MODE_EXT_I_STEREO  1
-
-#define FRAC_ONE    (1 << FRAC_BITS)
-#define FIX(a)   ((int)((a) * FRAC_ONE))
-#define FIXR(a)   ((int)((a) * FRAC_ONE + 0.5))
-#define FRAC_RND(a) (((a) + (FRAC_ONE/2)) >> FRAC_BITS)
-#define FIXHR(a) ((int)((a) * (1LL<<32) + 0.5))
-
-#ifndef _MSC_VER
-    #define MULL(a,b) (((int64_t)(a) * (int64_t)(b)) >> FRAC_BITS)
-    #define MULH(a,b) (((int64_t)(a) * (int64_t)(b)) >> 32)
-#else
-    static INLINE int MULL(int a, int b) {
-        int res;
-        __asm {
-            mov eax, a
-            imul b
-            shr eax, 15
-            shl edx, 17
-            or eax, edx
-            mov res, eax
-        }
-        return res;
-    }
-    static INLINE int MULH(int a, int b) {
-        int res;
-        __asm {
-            mov eax, a
-            imul b
-            mov res, edx
-        }
-        return res;
-    }
-#endif
-#define MULS(ra, rb) ((ra) * (rb))
-
-#define ISQRT2 FIXR(0.70710678118654752440)
-
-#define HEADER_SIZE 4
-#define BACKSTEP_SIZE 512
-#define EXTRABYTES 24
-
-#define VLC_TYPE int16_t
-
-////////////////////////////////////////////////////////////////////////////////
-
-struct _granule;
-
-typedef struct _bitstream {
-    const uint8_t *buffer, *buffer_end;
-    int index;
-    int size_in_bits;
-} bitstream_t;
-
-typedef struct _vlc {
-    int bits;
-    VLC_TYPE (*table)[2]; ///< code, bits
-    int table_size, table_allocated;
-} vlc_t;
-
-typedef struct _mp3_context {
-    uint8_t last_buf[2*BACKSTEP_SIZE + EXTRABYTES];
-    int last_buf_size;
-    int frame_size;
-    uint32_t free_format_next_header;
-    int error_protection;
-    int sample_rate;
-    int sample_rate_index;
-    int bit_rate;
-    bitstream_t gb;
-    bitstream_t in_gb;
-    int nb_channels;
-    int mode;
-    int mode_ext;
-    int lsf;
-    int16_t synth_buf[MP3_MAX_CHANNELS][512 * 2];
-    int synth_buf_offset[MP3_MAX_CHANNELS];
-    int32_t sb_samples[MP3_MAX_CHANNELS][36][SBLIMIT];
-    int32_t mdct_buf[MP3_MAX_CHANNELS][SBLIMIT * 18];
-    int dither_state;
-} mp3_context_t;
-
-typedef struct _granule {
-    uint8_t scfsi;
-    int part2_3_length;
-    int big_values;
-    int global_gain;
-    int scalefac_compress;
-    uint8_t block_type;
-    uint8_t switch_point;
-    int table_select[3];
-    int subblock_gain[3];
-    uint8_t scalefac_scale;
-    uint8_t count1table_select;
-    int region_size[3];
-    int preflag;
-    int short_start, long_end;
-    uint8_t scale_factors[40];
-    int32_t sb_hybrid[SBLIMIT * 18];
-} granule_t;
-
-typedef struct _huff_table {
-    int xsize;
-    const uint8_t *bits;
-    const uint16_t *codes;
-} huff_table_t;
 
 static vlc_t huff_vlc[16];
 static vlc_t huff_quad_vlc[2];
@@ -169,7 +42,7 @@ static int32_t csa_table[8][4];
 static float csa_table_float[8][4];
 static int32_t mdct_win[8][36];
 static int16_t window[512];
-
+unsigned long _size;
 ////////////////////////////////////////////////////////////////////////////////
 
 static const uint16_t mp3_bitrate_tab[2][15] = {
@@ -2531,6 +2404,17 @@ static int mp3_decode_main(
 ////////////////////////////////////////////////////////////////////////////////
 
 static int mp3_decode_init(mp3_context_t *s) {
+#ifdef TROI_mp3_decode_init
+    PRINT_TROI_PLUS("mp3_decode_init");
+#endif
+#ifdef stack_func_mp3_decode_init
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_decode_init",stack_func_mp3_decode_init_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_decode_init_size);
+    #endif
+#endif
     static int init=0;
     int i, j, k;
 
@@ -2690,6 +2574,17 @@ static int mp3_decode_init(mp3_context_t *s) {
         }
         init = 1;
     }
+#ifdef stack_func_mp3_decode_init
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_init",stack_func_mp3_decode_init_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_init_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_init
+    PRINT_TROI_MINUS("mp3_decode_init");
+#endif
     return 0;
 }
 
@@ -2698,13 +2593,37 @@ static int mp3_decode_frame(
     int16_t *out_samples, int *data_size,
     uint8_t *buf, int buf_size
 ) {
+#ifdef TROI_mp3_decode_frame
+    PRINT_TROI_PLUS("mp3_decode_frame");
+#endif
+#ifdef stack_func_mp3_decode_frame
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_decode_frame",stack_func_mp3_decode_frame_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_decode_frame_size);
+    #endif
+#endif
     uint32_t header;
     int out_size;
     int extra_bytes = 0;
 
 retry:
     if(buf_size < HEADER_SIZE)
+    {
+#ifdef stack_func_mp3_decode_frame
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",stack_func_mp3_decode_frame_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_frame_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_frame
+    PRINT_TROI_MINUS("mp3_decode_frame");
+#endif
         return -1;
+    }
 
     header = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
     if(mp3_check_header(header) < 0){
@@ -2716,10 +2635,32 @@ retry:
 
     if (decode_header(s, header) == 1) {
         s->frame_size = -1;
+#ifdef stack_func_mp3_decode_frame
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",stack_func_mp3_decode_frame_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_frame_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_frame
+    PRINT_TROI_MINUS("mp3_decode_frame");
+#endif
         return -1;
     }
 
     if(s->frame_size<=0 || s->frame_size > buf_size){
+#ifdef stack_func_mp3_decode_frame
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",stack_func_mp3_decode_frame_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_frame_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_frame
+    PRINT_TROI_MINUS("mp3_decode_frame");
+#endif
         return -1;  // incomplete frame
     }
     if(s->frame_size < buf_size) {
@@ -2731,29 +2672,145 @@ retry:
         *data_size = out_size;
     // else: Error while decoding MPEG audio frame.
     s->frame_size += extra_bytes;
+
+#ifdef stack_func_mp3_decode_frame
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode_frame",stack_func_mp3_decode_frame_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_frame_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode_frame
+    PRINT_TROI_MINUS("mp3_decode_frame");
+#endif
     return buf_size;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 mp3_decoder_t mp3_create(void) {
+#ifdef TROI_mp3_create
+    PRINT_TROI_PLUS("mp3_create");
+#endif
+#ifdef stack_func_mp3_create
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_create",stack_func_mp3_create_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_create_size);
+    #endif
+#endif
+    _size = sizeof(mp3_context_t);
+    void *dec = libc_calloc(_size, 1);
 
-    void *dec = libc_calloc(sizeof(mp3_context_t), 1);
+#ifdef heap_array_dec
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("dec",dec,_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(dec,_size);
+    #endif
+#endif
+
     if (dec) mp3_decode_init((mp3_context_t*) dec);
 
+#ifdef stack_func_mp3_create
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_create",stack_func_mp3_create_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_create_size);
+    #endif
+#endif
+#ifdef TROI_mp3_create
+    PRINT_TROI_MINUS("mp3_create");
+#endif
     return (mp3_decoder_t)dec;
 }
 
 void mp3_done(mp3_decoder_t *dec) {
+#ifdef TROI_mp3_done
+    PRINT_TROI_PLUS("mp3_done");
+#endif
+#ifdef stack_func_mp3_done
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_done",stack_func_mp3_done_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_done_size);
+    #endif
+#endif
+
+    unsigned long size =0;
     if (dec) libc_free(dec);
+
+#ifdef heap_array_dec
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("dec",dec,_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(dec,_size);
+    #endif
+#endif
+
+
+#ifdef stack_func_mp3_done
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_done",stack_func_mp3_done_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_done_size);
+    #endif
+#endif
+#ifdef TROI_mp3_done
+    PRINT_TROI_MINUS("mp3_done");
+#endif
 }
 
+
 int mp3_decode(mp3_decoder_t *dec, void *buf, int bytes, signed short *out, mp3_info_t *info) {
+#ifdef TROI_mp3_decode
+    PRINT_TROI_PLUS("mp3_decode");
+#endif
+#ifdef stack_func_mp3_decode
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_decode",stack_func_mp3_decode_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_decode_size);
+    #endif
+#endif
     int res, size = -1;
     mp3_context_t *s = (mp3_context_t*) dec;
-    if (!s) return 0;
+    if (!s) {
+#ifdef stack_func_mp3_decode
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode",stack_func_mp3_decode_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode
+    PRINT_TROI_MINUS("mp3_decode");
+#endif
+        return 0;
+    }
     res = mp3_decode_frame(s, (int16_t*) out, &size, buf, bytes);
     if (res < 0){
+      mp3_done(dec);
+#ifdef stack_func_mp3_decode
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode",stack_func_mp3_decode_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode
+    PRINT_TROI_MINUS("mp3_decode");
+#endif
       return 0;
     }
     if (info) {
@@ -2762,5 +2819,17 @@ int mp3_decode(mp3_decoder_t *dec, void *buf, int bytes, signed short *out, mp3_
         info->audio_bytes = size;
     }
 
+#ifdef stack_func_mp3_decode
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_decode",stack_func_mp3_decode_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_decode_size);
+    #endif
+#endif
+#ifdef TROI_mp3_decode
+    PRINT_TROI_MINUS("mp3_decode");
+#endif
     return s->frame_size;
 }
+

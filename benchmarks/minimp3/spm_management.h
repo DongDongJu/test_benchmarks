@@ -18,26 +18,28 @@
 
 #ifdef TRACE_on
 #define TROI_main
-#define TROI_build_table
-#define TROI_huffman_decode
+#define TROI_mp3_create
+#define TROI_mp3_done
+#define TROI_mp3_decode
+#define TROI_mp3_decode_frame
+#define TROI_mp3_decode_init
 #endif
 
 #define stack_func_main
-#define stack_func_build_table
-#define stack_func_huffman_decode
+#define stack_func_mp3_create
+#define stack_func_mp3_done
+#define stack_func_mp3_decode
+#define stack_func_mp3_decode_frame
+#define stack_func_mp3_decode_init
+
 #define heap_array_file_data
-
-#define stack_func_main_size 4704
-#define stack_func_build_table_size 112
-#define stack_func_huffman_decode_size 104
+#define heap_array_dec
 
 
-#define stack_func_mp3_synth_filter_size 200
+
+#define stack_func_main_size 4688
 #define stack_func_mp3_create_size 16
+#define stack_func_mp3_done_size 16
 #define stack_func_mp3_decode_size 48
 #define stack_func_mp3_decode_frame_size 40
-#define stack_func_mp3_decode_main_size 64
-#define stack_func_mp_decode_layer3_size 144
-#define minimp3_stack_size
-#define stack_func_imdct36_size 336
-#define stack_func_reorder_block_size 2344
+#define stack_func_mp3_decode_init_size 1720
