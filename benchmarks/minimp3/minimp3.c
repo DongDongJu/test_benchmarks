@@ -686,7 +686,7 @@ static const int icos36h[9] = {
 void VAROI_FOR_STATIC_PLUS(){
 #ifdef stack_array_huff_vlc
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("huff_vlc",sizeof(vlc_t)*16);
+        PRINT_VAROI_ARRAY_PLUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(vlc_t)*16);
@@ -694,7 +694,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_huff_quad_vlc
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("huff_quad_vlc",sizeof(vlc_t)*2);
+        PRINT_VAROI_ARRAY_PLUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(vlc_t)*2);
@@ -702,7 +702,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_band_index_long
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("band_index_long",sizeof(uint16_t)*9*23);
+        PRINT_VAROI_ARRAY_PLUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(uint16_t)*9*23);
@@ -710,7 +710,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_exp_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("exp_table",sizeof(uint32_t)*512);
+        PRINT_VAROI_ARRAY_PLUS("exp_table",exp_table,sizeof(uint32_t)*512);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(uint32_t)*512);
@@ -718,7 +718,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_expval_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("expval_table",sizeof(uint32_t)*512*16);
+        PRINT_VAROI_ARRAY_PLUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(uint32_t)*512);
@@ -726,7 +726,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_is_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("is_table",sizeof(int32_t)*2*16);
+        PRINT_VAROI_ARRAY_PLUS("is_table",is_table,sizeof(int32_t)*2*16);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(int32_t)*2*16);
@@ -734,7 +734,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_is_table_lsf
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("is_table_lsf",sizeof(int32_t)*2*2*16);
+        PRINT_VAROI_ARRAY_PLUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(int32_t)*2*2*16);
@@ -742,7 +742,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_csa_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("csa_table",sizeof(int32_t)*8*4);
+        PRINT_VAROI_ARRAY_PLUS("csa_table",csa_table,sizeof(int32_t)*8*4);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(int32_t)*8*4);
@@ -750,7 +750,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_csa_table_float
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("csa_table_float",sizeof(float)*8*4);
+        PRINT_VAROI_ARRAY_PLUS("csa_table_float",csa_table_float,sizeof(float)*8*4);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(float)*8*4);
@@ -758,7 +758,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_mdct_win
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("mdct_win",sizeof(int32_t)*8*36);
+        PRINT_VAROI_ARRAY_PLUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(int32_t)*8*36);
@@ -766,7 +766,7 @@ void VAROI_FOR_STATIC_PLUS(){
 #endif
 #ifdef stack_array_window
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("window",sizeof(int16_t)*512);
+        PRINT_VAROI_ARRAY_PLUS("window",window,sizeof(int16_t)*512);
     #endif
     #ifdef SPM_on
         SPM_ALLOC_STACK(sizeof(int16_t)*512);
@@ -776,7 +776,7 @@ void VAROI_FOR_STATIC_PLUS(){
 void VAROI_FOR_STATIC_MINUS(){
 #ifdef stack_array_huff_vlc
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("huff_vlc",sizeof(vlc_t)*16);
+        PRINT_VAROI_ARRAY_MINUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(vlc_t)*16);
@@ -784,7 +784,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_huff_quad_vlc
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("huff_quad_vlc",sizeof(vlc_t)*2);
+        PRINT_VAROI_ARRAY_MINUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(vlc_t)*2);
@@ -792,7 +792,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_band_index_long
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("band_index_long",sizeof(uint16_t)*9*23);
+        PRINT_VAROI_ARRAY_MINUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(uint16_t)*9*23);
@@ -800,7 +800,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_exp_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("exp_table",sizeof(uint32_t)*512);
+        PRINT_VAROI_ARRAY_MINUS("exp_table",exp_table,sizeof(uint32_t)*512);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(uint32_t)*512);
@@ -808,7 +808,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_expval_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("expval_table",sizeof(uint32_t)*512*16);
+        PRINT_VAROI_ARRAY_MINUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(uint32_t)*512);
@@ -816,7 +816,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_is_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("is_table",sizeof(int32_t)*2*16);
+        PRINT_VAROI_ARRAY_MINUS("is_table",is_table,sizeof(int32_t)*2*16);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(int32_t)*2*16);
@@ -824,7 +824,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_is_table_lsf
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("is_table_lsf",sizeof(int32_t)*2*2*16);
+        PRINT_VAROI_ARRAY_MINUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(int32_t)*2*2*16);
@@ -832,7 +832,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_csa_table
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("csa_table",sizeof(int32_t)*8*4);
+        PRINT_VAROI_ARRAY_MINUS("csa_table",csa_table,sizeof(int32_t)*8*4);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(int32_t)*8*4);
@@ -840,7 +840,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_csa_table_float
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("csa_table_float",sizeof(float)*8*4);
+        PRINT_VAROI_ARRAY_MINUS("csa_table_float",csa_table_float,sizeof(float)*8*4);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(float)*8*4);
@@ -848,7 +848,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_mdct_win
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("mdct_win",sizeof(int32_t)*8*36);
+        PRINT_VAROI_ARRAY_MINUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(int32_t)*8*36);
@@ -856,7 +856,7 @@ void VAROI_FOR_STATIC_MINUS(){
 #endif
 #ifdef stack_array_window
     #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("window",sizeof(int16_t)*512);
+        PRINT_VAROI_ARRAY_MINUS("window",window,sizeof(int16_t)*512);
     #endif
     #ifdef SPM_on
         SPM_FREE_STACK(sizeof(int16_t)*512);
