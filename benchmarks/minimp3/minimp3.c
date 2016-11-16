@@ -27,7 +27,6 @@
 #include "minimp3.h"
 #include "spm_management.h"
 
-
 static vlc_t huff_vlc[16];
 static vlc_t huff_quad_vlc[2];
 static uint16_t band_index_long[9][23];
@@ -682,7 +681,188 @@ static const int icos36h[9] = {
     FIXHR(1.93185165257813657349/4), //2
 //    FIXHR(5.73685662283492756461),
 };
+////////////////////////////////////////////////////////////////////////////////
 
+void VAROI_FOR_STATIC_PLUS(){
+#ifdef stack_array_huff_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("huff_vlc",sizeof(vlc_t)*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(vlc_t)*16);
+    #endif
+#endif
+#ifdef stack_array_huff_quad_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("huff_quad_vlc",sizeof(vlc_t)*2);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(vlc_t)*2);
+    #endif
+#endif
+#ifdef stack_array_band_index_long
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("band_index_long",sizeof(uint16_t)*9*23);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(uint16_t)*9*23);
+    #endif
+#endif
+#ifdef stack_array_exp_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("exp_table",sizeof(uint32_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(uint32_t)*512);
+    #endif
+#endif
+#ifdef stack_array_expval_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("expval_table",sizeof(uint32_t)*512*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(uint32_t)*512);
+    #endif
+#endif
+#ifdef stack_array_is_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("is_table",sizeof(int32_t)*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(int32_t)*2*16);
+    #endif
+#endif
+#ifdef stack_array_is_table_lsf
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("is_table_lsf",sizeof(int32_t)*2*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(int32_t)*2*2*16);
+    #endif
+#endif
+#ifdef stack_array_csa_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("csa_table",sizeof(int32_t)*8*4);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(int32_t)*8*4);
+    #endif
+#endif
+#ifdef stack_array_csa_table_float
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("csa_table_float",sizeof(float)*8*4);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(float)*8*4);
+    #endif
+#endif
+#ifdef stack_array_mdct_win
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("mdct_win",sizeof(int32_t)*8*36);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(int32_t)*8*36);
+    #endif
+#endif
+#ifdef stack_array_window
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_PLUS("window",sizeof(int16_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(sizeof(int16_t)*512);
+    #endif
+#endif
+}
+void VAROI_FOR_STATIC_MINUS(){
+#ifdef stack_array_huff_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("huff_vlc",sizeof(vlc_t)*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(vlc_t)*16);
+    #endif
+#endif
+#ifdef stack_array_huff_quad_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("huff_quad_vlc",sizeof(vlc_t)*2);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(vlc_t)*2);
+    #endif
+#endif
+#ifdef stack_array_band_index_long
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("band_index_long",sizeof(uint16_t)*9*23);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(uint16_t)*9*23);
+    #endif
+#endif
+#ifdef stack_array_exp_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("exp_table",sizeof(uint32_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(uint32_t)*512);
+    #endif
+#endif
+#ifdef stack_array_expval_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("expval_table",sizeof(uint32_t)*512*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(uint32_t)*512);
+    #endif
+#endif
+#ifdef stack_array_is_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("is_table",sizeof(int32_t)*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(int32_t)*2*16);
+    #endif
+#endif
+#ifdef stack_array_is_table_lsf
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("is_table_lsf",sizeof(int32_t)*2*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(int32_t)*2*2*16);
+    #endif
+#endif
+#ifdef stack_array_csa_table
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("csa_table",sizeof(int32_t)*8*4);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(int32_t)*8*4);
+    #endif
+#endif
+#ifdef stack_array_csa_table_float
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("csa_table_float",sizeof(float)*8*4);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(float)*8*4);
+    #endif
+#endif
+#ifdef stack_array_mdct_win
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("mdct_win",sizeof(int32_t)*8*36);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(int32_t)*8*36);
+    #endif
+#endif
+#ifdef stack_array_window
+    #ifdef TRACE_on
+        PRINT_VAROI_ARRAY_MINUS("window",sizeof(int16_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(sizeof(int16_t)*512);
+    #endif
+#endif
+}
 ////////////////////////////////////////////////////////////////////////////////
 
 static INLINE int unaligned32_be(const uint8_t *p)
@@ -2712,14 +2892,14 @@ retry:
     }
 
     header = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-    if(mp3_check_header(header) < 0){
+    if(mp3_check_header(header) < 0){ //tiny
         buf++;
         buf_size--;
         extra_bytes++;
         goto retry;
     }
 
-    if (decode_header(s, header) == 1) {
+    if (decode_header(s, header) == 1) { //tiny
         s->frame_size = -1;
 #ifdef stack_func_mp3_decode_frame
     #ifdef TRACE_on
@@ -2787,6 +2967,8 @@ mp3_decoder_t mp3_create(void) {
         SPM_ALLOC_STACK(stack_func_mp3_create_size);
     #endif
 #endif
+VAROI_FOR_STATIC_PLUS();
+
     _size = sizeof(mp3_context_t);
     void *dec = libc_calloc(_size, 1);
 
@@ -2858,7 +3040,7 @@ free(table_4_3_value);
     #endif
 #endif
 
-
+VAROI_FOR_STATIC_MINUS();
 #ifdef stack_func_mp3_done
     #ifdef TRACE_on
         PRINT_VAROI_FUNC_MINUS("mp3_done",stack_func_mp3_done_size);
