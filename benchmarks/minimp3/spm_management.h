@@ -37,23 +37,14 @@
 #define stack_func_mp3_decode_init
 #define stack_func_mp3_decode_main
 #define stack_func_mp_decode_layer3
-
+#define stack_func_imdct36
+#define stack_func_build_table
 
 #define heap_array_file_data
 #define heap_array_dec
 #define heap_array_table_4_3_exp
 #define heap_array_table_4_3_value
-#define stack_array_huff_vlc
-#define stack_array_huff_quad_vlc
-#define stack_array_band_index_long
-#define stack_array_exp_table
-#define stack_array_expval_table
-#define stack_array_is_table
-#define stack_array_is_table_lsf
-#define stack_array_csa_table
-#define stack_array_csa_table_float
-#define stack_array_mdct_win
-#define stack_array_window
+
 
 #define stack_func_main_size 4688
 #define stack_func_mp3_create_size 16
@@ -62,4 +53,6 @@
 #define stack_func_mp3_decode_frame_size 40
 #define stack_func_mp3_decode_init_size 1720
 #define stack_func_mp3_decode_main_size 64
-#define stack_func_mp_decode_layer3_size 144
+#define stack_func_mp_decode_layer3_size 10976
+#define stack_func_imdct36_size 336
+#define stack_func_build_table_size 112

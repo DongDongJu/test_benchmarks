@@ -683,187 +683,6 @@ static const int icos36h[9] = {
 };
 ////////////////////////////////////////////////////////////////////////////////
 
-void VAROI_FOR_STATIC_PLUS(){
-#ifdef stack_array_huff_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(vlc_t)*16);
-    #endif
-#endif
-#ifdef stack_array_huff_quad_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(vlc_t)*2);
-    #endif
-#endif
-#ifdef stack_array_band_index_long
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(uint16_t)*9*23);
-    #endif
-#endif
-#ifdef stack_array_exp_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("exp_table",exp_table,sizeof(uint32_t)*512);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(uint32_t)*512);
-    #endif
-#endif
-#ifdef stack_array_expval_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(uint32_t)*512);
-    #endif
-#endif
-#ifdef stack_array_is_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("is_table",is_table,sizeof(int32_t)*2*16);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(int32_t)*2*16);
-    #endif
-#endif
-#ifdef stack_array_is_table_lsf
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(int32_t)*2*2*16);
-    #endif
-#endif
-#ifdef stack_array_csa_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("csa_table",csa_table,sizeof(int32_t)*8*4);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(int32_t)*8*4);
-    #endif
-#endif
-#ifdef stack_array_csa_table_float
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("csa_table_float",csa_table_float,sizeof(float)*8*4);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(float)*8*4);
-    #endif
-#endif
-#ifdef stack_array_mdct_win
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(int32_t)*8*36);
-    #endif
-#endif
-#ifdef stack_array_window
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_PLUS("window",window,sizeof(int16_t)*512);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_STACK(sizeof(int16_t)*512);
-    #endif
-#endif
-}
-void VAROI_FOR_STATIC_MINUS(){
-#ifdef stack_array_huff_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(vlc_t)*16);
-    #endif
-#endif
-#ifdef stack_array_huff_quad_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(vlc_t)*2);
-    #endif
-#endif
-#ifdef stack_array_band_index_long
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(uint16_t)*9*23);
-    #endif
-#endif
-#ifdef stack_array_exp_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("exp_table",exp_table,sizeof(uint32_t)*512);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(uint32_t)*512);
-    #endif
-#endif
-#ifdef stack_array_expval_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(uint32_t)*512);
-    #endif
-#endif
-#ifdef stack_array_is_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("is_table",is_table,sizeof(int32_t)*2*16);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(int32_t)*2*16);
-    #endif
-#endif
-#ifdef stack_array_is_table_lsf
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(int32_t)*2*2*16);
-    #endif
-#endif
-#ifdef stack_array_csa_table
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("csa_table",csa_table,sizeof(int32_t)*8*4);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(int32_t)*8*4);
-    #endif
-#endif
-#ifdef stack_array_csa_table_float
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("csa_table_float",csa_table_float,sizeof(float)*8*4);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(float)*8*4);
-    #endif
-#endif
-#ifdef stack_array_mdct_win
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(int32_t)*8*36);
-    #endif
-#endif
-#ifdef stack_array_window
-    #ifdef TRACE_on
-        PRINT_VAROI_ARRAY_MINUS("window",window,sizeof(int16_t)*512);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_STACK(sizeof(int16_t)*512);
-    #endif
-#endif
-}
-////////////////////////////////////////////////////////////////////////////////
 
 static INLINE int unaligned32_be(const uint8_t *p)
 {
@@ -1302,14 +1121,12 @@ static void exponents_from_scale_factors(
 
 static void reorder_block(mp3_context_t *s, granule_t *g)
 {
-
     int i, j, len;
     int32_t *ptr, *dst, *ptr1;
     int32_t tmp[576];
 
     if (g->block_type != 2)
     {
-
         return;
     }
 
@@ -1336,7 +1153,6 @@ static void reorder_block(mp3_context_t *s, granule_t *g)
         ptr+=2*len;
         libc_memcpy(ptr1, tmp, len * 3 * sizeof(*ptr1));
     }
-
 }
 
 static void compute_antialias(mp3_context_t *s, granule_t *g) {
@@ -1721,6 +1537,17 @@ static void imdct12(int *out, int *in)
 
 static void imdct36(int *out, int *buf, int *in, int *win)
 {
+#ifdef TROI_imdct36
+    PRINT_TROI_PLUS("imdct36");
+#endif
+#ifdef stack_func_imdct36
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("imdct36",stack_func_imdct36_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_imdct36_size);
+    #endif
+#endif
     int i, j, t0, t1, t2, t3, s0, s1, s2, s3;
     int tmp[18], *tmp1, *in1;
 
@@ -1795,6 +1622,17 @@ static void imdct36(int *out, int *buf, int *in, int *win)
     out[(8 - 4)*SBLIMIT] =  MULH(t1, win[8 - 4]) + buf[8 - 4];
     buf[9 + 4] = MULH(t0, win[18 + 9 + 4]);
     buf[8 - 4] = MULH(t0, win[18 + 8 - 4]);
+#ifdef stack_func_imdct36
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("imdct36",stack_func_imdct36_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_imdct36_size);
+    #endif
+#endif
+#ifdef TROI_imdct36
+    PRINT_TROI_MINUS("imdct36");
+#endif
 }
 
 static void compute_imdct(
@@ -2278,6 +2116,7 @@ static int mp_decode_layer3(mp3_context_t *s) {
     int16_t exponents[576];
     const uint8_t *ptr;
 
+
     if (s->lsf) {
         main_data_begin = get_bits(&s->gb, 8);
         private_bits = get_bits(&s->gb, s->nb_channels);
@@ -2297,6 +2136,7 @@ static int mp_decode_layer3(mp3_context_t *s) {
 
     for(gr=0;gr<nb_granules;gr++) {
         for(ch=0;ch<s->nb_channels;ch++) {
+
             g = &granules[ch][gr];
             g->part2_3_length = get_bits(&s->gb, 12);
             g->big_values = get_bits(&s->gb, 9);
