@@ -2274,8 +2274,8 @@ static int mp_decode_layer3(mp3_context_t *s) {
     int nb_granules, main_data_begin, private_bits;
     int gr, ch, blocksplit_flag, i, j, k, n, bits_pos;
     granule_t *g;
-    static granule_t granules[2][2];
-    static int16_t exponents[576];
+    granule_t granules[2][2];
+    int16_t exponents[576];
     const uint8_t *ptr;
 
     if (s->lsf) {
@@ -2967,7 +2967,6 @@ mp3_decoder_t mp3_create(void) {
         SPM_ALLOC_STACK(stack_func_mp3_create_size);
     #endif
 #endif
-VAROI_FOR_STATIC_PLUS();
 
     _size = sizeof(mp3_context_t);
     void *dec = libc_calloc(_size, 1);
@@ -3040,7 +3039,6 @@ free(table_4_3_value);
     #endif
 #endif
 
-VAROI_FOR_STATIC_MINUS();
 #ifdef stack_func_mp3_done
     #ifdef TRACE_on
         PRINT_VAROI_FUNC_MINUS("mp3_done",stack_func_mp3_done_size);
