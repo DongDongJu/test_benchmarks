@@ -1831,6 +1831,17 @@ static void compute_imdct(
 
 static void dct32(int32_t *out, int32_t *tab)
 {
+#ifdef TROI_dct32
+    PRINT_TROI_PLUS("dct32");
+#endif
+#ifdef stack_func_dct32
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("dct32",stack_func_dct32_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_dct32_size);
+    #endif
+#endif
     int tmp0, tmp1;
 
     /* pass 1 */
@@ -1985,6 +1996,17 @@ static void dct32(int32_t *out, int32_t *tab)
     out[23] = tab[29] + tab[19];
     out[15] = tab[30] + tab[17];
     out[31] = tab[31];
+#ifdef stack_func_dct32
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("dct32",stack_func_dct32_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_dct32_size);
+    #endif
+#endif
+#ifdef TROI_dct32
+    PRINT_TROI_MINUS("dct32");
+#endif
 }
 
 static void mp3_synth_filter(

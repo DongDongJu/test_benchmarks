@@ -27,6 +27,10 @@
 #define TROI_mp3_decode_init
 #define TROI_mp3_decode_main
 #define TROI_mp_decode_layer3
+#define TROI_imdct36
+#define TROI_dct32
+#define TROI_build_table
+#define TROI_huffman_decode
 #endif
 
 #define stack_func_main
@@ -39,6 +43,8 @@
 #define stack_func_mp_decode_layer3
 #define stack_func_imdct36
 #define stack_func_build_table
+#define stack_func_dct32
+#define stack_func_huffman_decode
 
 #define heap_array_file_data
 #define heap_array_dec
@@ -56,3 +62,5 @@
 #define stack_func_mp_decode_layer3_size 10976
 #define stack_func_imdct36_size 336
 #define stack_func_build_table_size 112
+#define stack_func_dct32_size 672
+#define stack_func_huffman_decode_size
