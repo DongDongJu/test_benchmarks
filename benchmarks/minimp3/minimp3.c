@@ -1330,7 +1330,7 @@ static int huffman_decode(
     mp3_context_t *s, granule_t *g, int16_t *exponents, int end_pos2
 ) {
 #ifdef TROI_huffman_decode
-    PRINT_TROI_PLUS("TROI_huffman_decode");
+    PRINT_TROI_PLUS("huffman_decode");
 #endif
 #ifdef stack_func_huffman_decode
     #ifdef TRACE_on
@@ -1486,7 +1486,7 @@ static int huffman_decode(
     #endif
 #endif
 #ifdef TROI_huffman_decode
-    PRINT_TROI_MINUS("TROI_huffman_decode");
+    PRINT_TROI_MINUS("huffman_decode");
 #endif
 
     return 0;

@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
     bytes_left -= 100;
 
     mp3 = mp3_create();
-    frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);
-
+//    frame_size = mp3_decode(mp3, stream_pos, bytes_left, sample_buf, &info);
+    frame_size = mp3_decode(mp3, (unsigned char*)file_data, bytes_left, sample_buf, &info);
     if (!frame_size) {
         out("\nError: not a valid MP3 audio file!\n");
 
