@@ -50,10 +50,21 @@
 #define stack_func_exponents_from_scale_factors
 #define stack_func_reorder_block
 
+
 #define heap_array_file_data
 #define heap_array_dec
 #define heap_array_table_4_3_exp
 #define heap_array_table_4_3_value
+#define heap_array_huff_vlc
+#define heap_array_huff_quad_vlc
+#define heap_array_band_index_long
+#define heap_array_exp_table
+#define heap_array_expval_table
+#define heap_array_is_table
+#define heap_array_is_table_lsf
+#define heap_array_csa_table
+#define heap_array_csa_table_float
+#define heap_array_mdct_win
 
 
 #define stack_func_main_size 4688
@@ -70,3 +81,4 @@
 #define stack_func_huffman_decode_size 104
 #define stack_func_exponents_from_scale_factors_size 80
 #define stack_func_reorder_block_size 2344
+

@@ -26,22 +26,304 @@
 #include "libc.h"
 #include "minimp3.h"
 #include "spm_management.h"
+// static array to heap
 
-static vlc_t huff_vlc[16];
-static vlc_t huff_quad_vlc[2];
-static uint16_t band_index_long[9][23];
+
+vlc_t* huff_vlc;
+vlc_t* huff_quad_vlc;
+uint16_t** band_index_long; // 9 23
 #define TABLE_4_3_SIZE (8191 + 16)*4
 static int8_t  *table_4_3_exp;
 static uint32_t *table_4_3_value;
-static uint32_t exp_table[512];
-static uint32_t expval_table[512][16];
-static int32_t is_table[2][16];
-static int32_t is_table_lsf[2][2][16];
-static int32_t csa_table[8][4];
-static float csa_table_float[8][4];
-static int32_t mdct_win[8][36];
-static int16_t window[512];
+uint32_t* exp_table; // 512
+uint32_t** expval_table;
+int32_t** is_table;
+int32_t*** is_table_lsf;
+int32_t** csa_table;
+float** csa_table_float;
+int32_t** mdct_win;
+int16_t* window;
 unsigned long _size;
+
+void AllocHeap(){
+    int i,j;
+    huff_vlc=(vlc_t*)malloc(sizeof(vlc_t)*16);
+#ifdef heap_array_huff_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(huff_vlc,sizeof(vlc_t)*16);
+    #endif
+#endif
+
+    huff_quad_vlc=(vlc_t*)malloc(sizeof(vlc_t)*2);
+#ifdef heap_array_huff_quad_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
+    #endif
+#endif
+
+    band_index_long= (uint16_t**)malloc(sizeof(uint16_t*)*9);
+    for(i=0;i<9;i++){
+        band_index_long[i]=(uint16_t*)malloc(sizeof(uint16_t)*23);
+    }
+#ifdef heap_array_band_index_long
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(band_index_long,sizeof(uint16_t)*9*23);
+    #endif
+#endif
+
+    exp_table=(uint32_t*)malloc(sizeof(uint32_t)*512);
+#ifdef heap_array_exp_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("exp_table",exp_table,sizeof(uint32_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(exp_table,sizeof(uint32_t)*512);
+    #endif
+#endif
+
+    expval_table= (uint32_t**)malloc(sizeof(uint32_t*)*512);
+    for(i=0;i<512;i++){
+        expval_table[i]=(uint32_t*)malloc(sizeof(uint32_t)*16);
+    }
+#ifdef heap_array_expval_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(expval_table,sizeof(uint32_t)*512*16);
+    #endif
+#endif
+
+
+    is_table= (int32_t**)malloc(sizeof(int32_t*)*2);
+    for(i=0;i<2;i++){
+        is_table[i]=(int32_t*)malloc(sizeof(int32_t)*16);
+    }
+#ifdef heap_array_is_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("expval_table",is_table,sizeof(int32_t)*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(is_table,sizeof(int32_t)*2*16);
+    #endif
+#endif
+
+  is_table_lsf=(int32_t***)malloc(sizeof(int32_t**)*2);
+  for(i=0;i<2;i++){
+      is_table_lsf[i]=(int32_t**)malloc(sizeof(int32_t*)*2);
+      for(j=0;j<2;j++){
+          is_table_lsf[i][j]=(int32_t*)malloc(sizeof(int32_t)*16);
+      }
+  }
+#ifdef heap_array_is_table_lsf
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(is_table_lsf,sizeof(int32_t)*2*2*16);
+    #endif
+#endif
+
+    csa_table= (int32_t**)malloc(sizeof(int32_t*)*8);
+    for(i=0;i<8;i++){
+        csa_table[i]=(int32_t*)malloc(sizeof(int32_t)*4);
+    }
+#ifdef heap_array_csa_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("csa_table",csa_table,sizeof(int32_t)*4*8);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(csa_table,sizeof(int32_t)*4*8);
+    #endif
+#endif
+
+    csa_table_float= (float**)malloc(sizeof(float*)*8);
+    for(i=0;i<8;i++){
+        csa_table_float[i]=(float*)malloc(sizeof(float)*4);
+    }
+#ifdef heap_array_csa_table_float
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("csa_table_float",csa_table_float,sizeof(float)*4*8);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(csa_table_float,sizeof(float)*4*8);
+    #endif
+#endif
+
+    mdct_win= (int32_t**)malloc(sizeof(int32_t*)*8);
+    for(i=0;i<8;i++){
+        mdct_win[i]=(int32_t*)malloc(sizeof(int32_t)*36);
+    }
+#ifdef heap_array_mdct_win
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(mdct_win,sizeof(int32_t)*8*36);
+    #endif
+#endif
+
+
+    window=(int16_t*)malloc(sizeof(int16_t)*512);
+
+#ifdef heap_array_window
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("window",window,sizeof(int16_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(window,sizeof(int16_t)*512);
+    #endif
+#endif
+}
+void FreeHeap(){
+    int i,j;
+    free(huff_vlc);
+#ifdef heap_array_huff_quad_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(huff_vlc,sizeof(vlc_t)*16);
+    #endif
+#endif
+
+    free(huff_quad_vlc);
+#ifdef heap_array_huff_quad_vlc
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
+    #endif
+#endif
+
+    for(i=0;i<9;i++){
+        free(band_index_long[i]);
+    }
+    free(band_index_long);
+#ifdef heap_array_band_index_long
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("band_index_long",band_index_long,sizeof(uint16_t)*9*23);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(band_index_long,sizeof(uint16_t)*9*23);
+    #endif
+#endif
+
+    free(exp_table);
+#ifdef heap_array_exp_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("exp_table",exp_table,sizeof(uint32_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(exp_table,sizeof(uint32_t)*512);
+    #endif
+#endif
+
+    for(i=0;i<512;i++){
+        free(expval_table[i]);
+    }
+    free(expval_table);
+#ifdef heap_array_expval_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("expval_table",expval_table,sizeof(uint32_t)*512*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(expval_table,sizeof(uint32_t)*512*16);
+    #endif
+#endif
+
+    for(i=0;i<2;i++){
+        free(is_table[i]);
+    }
+    free(is_table);
+#ifdef heap_array_is_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("expval_table",is_table,sizeof(int32_t)*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(is_table,sizeof(int32_t)*2*16);
+    #endif
+#endif
+
+    for(i=0;i<2;i++){
+        for(j=0;j<2;j++){
+            free(is_table_lsf[i][j]);
+        }
+        free(is_table_lsf[i]);
+    }
+    free(is_table_lsf);
+
+#ifdef heap_array_is_table_lsf
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("is_table_lsf",is_table_lsf,sizeof(int32_t)*2*2*16);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(is_table_lsf,sizeof(int32_t)*2*2*16);
+    #endif
+#endif
+
+    for(i=0;i<4;i++){
+        free(csa_table[i]);
+    }
+    free(csa_table);
+
+#ifdef heap_array_csa_table
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("csa_table",csa_table,sizeof(int32_t)*4*8);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(csa_table,sizeof(int32_t)*4*8);
+    #endif
+#endif
+
+    for(i=0;i<4;i++){
+        free(csa_table_float[i]);
+    }
+    free(csa_table_float);
+#ifdef heap_array_csa_table_float
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("csa_table_float",csa_table_float,sizeof(float)*4*8);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(csa_table_float,sizeof(float)*4*8);
+    #endif
+#endif
+
+    for(i=0;i<8;i++){
+        free(mdct_win[i]);
+    }
+    free(mdct_win);
+#ifdef heap_array_mdct_win
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("mdct_win",mdct_win,sizeof(int32_t)*8*36);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(mdct_win,sizeof(float)*8*36);
+    #endif
+#endif
+
+    free(window);
+#ifdef heap_array_window
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("window",window,sizeof(int16_t)*512);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(window,sizeof(int16_t)*512);
+    #endif
+#endif
+}
+//
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static const uint16_t mp3_bitrate_tab[2][15] = {
@@ -805,7 +1087,7 @@ static INLINE int alloc_table(vlc_t *vlc, int size) {
     vlc->table_size += size;
     if (vlc->table_size > vlc->table_allocated) {
         vlc->table_allocated += (1 << vlc->bits);
-        vlc->table = libc_realloc(vlc->table, sizeof(VLC_TYPE) * 2 * vlc->table_allocated);
+        vlc->table = realloc(vlc->table, sizeof(VLC_TYPE) * 2 * vlc->table_allocated);
         if (!vlc->table)
             return -1;
     }
@@ -835,7 +1117,12 @@ static int build_table(
     VLC_TYPE (*table)[2];
 
     table_size = 1 << table_nb_bits;
+__try{
     table_index = alloc_table(vlc, table_size);
+}
+__finally{
+    table_index=-1;
+}
     if (table_index < 0)
     {
 #ifdef stack_func_build_table
@@ -2557,7 +2844,7 @@ static int mp3_decode_init(mp3_context_t *s) {
 #endif
     static int init=0;
     int i, j, k;
-
+    AllocHeap();
     if (!init) {
         /* synth init */
         for(i=0;i<257;i++) {
@@ -2914,6 +3201,7 @@ void mp3_done(mp3_decoder_t *dec) {
 #endif
 
     unsigned long size =0;
+    FreeHeap();
     if (dec) libc_free(dec);
 free(table_4_3_exp);
 #ifdef heap_array_table_4_3_exp
