@@ -26,11 +26,14 @@
 #include "libc.h"
 #include "minimp3.h"
 #include "spm_management.h"
+
+
+
 // static array to heap
 
 
-vlc_t* huff_vlc;
-vlc_t* huff_quad_vlc;
+static vlc_t huff_vlc[16];
+static vlc_t huff_quad_vlc[2];
 uint16_t** band_index_long; // 9 23
 #define TABLE_4_3_SIZE (8191 + 16)*4
 static int8_t  *table_4_3_exp;
@@ -47,25 +50,32 @@ unsigned long _size;
 
 void AllocHeap(){
     int i,j;
-    huff_vlc=(vlc_t*)malloc(sizeof(vlc_t)*16);
-#ifdef heap_array_huff_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_HEAP_PLUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_HEAP(huff_vlc,sizeof(vlc_t)*16);
-    #endif
-#endif
+//     huff_vlc=(vlc_t*)malloc(sizeof(vlc_t)*16);
+//     for(i=0;i<2;i++){
+//         huff_vlc->table=(VLC_TYPE*)malloc(sizeof(VLC_TYPE) * 2);
+//     }
 
-    huff_quad_vlc=(vlc_t*)malloc(sizeof(vlc_t)*2);
-#ifdef heap_array_huff_quad_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_HEAP_PLUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-#endif
+// #ifdef heap_array_huff_vlc
+//     #ifdef TRACE_on
+//         PRINT_VAROI_HEAP_PLUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
+//     #endif
+//     #ifdef SPM_on
+//         SPM_ALLOC_HEAP(huff_vlc,sizeof(vlc_t)*16);
+//     #endif
+// #endif
+
+//     huff_quad_vlc=(vlc_t*)malloc(sizeof(vlc_t)*2);
+//     for(i=0;i<2;i++){
+//         huff_quad_vlc->table=(VLC_TYPE*)malloc(sizeof(VLC_TYPE) * 2);
+//     }
+// #ifdef heap_array_huff_quad_vlc
+//     #ifdef TRACE_on
+//         PRINT_VAROI_HEAP_PLUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
+//     #endif
+//     #ifdef SPM_on
+//         SPM_ALLOC_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
+//     #endif
+// #endif
 
     band_index_long= (uint16_t**)malloc(sizeof(uint16_t*)*9);
     for(i=0;i<9;i++){
@@ -186,25 +196,33 @@ void AllocHeap(){
 }
 void FreeHeap(){
     int i,j;
-    free(huff_vlc);
-#ifdef heap_array_huff_quad_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_HEAP_MINUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_HEAP(huff_vlc,sizeof(vlc_t)*16);
-    #endif
-#endif
 
-    free(huff_quad_vlc);
-#ifdef heap_array_huff_quad_vlc
-    #ifdef TRACE_on
-        PRINT_VAROI_HEAP_MINUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-    #ifdef SPM_on
-        SPM_FREE_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
-    #endif
-#endif
+//     for(i=0;i<16;i++){
+//         free(huff_vlc->table);
+//     }
+//     free(huff_vlc);
+// #ifdef heap_array_huff_quad_vlc
+//     #ifdef TRACE_on
+//         PRINT_VAROI_HEAP_MINUS("huff_vlc",huff_vlc,sizeof(vlc_t)*16);
+//     #endif
+//     #ifdef SPM_on
+//         SPM_FREE_HEAP(huff_vlc,sizeof(vlc_t)*16);
+//     #endif
+// #endif
+
+
+//     for(i=0;i<2;i++){
+//         free(huff_quad_vlc->table);
+//     }
+//     free(huff_quad_vlc);
+// #ifdef heap_array_huff_quad_vlc
+//     #ifdef TRACE_on
+//         PRINT_VAROI_HEAP_MINUS("huff_quad_vlc",huff_quad_vlc,sizeof(vlc_t)*2);
+//     #endif
+//     #ifdef SPM_on
+//         SPM_FREE_HEAP(huff_quad_vlc,sizeof(vlc_t)*2);
+//     #endif
+// #endif
 
     for(i=0;i<9;i++){
         free(band_index_long[i]);
@@ -1088,8 +1106,8 @@ static INLINE int alloc_table(vlc_t *vlc, int size) {
     if (vlc->table_size > vlc->table_allocated) {
         vlc->table_allocated += (1 << vlc->bits);
         vlc->table = realloc(vlc->table, sizeof(VLC_TYPE) * 2 * vlc->table_allocated);
-        if (!vlc->table)
-            return -1;
+        if(!vlc->table)
+          return -1;
     }
     return index;
 }
@@ -1117,12 +1135,9 @@ static int build_table(
     VLC_TYPE (*table)[2];
 
     table_size = 1 << table_nb_bits;
-__try{
+
     table_index = alloc_table(vlc, table_size);
-}
-__finally{
-    table_index=-1;
-}
+
     if (table_index < 0)
     {
 #ifdef stack_func_build_table
@@ -1242,7 +1257,7 @@ static INLINE int init_vlc(
                     bits, bits_wrap, bits_size,
                     codes, codes_wrap, codes_size,
                     0, 0) < 0) {
-        libc_free(vlc->table);
+        free(vlc->table);
         return -1;
     }
     return 0;

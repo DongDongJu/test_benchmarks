@@ -55,8 +55,8 @@
 #define heap_array_dec
 #define heap_array_table_4_3_exp
 #define heap_array_table_4_3_value
-#define heap_array_huff_vlc
-#define heap_array_huff_quad_vlc
+//#define heap_array_huff_vlc
+//#define heap_array_huff_quad_vlc
 #define heap_array_band_index_long
 #define heap_array_exp_table
 #define heap_array_expval_table
