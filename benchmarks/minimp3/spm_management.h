@@ -31,6 +31,8 @@
 #define TROI_dct32
 #define TROI_build_table
 #define TROI_huffman_decode
+#define TROI_exponents_from_scale_factors
+#define TROI_reorder_block
 #endif
 
 #define stack_func_main
@@ -45,6 +47,8 @@
 #define stack_func_build_table
 #define stack_func_dct32
 #define stack_func_huffman_decode
+#define stack_func_exponents_from_scale_factors
+#define stack_func_reorder_block
 
 #define heap_array_file_data
 #define heap_array_dec
@@ -63,4 +67,6 @@
 #define stack_func_imdct36_size 336
 #define stack_func_build_table_size 112
 #define stack_func_dct32_size 672
-#define stack_func_huffman_decode_size
+#define stack_func_huffman_decode_size 104
+#define stack_func_exponents_from_scale_factors_size 80
+#define stack_func_reorder_block_size 2344

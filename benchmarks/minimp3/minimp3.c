@@ -1083,7 +1083,17 @@ static INLINE int round_sample(int *sum) {
 static void exponents_from_scale_factors(
     mp3_context_t *s, granule_t *g, int16_t *exponents
 ) {
-
+#ifdef TROI_exponents_from_scale_factors
+    PRINT_TROI_PLUS("exponents_from_scale_factors");
+#endif
+#ifdef stack_func_huffman_decode
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("exponents_from_scale_factors",stack_func_exponents_from_scale_factors_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_exponents_from_scale_factors_size);
+    #endif
+#endif
     const uint8_t *bstab, *pretab;
     int len, i, j, k, l, v0, shift, gain, gains[3];
     int16_t *exp_ptr;
@@ -1116,7 +1126,17 @@ static void exponents_from_scale_factors(
             }
         }
     }
-
+#ifdef stack_func_exponents_from_scale_factors
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("exponents_from_scale_factors",stack_func_exponents_from_scale_factors_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_exponents_from_scale_factors_size);
+    #endif
+#endif
+#ifdef TROI_exponents_from_scale_factors
+    PRINT_TROI_MINUS("exponents_from_scale_factors");
+#endif
 }
 
 static void reorder_block(mp3_context_t *s, granule_t *g)
@@ -1124,7 +1144,17 @@ static void reorder_block(mp3_context_t *s, granule_t *g)
     int i, j, len;
     int32_t *ptr, *dst, *ptr1;
     int32_t tmp[576];
-
+#ifdef TROI_reorder_block
+    PRINT_TROI_PLUS("reorder_block");
+#endif
+#ifdef stack_func_reorder_block
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("reorder_block",stack_func_reorder_block_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_reorder_block_size);
+    #endif
+#endif
     if (g->block_type != 2)
     {
         return;
@@ -1153,6 +1183,17 @@ static void reorder_block(mp3_context_t *s, granule_t *g)
         ptr+=2*len;
         libc_memcpy(ptr1, tmp, len * 3 * sizeof(*ptr1));
     }
+#ifdef stack_func_reorder_block
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("reorder_block",stack_func_reorder_block_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_reorder_block_size);
+    #endif
+#endif
+#ifdef TROI_reorder_block
+    PRINT_TROI_MINUS("reorder_block");
+#endif
 }
 
 static void compute_antialias(mp3_context_t *s, granule_t *g) {
