@@ -20,19 +20,11 @@
 
 #ifdef TRACE_on
 #define TROI_main
-#define TROI_mp3_create
-#define TROI_mp3_done
-#define TROI_mp3_decode
-#define TROI_mp3_decode_frame
-#define TROI_mp3_decode_init
-#define TROI_mp3_decode_main
-#define TROI_mp_decode_layer3
 #define TROI_imdct36
 #define TROI_dct32
 #define TROI_build_table
-#define TROI_huffman_decode
-#define TROI_exponents_from_scale_factors
 #define TROI_reorder_block
+#define TROI_mp3_synth_filter
 #endif
 
 #define stack_func_main
@@ -49,6 +41,7 @@
 #define stack_func_huffman_decode
 #define stack_func_exponents_from_scale_factors
 #define stack_func_reorder_block
+#define stack_func_mp3_synth_filter
 
 
 #define heap_array_file_data
@@ -81,4 +74,5 @@
 #define stack_func_huffman_decode_size 104
 #define stack_func_exponents_from_scale_factors_size 80
 #define stack_func_reorder_block_size 2344
+#define stack_func_mp3_synth_filter_size
 

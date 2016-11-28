@@ -2358,6 +2358,17 @@ static void mp3_synth_filter(
     int16_t *samples, int incr,
     int32_t sb_samples[SBLIMIT]
 ) {
+#ifdef TROI_mp3_synth_filter
+    PRINT_TROI_PLUS("mp3_synth_filter");
+#endif
+#ifdef stack_func_mp3_synth_filter
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("mp3_synth_filter",stack_func_mp3_synth_filter_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_mp3_synth_filter_size);
+    #endif
+#endif
     int32_t tmp[32];
     register int16_t *synth_buf;
     register const int16_t *w, *w2, *p;
@@ -2421,6 +2432,17 @@ static void mp3_synth_filter(
 
     offset = (offset - 32) & 511;
     *synth_buf_offset = offset;
+#ifdef stack_func_mp3_synth_filter
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("mp3_synth_filter",stack_func_mp3_synth_filter_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_mp3_synth_filter_size);
+    #endif
+#endif
+#ifdef TROI_mp3_synth_filter
+    PRINT_TROI_MINUS("mp3_synth_filter");
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
