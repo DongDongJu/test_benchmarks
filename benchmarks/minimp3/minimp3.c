@@ -1459,6 +1459,17 @@ static void reorder_block(mp3_context_t *s, granule_t *g)
 #endif
     if (g->block_type != 2)
     {
+#ifdef stack_func_reorder_block
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("reorder_block",stack_func_reorder_block_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_reorder_block_size);
+    #endif
+#endif
+#ifdef TROI_reorder_block
+    PRINT_TROI_MINUS("reorder_block");
+#endif
         return;
     }
 
