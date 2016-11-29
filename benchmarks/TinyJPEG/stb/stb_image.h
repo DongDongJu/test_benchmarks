@@ -388,7 +388,7 @@ publish, and distribute this file as you see fit.
 // and only if iPhone convert-to-rgb processing is on).
 //
 
-
+static int len_of_out;
 #ifndef STBI_NO_STDIO
 #include <stdio.h>
 #endif // STBI_NO_STDIO
@@ -4855,6 +4855,7 @@ static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int 
       target = s->img_n; // if they want monochrome, we'll post-convert
 
    out = (stbi_uc *) stbi__malloc(target * s->img_x * s->img_y);
+   len_of_out=target * s->img_x * s->img_y;
    if (!out) return stbi__errpuc("outofmem", "Out of memory");
    if (info.bpp < 16) {
       int z=0;

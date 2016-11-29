@@ -373,17 +373,7 @@ static const uint8_t tjei_default_ht_chroma_ac[] =
 // ============================================================
 
 // Zig-zag order:
-static const uint8_t tjei_zig_zag[64] =
-{
-    0,   1,  5,  6, 14, 15, 27, 28,
-    2,   4,  7, 13, 16, 26, 29, 42,
-    3,   8, 12, 17, 25, 30, 41, 43,
-    9,  11, 18, 24, 31, 40, 44, 53,
-    10, 19, 23, 32, 39, 45, 52, 54,
-    20, 22, 33, 38, 46, 51, 55, 60,
-    21, 34, 37, 47, 50, 56, 59, 61,
-    35, 36, 48, 49, 57, 58, 62, 63,
-};
+
 
 // Memory order as big endian. 0xhilo -> 0xlohi which looks as 0xhilo in memory.
 static uint16_t tjei_be_word(const uint16_t le_word)
@@ -856,6 +846,17 @@ static void tjei_encode_and_write_MCU(TJEState* state,
         SPM_ALLOC_STACK(stack_func_tjei_encode_and_write_MCU_size);
     #endif
 #endif
+    uint8_t tjei_zig_zag[64] =
+    {
+        0,   1,  5,  6, 14, 15, 27, 28,
+        2,   4,  7, 13, 16, 26, 29, 42,
+        3,   8, 12, 17, 25, 30, 41, 43,
+        9,  11, 18, 24, 31, 40, 44, 53,
+        10, 19, 23, 32, 39, 45, 52, 54,
+        20, 22, 33, 38, 46, 51, 55, 60,
+        21, 34, 37, 47, 50, 56, 59, 61,
+        35, 36, 48, 49, 57, 58, 62, 63,
+    };
     int du[64];  // Data unit in zig-zag order
 
     float dct_mcu[64];
@@ -1056,6 +1057,17 @@ static int tjei_encode_main(TJEState* state,
         SPM_ALLOC_STACK(stack_func_tjei_encode_main_size);
     #endif
 #endif
+    uint8_t tjei_zig_zag[64] =
+    {
+        0,   1,  5,  6, 14, 15, 27, 28,
+        2,   4,  7, 13, 16, 26, 29, 42,
+        3,   8, 12, 17, 25, 30, 41, 43,
+        9,  11, 18, 24, 31, 40, 44, 53,
+        10, 19, 23, 32, 39, 45, 52, 54,
+        20, 22, 33, 38, 46, 51, 55, 60,
+        21, 34, 37, 47, 50, 56, 59, 61,
+        35, 36, 48, 49, 57, 58, 62, 63,
+    };
     if (src_num_components != 3 && src_num_components != 4) {
         return 0;
     }

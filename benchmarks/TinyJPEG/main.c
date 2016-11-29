@@ -3,7 +3,7 @@
 #define TJE_IMPLEMENTATION
 #include "tiny_jpeg.h"
 #include "spm_management.h"
-
+#include <string.h>
 int main(int argc, char* argv[])
 {
 #ifdef TROI_main
@@ -27,6 +27,14 @@ int main(int argc, char* argv[])
     }
 
     unsigned char* data = stbi_load(in, &width, &height, &num_components, 0);
+#ifdef heap_array_data
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("data",data,sizeof(unsigned char)*len_of_out);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(data,sizeof(unsigned char)*len_of_out);
+    #endif
+#endif
 
     if ( !data ) {
         puts("Could not find file");
@@ -37,6 +45,16 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Could not write JPEG\n");
         return EXIT_FAILURE;
     }
+
+    free(data);
+#ifdef heap_array_data
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_MINUS("data",data,sizeof(unsigned char)*len_of_out);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_HEAP(data,sizeof(unsigned char)*len_of_out);
+    #endif
+#endif
 
 #ifdef stack_func_main
     #ifdef TRACE_on
