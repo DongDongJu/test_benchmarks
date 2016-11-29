@@ -26,8 +26,8 @@
 #define stack_func_stbi__bmp_load
 #define stack_func_tje_encode_with_func
 #define stack_func_tjei_huff_expand
-#define stack_func_tjei_calculate_variable_length_int
-#define stack_func_tjei_write_bits
+// #define stack_func_tjei_calculate_variable_length_int
+// #define stack_func_tjei_write_bits
 //#define heap_array_file_data
 
 
@@ -38,5 +38,5 @@
 #define stack_func_stbi__bmp_load_size 1224
 #define stack_func_tje_encode_with_func_size 4352
 #define stack_func_tjei_huff_expand_size 3168
-#define stack_func_tjei_calculate_variable_length_int_size 24
-#define stack_func_tjei_write_bits_size 32
+// #define stack_func_tjei_calculate_variable_length_int_size 24
+// #define stack_func_tjei_write_bits_size 32
