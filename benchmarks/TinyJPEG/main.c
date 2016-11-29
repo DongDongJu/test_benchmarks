@@ -2,9 +2,22 @@
 #include "stb/stb_image.h"
 #define TJE_IMPLEMENTATION
 #include "tiny_jpeg.h"
+#include "spm_management.h"
 
 int main(int argc, char* argv[])
 {
+#ifdef TROI_main
+    PRINT_TROI_PLUS("main");
+#endif
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("main",stack_func_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_main_size);
+    #endif
+#endif
+
     int width, height, num_components;
     char* in;
     if (argc == 2){
@@ -24,6 +37,18 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Could not write JPEG\n");
         return EXIT_FAILURE;
     }
+
+#ifdef stack_func_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("main",stack_func_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_main_size);
+    #endif
+#endif
+#ifdef TROI_main
+    PRINT_TROI_MINUS("main");
+#endif
 
     return EXIT_SUCCESS;
 }

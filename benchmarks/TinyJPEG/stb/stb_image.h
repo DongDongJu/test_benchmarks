@@ -215,7 +215,7 @@ license: you are granted a perpetual, irrevocable license to copy, modify,
 publish, and distribute this file as you see fit.
 
 */
-
+#include "../spm_management.h"
 #ifndef STBI_INCLUDE_STB_IMAGE_H
 #define STBI_INCLUDE_STB_IMAGE_H
 
@@ -4809,6 +4809,17 @@ static void *stbi__bmp_parse_header(stbi__context *s, stbi__bmp_data *info)
 
 static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int req_comp)
 {
+#ifdef TROI_stbi__bmp_load
+    PRINT_TROI_PLUS("stbi__bmp_load");
+#endif
+#ifdef stack_func_stbi__bmp_load
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("stbi__bmp_load",stack_func_stbi__bmp_load_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_stbi__bmp_load_size);
+    #endif
+#endif
    stbi_uc *out;
    unsigned int mr=0,mg=0,mb=0,ma=0, all_a;
    stbi_uc pal[256][4];
@@ -4956,6 +4967,17 @@ static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int 
    *x = s->img_x;
    *y = s->img_y;
    if (comp) *comp = s->img_n;
+#ifdef stack_func_stbi__bmp_load
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("stbi__bmp_load",stack_func_stbi__bmp_load_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_stbi__bmp_load_size);
+    #endif
+#endif
+#ifdef TROI_stbi__bmp_load
+    PRINT_TROI_MINUS("stbi__bmp_load");
+#endif
    return out;
 }
 #endif

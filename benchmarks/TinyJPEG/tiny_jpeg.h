@@ -75,7 +75,7 @@ int main()
 }
 
 */
-
+#include "spm_management.h"
 
 
 #ifdef __cplusplus
@@ -592,6 +592,14 @@ static void tjei_huff_get_extended(uint8_t* out_ehuffsize,
 //  out[0] : bits
 TJEI_FORCE_INLINE void tjei_calculate_variable_length_int(int value, uint16_t out[2])
 {
+#ifdef stack_func_tjei_calculate_variable_length_int
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_calculate_variable_length_int",stack_func_tjei_calculate_variable_length_int_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_calculate_variable_length_int_size);
+    #endif
+#endif
     int abs_val = value;
     if ( value < 0 ) {
         abs_val = -abs_val;
@@ -602,6 +610,14 @@ TJEI_FORCE_INLINE void tjei_calculate_variable_length_int(int value, uint16_t ou
         ++out[1];
     }
     out[0] = (uint16_t)(value & ((1 << out[1]) - 1));
+#ifdef stack_func_tjei_calculate_variable_length_int
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_calculate_variable_length_int",stack_func_tjei_calculate_variable_length_int_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_calculate_variable_length_int_size);
+    #endif
+#endif
 }
 
 // Write bits to file.
@@ -618,6 +634,14 @@ TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
     // When we can write a full byte, we write a byte and shift.
 
     // Push the stack.
+#ifdef stack_func_tjei_write_bits
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_write_bits",stack_func_tjei_write_bits_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_write_bits_size);
+    #endif
+#endif
     uint32_t nloc = *location + num_bits;
     *bitbuffer |= (uint32_t)(bits << (32 - nloc));
     *location = nloc;
@@ -635,6 +659,14 @@ TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
         *bitbuffer <<= 8;
         *location -= 8;
     }
+#ifdef stack_func_tjei_write_bits
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_write_bits",stack_func_tjei_write_bits_size);
+    #endif
+    #ifdef SPM_on
+        SPM__STACK(stack_func_tjei_write_bits_size);
+    #endif
+#endif
 }
 
 // DCT implementation by Thomas G. Lane.
@@ -650,6 +682,17 @@ TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
 //
 static void tjei_fdct (float * data)
 {
+#ifdef TROI_tjei_fdct
+    PRINT_TROI_PLUS("tjei_fdct");
+#endif
+#ifdef stack_func_tjei_fdct
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_fdct",stack_func_tjei_fdct_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_fdct_size);
+    #endif
+#endif
     float tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
     float tmp10, tmp11, tmp12, tmp13;
     float z1, z2, z3, z4, z5, z11, z13;
@@ -755,6 +798,17 @@ static void tjei_fdct (float * data)
 
         dataptr++;          /* advance pointer to next column */
     }
+#ifdef stack_func_tjei_fdct_size
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_fdct",stack_func_tjei_fdct_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_fdct_size);
+    #endif
+#endif
+#ifdef TROI_tjei_fdct
+    PRINT_TROI_MINUS("tjei_fdct");
+#endif
 }
 #if !TJE_USE_FAST_DCT
 static float slow_fdct(int u, int v, float* data)
@@ -791,6 +845,17 @@ static void tjei_encode_and_write_MCU(TJEState* state,
                                       uint32_t* bitbuffer,  // Bitstack.
                                       uint32_t* location)
 {
+#ifdef TROI_tjei_encode_and_write_MCU
+    PRINT_TROI_PLUS("tjei_encode_and_write_MCU");
+#endif
+#ifdef stack_func_tjei_encode_and_write_MCU
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_encode_and_write_MCU",stack_func_tjei_encode_and_write_MCU_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_encode_and_write_MCU_size);
+    #endif
+#endif
     int du[64];  // Data unit in zig-zag order
 
     float dct_mcu[64];
@@ -880,6 +945,17 @@ static void tjei_encode_and_write_MCU(TJEState* state,
         // write EOB HUFF(00,00)
         tjei_write_bits(state, bitbuffer, location, huff_ac_len[0], huff_ac_code[0]);
     }
+#ifdef stack_func_tjei_encode_and_write_MCU
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_encode_and_write_MCU",stack_func_tjei_encode_and_write_MCU_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_encode_and_write_MCU_size);
+    #endif
+#endif
+#ifdef TROI_tjei_encode_and_write_MCU
+    PRINT_TROI_MINUS("tjei_encode_and_write_MCU");
+#endif
     return;
 }
 
@@ -901,6 +977,18 @@ struct TJEProcessedQT
 // Set up huffman tables in state.
 static void tjei_huff_expand(TJEState* state)
 {
+#ifdef TROI_tjei_huff_expand
+    PRINT_TROI_PLUS("tjei_huff_expand");
+#endif
+#ifdef stack_func_tjei_huff_expand
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_huff_expand",stack_func_tjei_huff_expand_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_huff_expand_size);
+    #endif
+#endif
+
     assert(state);
 
     state->ht_bits[TJEI_LUMA_DC]   = tjei_default_ht_luma_dc_len;
@@ -938,6 +1026,17 @@ static void tjei_huff_expand(TJEState* state)
                                &huffsize[i][0],
                                &huffcode[i][0], count);
     }
+#ifdef stack_func_tjei_huff_expand
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_huff_expand",stack_func_tjei_huff_expand_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_huff_expand_size);
+    #endif
+#endif
+#ifdef TROI_tjei_huff_expand
+    PRINT_TROI_MINUS("tjei_huff_expand");
+#endif
 }
 
 static int tjei_encode_main(TJEState* state,
@@ -946,6 +1045,17 @@ static int tjei_encode_main(TJEState* state,
                             const int height,
                             const int src_num_components)
 {
+#ifdef TROI_tjei_encode_main
+    PRINT_TROI_PLUS("tjei_encode_main");
+#endif
+#ifdef stack_func_tjei_encode_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_encode_main",stack_func_tjei_encode_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_encode_main_size);
+    #endif
+#endif
     if (src_num_components != 3 && src_num_components != 4) {
         return 0;
     }
@@ -1165,7 +1275,17 @@ static int tjei_encode_main(TJEState* state,
         state->write_context.func(state->write_context.context, state->output_buffer, (int)state->output_buffer_count);
         state->output_buffer_count = 0;
     }
-
+#ifdef stack_func_tjei_encode_main
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_encode_main",stack_func_tjei_encode_main_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_encode_main_size);
+    #endif
+#endif
+#ifdef TROI_tjei_encode_main
+    PRINT_TROI_MINUS("tjei_encode_main");
+#endif
     return 1;
 }
 
@@ -1215,6 +1335,17 @@ int tje_encode_with_func(tje_write_func* func,
                          const int num_components,
                          const unsigned char* src_data)
 {
+#ifdef TROI_tje_encode_with_func
+    PRINT_TROI_PLUS("tje_encode_with_func");
+#endif
+#ifdef stack_func_tje_encode_with_func
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tje_encode_with_func",stack_func_tje_encode_with_func_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tje_encode_with_func_size);
+    #endif
+#endif
     if (quality < 1 || quality > 3) {
         tje_log("[ERROR] -- Valid 'quality' values are 1 (lowest), 2, or 3 (highest)\n");
         return 0;
@@ -1261,7 +1392,17 @@ int tje_encode_with_func(tje_write_func* func,
     tjei_huff_expand(&state);
 
     int result = tjei_encode_main(&state, src_data, width, height, num_components);
-
+#ifdef stack_func_tje_encode_with_func
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tje_encode_with_func",stack_func_tje_encode_with_func_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tje_encode_with_func_size);
+    #endif
+#endif
+#ifdef TROI_tje_encode_with_func
+    PRINT_TROI_MINUS("tje_encode_with_func");
+#endif
     return result;
 }
 // ============================================================
