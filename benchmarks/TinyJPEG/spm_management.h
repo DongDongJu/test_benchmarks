@@ -26,10 +26,10 @@
 #define stack_func_stbi__bmp_load
 #define stack_func_tje_encode_with_func
 #define stack_func_tjei_huff_expand
-// #define stack_func_stbi__get8
-// #define stack_func_tjei_calculate_variable_length_int
-// #define stack_func_tjei_write_bits
-// #define stack_func_tjei_write
+//#define stack_func_stbi__get8
+//#define stack_func_tjei_calculate_variable_length_int
+//#define stack_func_tjei_write_bits
+//#define stack_func_tjei_write
 #define heap_array_data
 
 
