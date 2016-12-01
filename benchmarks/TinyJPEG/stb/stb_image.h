@@ -1227,12 +1227,57 @@ static void stbi__refill_buffer(stbi__context *s)
 
 stbi_inline static stbi_uc stbi__get8(stbi__context *s)
 {
-   if (s->img_buffer < s->img_buffer_end)
+#ifdef TROI_stbi__get8
+    PRINT_TROI_PLUS("stbi__get8");
+#endif
+#ifdef stack_func_stbi__get8
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("stbi__get8",stack_func_stbi__get8_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_stbi__get8_size);
+    #endif
+#endif
+   if (s->img_buffer < s->img_buffer_end){
+#ifdef stack_func_stbi__get8
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("stbi__get8",stack_func_stbi__get8_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_stbi__get8_size);
+    #endif
+#endif
+#ifdef TROI_stbi__get8
+    PRINT_TROI_MINUS("stbi__get8");
+#endif
       return *s->img_buffer++;
+    }
    if (s->read_from_callbacks) {
       stbi__refill_buffer(s);
+#ifdef stack_func_stbi__get8
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("stbi__get8",stack_func_stbi__get8_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_stbi__get8_size);
+    #endif
+#endif
+#ifdef TROI_stbi__get8
+    PRINT_TROI_MINUS("stbi__get8");
+#endif
       return *s->img_buffer++;
    }
+#ifdef stack_func_stbi__get8
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("stbi__get8",stack_func_stbi__get8_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_stbi__get8_size);
+    #endif
+#endif
+#ifdef TROI_stbi__get8
+    PRINT_TROI_MINUS("stbi__get8");
+#endif
    return 0;
 }
 
@@ -4855,6 +4900,15 @@ static stbi_uc *stbi__bmp_load(stbi__context *s, int *x, int *y, int *comp, int 
       target = s->img_n; // if they want monochrome, we'll post-convert
 
    out = (stbi_uc *) stbi__malloc(target * s->img_x * s->img_y);
+#ifdef heap_array_data
+    #ifdef TRACE_on
+        PRINT_VAROI_HEAP_PLUS("data",out,sizeof(unsigned char)*target * s->img_x * s->img_y);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_HEAP(out,sizeof(unsigned char)*target * s->img_x * s->img_y);
+    #endif
+#endif
+
    len_of_out=target * s->img_x * s->img_y;
    if (!out) return stbi__errpuc("outofmem", "Out of memory");
    if (info.bpp < 16) {

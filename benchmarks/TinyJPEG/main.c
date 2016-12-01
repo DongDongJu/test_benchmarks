@@ -27,14 +27,6 @@ int main(int argc, char* argv[])
     }
 
     unsigned char* data = stbi_load(in, &width, &height, &num_components, 0);
-#ifdef heap_array_data
-    #ifdef TRACE_on
-        PRINT_VAROI_HEAP_PLUS("data",data,sizeof(unsigned char)*len_of_out);
-    #endif
-    #ifdef SPM_on
-        SPM_ALLOC_HEAP(data,sizeof(unsigned char)*len_of_out);
-    #endif
-#endif
 
     if ( !data ) {
         puts("Could not find file");

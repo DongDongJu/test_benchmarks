@@ -458,6 +458,14 @@ typedef struct
 
 static void tjei_write(TJEState* state, const void* data, size_t num_bytes, size_t num_elements)
 {
+#ifdef stack_func_tjei_write
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_PLUS("tjei_write",stack_func_tjei_write_size);
+    #endif
+    #ifdef SPM_on
+        SPM_ALLOC_STACK(stack_func_tjei_write_size);
+    #endif
+#endif
     size_t to_write = num_bytes * num_elements;
 
     // Cap to the buffer available size and copy memory.
@@ -478,6 +486,14 @@ static void tjei_write(TJEState* state, const void* data, size_t num_bytes, size
     if (capped_count < to_write) {
         tjei_write(state, (uint8_t*)data+capped_count, to_write - capped_count, 1);
     }
+#ifdef stack_func_tjei_write_size_size
+    #ifdef TRACE_on
+        PRINT_VAROI_FUNC_MINUS("tjei_write",stack_func_tjei_write_size);
+    #endif
+    #ifdef SPM_on
+        SPM_FREE_STACK(stack_func_tjei_write_size);
+    #endif
+#endif
 }
 
 static void tjei_write_DQT(TJEState* state, const uint8_t* matrix, uint8_t id)
@@ -580,7 +596,7 @@ static void tjei_huff_get_extended(uint8_t* out_ehuffsize,
 // Returns:
 //  out[1] : number of bits
 //  out[0] : bits
-TJEI_FORCE_INLINE void tjei_calculate_variable_length_int(int value, uint16_t out[2])
+void tjei_calculate_variable_length_int(int value, uint16_t out[2])
 {
 #ifdef stack_func_tjei_calculate_variable_length_int
     #ifdef TRACE_on
@@ -611,7 +627,7 @@ TJEI_FORCE_INLINE void tjei_calculate_variable_length_int(int value, uint16_t ou
 }
 
 // Write bits to file.
-TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
+void tjei_write_bits(TJEState* state,
                                        uint32_t* bitbuffer, uint32_t* location,
                                        uint16_t num_bits, uint16_t bits)
 {
@@ -1057,6 +1073,20 @@ static int tjei_encode_main(TJEState* state,
         SPM_ALLOC_STACK(stack_func_tjei_encode_main_size);
     #endif
 #endif
+    // Write compressed data.
+
+    float du_y[64];
+    float du_b[64];
+    float du_r[64];
+
+    // Set diff to 0.
+    int pred_y = 0;
+    int pred_b = 0;
+    int pred_r = 0;
+
+    // Bit stack
+    uint32_t bitbuffer = 0;
+    uint32_t location = 0;
     uint8_t tjei_zig_zag[64] =
     {
         0,   1,  5,  6, 14, 15, 27, 28,
@@ -1192,20 +1222,7 @@ static int tjei_encode_main(TJEState* state,
         tjei_write(state, &header, sizeof(TJEScanHeader), 1);
 
     }
-    // Write compressed data.
 
-    float du_y[64];
-    float du_b[64];
-    float du_r[64];
-
-    // Set diff to 0.
-    int pred_y = 0;
-    int pred_b = 0;
-    int pred_r = 0;
-
-    // Bit stack
-    uint32_t bitbuffer = 0;
-    uint32_t location = 0;
 
 
     for ( int y = 0; y < height; y += 8 ) {
